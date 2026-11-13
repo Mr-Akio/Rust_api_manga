@@ -748,12 +748,18 @@
             }
         }
 
-        function changePage(delta) {
+        async function changePage(delta) {
             const next = currentPage + delta;
             if (next >= 1) {
-                loadLatestManga(next);
+                await loadLatestManga(next);
+                // Once new page loads, jump smoothly to the top of the manga catalog section
                 const section = document.getElementById('allMangaSection');
-                if (section) section.scrollIntoView({ behavior: 'smooth' });
+                if (section) {
+                    const top = section.getBoundingClientRect().top + window.pageYOffset - 75;
+                    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }
             }
         }
 
@@ -1089,6 +1095,7 @@
         async function openChapter(chapter, index) {
             currentChapterIndex = index;
             showView('viewReader');
+            window.scrollTo({ top: 0, behavior: 'instant' });
             
             // Mark as Read immediately
             markChapterAsRead(currentMangaData.slug, chapter.url);
@@ -1097,6 +1104,14 @@
             document.getElementById('readerImagesContainer').innerHTML = '';
             document.getElementById('episodeDrawer').classList.add('hidden');
             
+            // Ensure toolbars are visible and reset scroll tracker
+            const readerTop = document.getElementById('readerTopToolbar');
+            const readerBottom = document.getElementById('readerBottomToolbar');
+            if (readerTop) readerTop.style.transform = 'translateY(0)';
+            if (readerBottom) readerBottom.style.transform = 'translateY(0)';
+            isViewerToolbarsVisible = true;
+            lastScrollY = 0;
+
             // Top Toolbar Titles
             document.getElementById('readerComicTitle').innerText = currentMangaData.title;
             document.getElementById('readerChapterTitle').innerText = chapter.title;
@@ -1122,10 +1137,17 @@
                 if (!res.ok) throw new Error('ไม่สามารถโหลดภาพในตอนนี้ได้');
                 const data = await res.json();
                 renderReaderImages(data.images || []);
+
+                // Once images are rendered, immediately jump to the top
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                requestAnimationFrame(() => {
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                });
             } catch (err) {
                 showAlert('เกิดข้อผิดพลาด: ' + err.message, true);
             } finally {
                 document.getElementById('readerLoading').classList.add('hidden');
+                window.scrollTo({ top: 0, behavior: 'instant' });
             }
         }
 
@@ -1196,6 +1218,7 @@
             // Because 0 is latest and length-1 is oldest
             const nextIdx = currentChapterIndex - delta;
             if (nextIdx >= 0 && nextIdx < currentMangaData.chapters.length) {
+                window.scrollTo({ top: 0, behavior: 'instant' });
                 openChapter(currentMangaData.chapters[nextIdx], nextIdx);
             }
         }
