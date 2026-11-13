@@ -71,6 +71,8 @@ impl MangaScraper {
 
     async fn fetch_html(&self, url: &str) -> Result<String, String> {
         let curl_cmd = if cfg!(windows) { "curl.exe" } else { "curl" };
+
+        // 1. Direct curl
         let output = tokio::process::Command::new(curl_cmd)
             .args([
                 "-4",
@@ -78,7 +80,7 @@ impl MangaScraper {
                 "-s",
                 "-L",
                 "--max-time",
-                "15",
+                "12",
                 "--compressed",
                 "-A",
                 "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
@@ -101,18 +103,43 @@ impl MangaScraper {
             );
 
             if out.status.success() && !text.is_empty() {
-                if text.contains("Just a moment...")
-                    || text.contains("<title>403 Forbidden</title>")
-                    || text.contains("<title>Access denied</title>")
+                if !text.contains("Just a moment...")
+                    && !text.contains("<title>403 Forbidden</title>")
+                    && !text.contains("<title>Access denied</title>")
                 {
-                    eprintln!("Cloudflare bot challenge/403 detected for {}", url);
-                } else {
                     return Ok(text);
                 }
+                eprintln!("Cloudflare bot challenge/403 detected for {}", url);
             }
         }
 
-        // Fallback to reqwest
+        // 2. Cloudflare Relay via Jina Reader (bypasses Cloudflare Datacenter block on Render/AWS)
+        eprintln!("Bypassing Cloudflare via Jina Reader relay: {}", url);
+        let jina_url = format!("https://r.jina.ai/{}", url);
+        let jina_output = tokio::process::Command::new(curl_cmd)
+            .args([
+                "-s",
+                "-L",
+                "--max-time",
+                "15",
+                "-H",
+                "X-Return-Format: html",
+                "-A",
+                "Mozilla/5.0",
+                &jina_url,
+            ])
+            .output()
+            .await;
+
+        if let Ok(out) = jina_output {
+            let text = String::from_utf8_lossy(&out.stdout).to_string();
+            if out.status.success() && !text.is_empty() && !text.contains("Just a moment...") {
+                eprintln!("Successfully fetched {} via Jina relay (len={})", url, text.len());
+                return Ok(text);
+            }
+        }
+
+        // 3. Fallback to reqwest
         eprintln!("Falling back to reqwest for {}", url);
         let resp = self
             .client
