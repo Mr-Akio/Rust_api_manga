@@ -1,5 +1,5 @@
-# Stage 1: Build binary
-FROM rust:1-slim as builder
+# Stage 1: Build binary using Debian Bookworm (matches runtime glibc)
+FROM rust:1-bookworm as builder
 
 WORKDIR /app
 

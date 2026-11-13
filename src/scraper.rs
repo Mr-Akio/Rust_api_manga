@@ -69,7 +69,6 @@ impl MangaScraper {
     }
 
     async fn fetch_html(&self, url: &str) -> Result<String, String> {
-        // Use native curl (bypasses Cloudflare JA3/JA4 TLS bot filter seamlessly)
         let curl_cmd = if cfg!(windows) { "curl.exe" } else { "curl" };
         let output = tokio::process::Command::new(curl_cmd)
             .args([
@@ -77,23 +76,54 @@ impl MangaScraper {
                 "-L",
                 "--max-time",
                 "15",
+                "--compressed",
                 "-A",
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+                "-H",
+                "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+                "-H",
+                "Accept-Language: th-TH,th;q=0.9,en-US;q=0.8,en;q=0.7",
+                "-H",
+                "Sec-Ch-Ua: \"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
+                "-H",
+                "Sec-Ch-Ua-Mobile: ?0",
+                "-H",
+                "Sec-Ch-Ua-Platform: \"Windows\"",
+                "-H",
+                "Sec-Fetch-Dest: document",
+                "-H",
+                "Sec-Fetch-Mode: navigate",
+                "-H",
+                "Sec-Fetch-Site: none",
+                "-H",
+                "Sec-Fetch-User: ?1",
+                "-H",
+                "Upgrade-Insecure-Requests: 1",
                 url,
             ])
             .output()
             .await;
 
         if let Ok(out) = output {
-            if out.status.success() {
-                let text = String::from_utf8_lossy(&out.stdout).to_string();
-                if !text.is_empty() && !text.contains("Just a moment...") {
+            let text = String::from_utf8_lossy(&out.stdout).to_string();
+            eprintln!(
+                "curl fetch {}: status={}, stdout_len={}",
+                url,
+                out.status,
+                text.len()
+            );
+
+            if out.status.success() && !text.is_empty() {
+                if text.contains("Just a moment...") {
+                    eprintln!("Cloudflare bot challenge detected for {}", url);
+                } else {
                     return Ok(text);
                 }
             }
         }
 
         // Fallback to reqwest
+        eprintln!("Falling back to reqwest for {}", url);
         let resp = self
             .client
             .get(url)
