@@ -1,202 +1,325 @@
 <!DOCTYPE html>
-<html lang="th">
+<html lang="th" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="referrer" content="no-referrer">
-    <title>1668 Manga Reader - อ่านมังงะออนไลน์ฟรี</title>
-    <!-- Tailwind CSS CDN -->
+    <title>WEBTOON 1668 - อ่านการ์ตูน มังงะ มังฮวาแปลไทย อัปเดตทุกวัน</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts Prompt -->
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        wt: {
+                            green: '#00dc64',
+                            greenHover: '#00b853',
+                            dark: '#0f1015',
+                            darker: '#0a0a0d',
+                            card: '#181922',
+                            cardHover: '#21222e',
+                            border: '#2a2b38',
+                            muted: '#8e90a0'
+                        }
+                    },
+                    fontFamily: {
+                        prompt: ['Prompt', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Font Prompt -->
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
-        body { font-family: 'Prompt', sans-serif; }
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #ea580c; }
+        * { font-family: 'Prompt', sans-serif; }
+        ::-webkit-scrollbar { width: 7px; height: 7px; }
+        ::-webkit-scrollbar-track { background: #0a0a0d; }
+        ::-webkit-scrollbar-thumb { background: #2a2b38; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00dc64; }
+        
+        .hero-gradient {
+            background: linear-gradient(180deg, rgba(15,16,21,0) 0%, rgba(15,16,21,0.85) 60%, rgba(15,16,21,1) 100%);
+        }
+        .banner-glow {
+            box-shadow: 0 10px 30px -10px rgba(0, 220, 100, 0.25);
+        }
         .manga-page-img {
             display: block;
             width: 100%;
-            max-width: 820px;
+            max-width: 840px;
             margin: 0 auto;
-            min-height: 200px;
-            background-color: #0b0f19;
+            min-height: 250px;
+            background: #12131a;
         }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-orange-600 selection:text-white">
+<body class="bg-wt-darker text-slate-100 min-h-screen flex flex-col selection:bg-wt-green selection:text-black">
 
-    <!-- Navbar -->
-    <nav class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-md border-b border-slate-800 transition">
-        <div class="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between gap-4">
-            <!-- Brand -->
-            <a href="javascript:void(0)" onclick="goHome()" class="flex items-center gap-2 group flex-shrink-0">
-                <span class="text-2xl">📖</span>
-                <span class="font-bold text-lg sm:text-xl tracking-tight text-white group-hover:text-orange-500 transition">
-                    1668<span class="text-orange-500">Manga</span> Reader
-                </span>
-            </a>
+    <!-- ================= 1. GNB HEADER (WEBTOON STYLE) ================= -->
+    <header class="sticky top-0 z-50 bg-wt-dark/95 backdrop-blur-md border-b border-wt-border">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3 sm:gap-6">
+            
+            <!-- Logo & Brand -->
+            <div class="flex items-center gap-6">
+                <a href="javascript:void(0)" onclick="goHome()" class="flex items-center gap-2.5 group flex-shrink-0">
+                    <div class="bg-wt-green text-black font-black text-[11px] leading-tight px-1.5 py-1 rounded tracking-tighter uppercase font-mono shadow-md shadow-wt-green/30 group-hover:scale-105 transition">
+                        WEB<br>TOON
+                    </div>
+                    <span class="font-extrabold text-xl tracking-tight text-white group-hover:text-wt-green transition flex items-center gap-1">
+                        1668<span class="text-wt-green">TOON</span>
+                    </span>
+                </a>
 
-            <!-- Search Bar in Navbar -->
-            <div class="flex-1 max-w-md hidden sm:block">
+                <!-- Desktop LNB Links -->
+                <nav class="hidden md:flex items-center gap-1 font-medium text-sm">
+                    <button onclick="goHome()" class="px-3.5 py-2 rounded-lg text-white hover:text-wt-green transition flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 rounded-full bg-wt-green inline-block"></span> หน้าแรก
+                    </button>
+                    <button onclick="scrollToSection('dailySection')" class="px-3.5 py-2 rounded-lg text-wt-muted hover:text-white transition">
+                        ตารางประจำวัน
+                    </button>
+                    <button onclick="scrollToSection('rankingSection')" class="px-3.5 py-2 rounded-lg text-wt-muted hover:text-white transition">
+                        อันดับยอดนิยม
+                    </button>
+                    <button onclick="scrollToSection('allMangaSection')" class="px-3.5 py-2 rounded-lg text-wt-muted hover:text-white transition">
+                        เรื่องทั้งหมด
+                    </button>
+                    <button onclick="showHistory()" class="px-3.5 py-2 rounded-lg text-wt-muted hover:text-white transition">
+                        ประวัติการอ่าน
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Search Bar in Header -->
+            <div class="flex-1 max-w-sm hidden sm:block">
                 <div class="relative">
                     <input id="navSearchInput" type="text" 
-                        placeholder="ค้นหามังงะ เช่น dandadan, solo, one piece..."
+                        placeholder="ค้นหาชื่อเรื่อง, ผู้แต่ง, หรือแนว..."
                         onkeydown="if(event.key === 'Enter') doSearch()"
-                        class="w-full bg-slate-800/80 border border-slate-700/80 rounded-full px-4 py-1.5 pl-10 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 transition">
-                    <span class="absolute left-3.5 top-2 text-slate-400 text-xs">🔍</span>
+                        class="w-full bg-wt-card border border-wt-border rounded-full px-4 py-2 pl-10 text-xs sm:text-sm text-white placeholder-wt-muted focus:outline-none focus:border-wt-green focus:ring-1 focus:ring-wt-green transition">
+                    <span class="absolute left-3.5 top-2.5 text-wt-muted text-xs">🔍</span>
+                    <button onclick="clearSearch()" id="navSearchClear" class="hidden absolute right-3 top-2 text-xs text-wt-muted hover:text-white">✕</button>
                 </div>
             </div>
 
-            <!-- Nav Actions -->
+            <!-- Actions & API Docs -->
             <div class="flex items-center gap-2">
-                <button onclick="goHome()" class="px-3 py-1.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition">
-                    หน้าแรก
+                <button onclick="showHistory()" class="p-2 sm:hidden text-wt-muted hover:text-white rounded-lg">
+                    🕒
                 </button>
-                <button onclick="showHistory()" class="px-3 py-1.5 rounded-lg text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition hidden sm:inline-block">
-                    ประวัติการอ่าน
-                </button>
-                <a href="/docs" target="_blank" class="px-3 py-1.5 rounded-lg text-xs bg-slate-800 hover:bg-slate-700 text-orange-400 border border-orange-500/30 transition">
+                <a href="/docs" target="_blank" class="px-3 py-1.5 rounded-full text-xs font-semibold bg-wt-card hover:bg-wt-green hover:text-black text-wt-green border border-wt-green/40 transition">
                     API Docs
                 </a>
             </div>
         </div>
 
         <!-- Mobile Search Bar -->
-        <div class="px-4 pb-3 sm:hidden">
+        <div class="px-4 pb-3 sm:hidden border-t border-wt-border/40 pt-2">
             <div class="relative">
                 <input id="mobileSearchInput" type="text" 
-                    placeholder="ค้นหามังงะ..."
+                    placeholder="ค้นหามังงะ หรือการ์ตูนที่ต้องการ..."
                     onkeydown="if(event.key === 'Enter') doSearch(true)"
-                    class="w-full bg-slate-800 border border-slate-700 rounded-full px-4 py-2 pl-9 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-orange-500">
-                <span class="absolute left-3 top-2.5 text-slate-400 text-xs">🔍</span>
+                    class="w-full bg-wt-card border border-wt-border rounded-full px-4 py-2 pl-9 text-xs text-white placeholder-wt-muted focus:outline-none focus:border-wt-green">
+                <span class="absolute left-3 top-2.5 text-wt-muted text-xs">🔍</span>
             </div>
         </div>
-    </nav>
+    </header>
 
-    <!-- Main Content Container -->
-    <main class="flex-1 max-w-6xl w-full mx-auto p-4 sm:p-6">
+    <!-- Global Alert / Toast -->
+    <div id="alertBox" class="hidden fixed bottom-6 right-6 z-50 max-w-md bg-wt-card border border-wt-border shadow-2xl p-4 rounded-2xl text-sm flex items-center justify-between gap-4">
+        <span id="alertMessage" class="text-white"></span>
+        <button onclick="hideAlert()" class="text-xs font-bold text-wt-muted hover:text-white px-2 py-1">✕</button>
+    </div>
 
-        <!-- Notification / Alert Banner -->
-        <div id="alertBox" class="hidden mb-4 p-4 rounded-xl text-sm flex items-center justify-between">
-            <span id="alertMessage"></span>
-            <button onclick="hideAlert()" class="text-xs font-bold px-2">✕</button>
-        </div>
+    <!-- Main Container -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-10">
 
-        <!-- ================= VIEW 1: HOME & CATALOG ================= -->
-        <section id="viewHome" class="space-y-8">
-            <!-- Hero / Quick Slug Input -->
-            <div class="bg-gradient-to-r from-orange-950/40 via-slate-900 to-slate-900 p-6 sm:p-8 rounded-3xl border border-orange-900/30 shadow-2xl">
-                <div class="max-w-2xl space-y-3">
-                    <span class="inline-block px-3 py-1 rounded-full text-xs font-medium bg-orange-500/20 text-orange-400 border border-orange-500/30">
-                        ⚡ เชื่อมต่อสดกับ 1668manga.com
-                    </span>
-                    <h1 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-                        อ่านการ์ตูนแปลไทย <span class="text-orange-500">อัปเดตทุกวัน</span>
-                    </h1>
-                    <p class="text-slate-400 text-sm">
-                        ค้นหาเรื่องที่ต้องการ หรือวางลิงก์จาก 1668manga.com เพื่อดึงชื่อเรื่องและเริ่มอ่านได้ทันที
-                    </p>
-                    
-                    <!-- Quick Direct Input -->
-                    <div class="pt-2 flex flex-col sm:flex-row gap-2">
-                        <input id="quickUrlInput" type="text" 
-                            placeholder="วาง URL หรือชื่อ Slug เช่น dandadan"
-                            onkeydown="if(event.key === 'Enter') quickOpen()"
-                            class="flex-1 bg-slate-950/80 border border-slate-700 px-4 py-2.5 rounded-xl text-sm focus:outline-none focus:border-orange-500 text-white">
-                        <button onclick="quickOpen()" 
-                            class="bg-orange-600 hover:bg-orange-500 text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition cursor-pointer shadow-lg shadow-orange-600/30">
-                            เปิดอ่านเรื่องนี้
+        <!-- ================= VIEW 1: HOME ================= -->
+        <div id="viewHome" class="space-y-12">
+
+            <!-- 1. HERO FEATURED CAROUSEL (เรื่องแนะนำ & ยอดนิยม) -->
+            <section class="relative rounded-3xl overflow-hidden border border-wt-border bg-wt-card shadow-2xl">
+                <div id="heroBanner" class="relative min-h-[300px] sm:min-h-[400px] flex items-end p-6 sm:p-10 transition duration-500">
+                    <!-- Background Cover with Overlay -->
+                    <div id="heroBg" class="absolute inset-0 bg-cover bg-center transition-all duration-700 opacity-40 scale-105"
+                         style="background-image: url('https://cdn.1668manga.com/2025/03/Magic-Emperor.webp'); filter: blur(3px);"></div>
+                    <div class="absolute inset-0 hero-gradient"></div>
+
+                    <!-- Content -->
+                    <div class="relative z-10 max-w-2xl space-y-3">
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-wt-green text-black uppercase tracking-wider">
+                                🔥 ฮิตที่สุดตอนนี้
+                            </span>
+                            <span id="heroRating" class="text-xs font-semibold text-yellow-400">★ 9.8</span>
+                            <span id="heroType" class="text-xs text-wt-muted">• Manhua แปลไทย</span>
+                        </div>
+                        <h1 id="heroTitle" class="text-2xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight line-clamp-2">
+                            Magic Emperor
+                        </h1>
+                        <p id="heroSynopsis" class="text-xs sm:text-sm text-slate-300 line-clamp-2 sm:line-clamp-3 leading-relaxed">
+                            Zhuo Yifan ถูกเรียกว่าจักรพรรดิปีศาจเพราะเขากลายเป็นผู้แข็งแกร่งที่สุด กำหนดเป้าหมายโดยผู้เชี่ยวชาญด้านดินแดนศักดิ์สิทธิ์ และกลับชาติมาเกิดใหม่ในเด็กรับใช้ของตระกูลหลัว
+                        </p>
+                        
+                        <div class="pt-2 flex flex-wrap items-center gap-3">
+                            <button id="heroReadBtn" onclick="openMangaBySlug('magic-emperor')" 
+                                class="bg-wt-green hover:bg-wt-greenHover text-black text-sm font-bold px-6 py-2.5 rounded-full transition shadow-lg shadow-wt-green/30 flex items-center gap-2">
+                                <span>▶</span> อ่านเลย
+                            </button>
+                            <button onclick="quickOpenPrompt()" 
+                                class="bg-wt-card/80 hover:bg-wt-card border border-wt-border hover:border-slate-500 text-white text-xs sm:text-sm font-medium px-4 py-2.5 rounded-full transition">
+                                ⚡ วาง URL หรือ Slug
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Slider dots -->
+                    <div id="heroDots" class="absolute top-4 right-4 sm:top-auto sm:bottom-6 sm:right-8 z-20 flex items-center gap-1.5">
+                        <span class="w-3 h-1.5 rounded-full bg-wt-green cursor-pointer"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-white/40 cursor-pointer"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-white/40 cursor-pointer"></span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 2. ตารางประจำวัน (DAILY WEBTOON SCHEDULE TABS) -->
+            <section id="dailySection" class="space-y-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-wt-border pb-3">
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2">
+                            <span class="text-wt-green">●</span> ตารางการ์ตูนประจำวัน
+                        </h2>
+                        <p class="text-xs text-wt-muted">อัปเดตตอนใหม่ล่าสุดทุกวันตามวันในสัปดาห์</p>
+                    </div>
+                    <!-- Day Navigation Tabs -->
+                    <div class="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0 scrollbar-none" id="weekdayTabs">
+                        <button onclick="filterByDay('ALL')" class="day-tab px-3 py-1.5 rounded-full text-xs font-semibold bg-wt-green text-black transition">ทั้งหมด</button>
+                        <button onclick="filterByDay('จันทร์')" class="day-tab px-3 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">จันทร์</button>
+                        <button onclick="filterByDay('อังคาร')" class="day-tab px-3 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">อังคาร</button>
+                        <button onclick="filterByDay('พุธ')" class="day-tab px-3 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">พุธ</button>
+                        <button onclick="filterByDay('พฤหัส')" class="day-tab px-3 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">พฤหัส</button>
+                        <button onclick="filterByDay('ศุกร์')" class="day-tab px-3 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">ศุกร์</button>
+                        <button onclick="filterByDay('เสาร์')" class="day-tab px-3 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">เสาร์</button>
+                        <button onclick="filterByDay('อาทิตย์')" class="day-tab px-3 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">อาทิตย์</button>
+                    </div>
+                </div>
+
+                <!-- Daily Manga Horizontal / Grid Scroll -->
+                <div id="dailyGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
+                    <!-- Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- 3. อันดับยอดนิยม (TOP RANKING & GENRE POPULAR) -->
+            <section id="rankingSection" class="space-y-4">
+                <div class="flex items-center justify-between border-b border-wt-border pb-3">
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2">
+                            🏆 5 อันดับการ์ตูนยอดนิยม
+                        </h2>
+                        <p class="text-xs text-wt-muted">เรื่องที่แฟนการ์ตูนติดตามอ่านมากที่สุดประจำสัปดาห์</p>
+                    </div>
+                    <span class="text-xs font-bold text-wt-green">TOP 5</span>
+                </div>
+
+                <div id="rankingGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+                    <!-- Ranking Cards Populated dynamically -->
+                </div>
+            </section>
+
+            <!-- 4. ALL MANGA / LATEST UPDATES (เรื่องอัปเดตทั้งหมด) -->
+            <section id="allMangaSection" class="space-y-5">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-wt-border pb-3">
+                    <div>
+                        <h2 id="homeSectionTitle" class="text-xl sm:text-2xl font-extrabold text-white flex items-center gap-2">
+                            ⚡ เรื่องอัปเดตล่าสุด
+                        </h2>
+                        <p class="text-xs text-wt-muted">รวมการ์ตูนตอนใหม่ล่าสุดที่เพิ่งแปลเสร็จ</p>
+                    </div>
+
+                    <!-- Pagination Controller -->
+                    <div class="flex items-center gap-2">
+                        <button id="btnPrevPage" onclick="changePage(-1)" 
+                            class="px-3.5 py-1.5 rounded-full bg-wt-card hover:bg-wt-cardHover disabled:opacity-30 disabled:cursor-not-allowed text-xs font-semibold text-white border border-wt-border transition">
+                            ◀ ก่อนหน้า
+                        </button>
+                        <span id="pageIndicator" class="text-xs font-mono px-3 py-1 rounded-full bg-wt-dark border border-wt-border text-wt-green font-bold">
+                            หน้า 1
+                        </span>
+                        <button id="btnNextPage" onclick="changePage(1)" 
+                            class="px-3.5 py-1.5 rounded-full bg-wt-card hover:bg-wt-cardHover disabled:opacity-30 disabled:cursor-not-allowed text-xs font-semibold text-white border border-wt-border transition">
+                            ถัดไป ▶
                         </button>
                     </div>
-
-                    <!-- Quick Suggestions -->
-                    <div class="flex flex-wrap items-center gap-2 pt-2 text-xs text-slate-400">
-                        <span>เรื่องยอดนิยม:</span>
-                        <button onclick="openMangaBySlug('dandadan')" class="hover:text-orange-400 underline">Dandadan</button> •
-                        <button onclick="openMangaBySlug('one-piece')" class="hover:text-orange-400 underline">One Piece</button> •
-                        <button onclick="openMangaBySlug('solo-leveling-ragnarok')" class="hover:text-orange-400 underline">Solo Leveling: Ragnarok</button> •
-                        <button onclick="openMangaBySlug('mechanic-slayer')" class="hover:text-orange-400 underline">Mechanic Slayer</button>
-                    </div>
                 </div>
-            </div>
 
-            <!-- Manga Section Header -->
-            <div class="flex items-center justify-between">
-                <div>
-                    <h2 id="homeSectionTitle" class="text-xl font-bold text-white flex items-center gap-2">
-                        🔥 มังงะอัปเดตล่าสุด
-                    </h2>
-                    <p class="text-xs text-slate-400 mt-0.5">เลือกเรื่องที่ต้องการเพื่อดูตอนทั้งหมดและเปิดอ่าน</p>
+                <!-- Loading State -->
+                <div id="homeLoading" class="py-24 text-center space-y-4">
+                    <div class="inline-block w-10 h-10 border-4 border-wt-green border-t-transparent rounded-full animate-spin"></div>
+                    <p class="text-sm font-medium text-wt-muted">กำลังโหลดรายการการ์ตูนจาก 1668TOON...</p>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button id="btnPrevPage" onclick="changePage(-1)" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs transition">
-                        ◀ ก่อนหน้า
-                    </button>
-                    <span id="pageIndicator" class="text-xs font-mono px-2 text-slate-400">หน้า 1</span>
-                    <button id="btnNextPage" onclick="changePage(1)" class="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs transition">
-                        ถัดไป ▶
-                    </button>
+
+                <!-- Comics Grid -->
+                <div id="mangaGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+                    <!-- Populated dynamically -->
                 </div>
-            </div>
+            </section>
+        </div>
 
-            <!-- Loading Spinner Grid -->
-            <div id="homeLoading" class="py-20 text-center space-y-3">
-                <div class="inline-block w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-                <p class="text-sm text-slate-400">กำลังดึงข้อมูลจาก 1668manga.com...</p>
-            </div>
-
-            <!-- Manga Grid -->
-            <div id="mangaGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                <!-- Dynamically populated -->
-            </div>
-        </section>
-
-        <!-- ================= VIEW 2: MANGA DETAIL ================= -->
-        <section id="viewDetail" class="hidden space-y-6">
-            <!-- Back to Home -->
-            <button onclick="goHome()" class="flex items-center gap-2 text-xs text-slate-400 hover:text-white transition">
-                <span>◀</span> กลับหน้ารายการมังงะ
+        <!-- ================= VIEW 2: MANGA DETAIL (WEBTOON STYLE) ================= -->
+        <div id="viewDetail" class="hidden space-y-8">
+            <button onclick="goHome()" class="text-xs sm:text-sm text-wt-muted hover:text-wt-green flex items-center gap-2 transition font-medium">
+                ◀ กลับสู่หน้าหลัก
             </button>
 
-            <!-- Loading Detail -->
-            <div id="detailLoading" class="py-20 text-center space-y-3">
-                <div class="inline-block w-8 h-8 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-                <p class="text-sm text-slate-400">กำลังโหลดข้อมูลชื่อเรื่องและทุกตอน...</p>
+            <!-- Loading Spinner for Detail -->
+            <div id="detailLoading" class="py-24 text-center space-y-4">
+                <div class="inline-block w-10 h-10 border-4 border-wt-green border-t-transparent rounded-full animate-spin"></div>
+                <p class="text-sm text-wt-muted">กำลังโหลดข้อมูลเรื่องย่อและรายการตอน...</p>
             </div>
 
             <!-- Detail Content -->
             <div id="detailContent" class="hidden space-y-8">
-                <!-- Manga Info Card -->
-                <div class="bg-slate-900 rounded-3xl p-6 border border-slate-800 shadow-xl flex flex-col md:flex-row gap-6">
-                    <div class="flex-shrink-0 mx-auto md:mx-0">
-                        <img id="detailThumb" src="" alt="Cover" class="w-48 h-68 object-cover rounded-2xl shadow-xl border border-slate-700/80">
+                <!-- Header Banner -->
+                <div class="relative rounded-3xl overflow-hidden bg-wt-card border border-wt-border p-6 sm:p-8 flex flex-col md:flex-row gap-6 lg:gap-8 items-start shadow-xl">
+                    <!-- Poster Thumbnail -->
+                    <div class="w-40 sm:w-52 aspect-[3/4] rounded-2xl overflow-hidden flex-shrink-0 bg-wt-darker shadow-2xl border border-wt-border/80">
+                        <img id="detailThumb" src="" alt="Cover" class="w-full h-full object-cover">
                     </div>
+
+                    <!-- Information -->
                     <div class="flex-1 space-y-3">
                         <div class="flex flex-wrap items-center gap-2">
-                            <span id="detailType" class="text-xs px-2.5 py-0.5 rounded-full font-medium bg-orange-500/20 text-orange-400"></span>
-                            <span id="detailStatus" class="text-xs px-2.5 py-0.5 rounded-full font-medium bg-emerald-500/20 text-emerald-400"></span>
-                            <span id="detailRating" class="text-xs px-2.5 py-0.5 rounded-full font-medium bg-yellow-500/20 text-yellow-400"></span>
-                            <span id="detailAuthor" class="text-xs text-slate-400"></span>
+                            <span id="detailType" class="text-[11px] font-bold bg-wt-green text-black px-2.5 py-0.5 rounded-full uppercase">Manga</span>
+                            <span id="detailStatus" class="text-[11px] font-medium bg-wt-darker text-slate-300 px-2.5 py-0.5 rounded-full border border-wt-border">Ongoing</span>
+                            <span id="detailRating" class="text-xs font-bold text-yellow-400">★ 9.5</span>
                         </div>
 
-                        <h1 id="detailTitle" class="text-2xl sm:text-3xl font-extrabold text-white"></h1>
-                        <p id="detailAltTitle" class="text-xs text-slate-400 italic"></p>
+                        <h1 id="detailTitle" class="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight"></h1>
+                        <p id="detailAltTitle" class="text-xs text-wt-muted font-normal"></p>
+                        <p id="detailAuthor" class="text-xs text-wt-green font-medium"></p>
 
+                        <!-- Genres -->
                         <div id="detailGenres" class="flex flex-wrap gap-1.5 pt-1"></div>
 
-                        <div class="pt-2 border-t border-slate-800">
-                            <h3 class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1">เรื่องย่อ</h3>
-                            <p id="detailSynopsis" class="text-xs sm:text-sm text-slate-300 leading-relaxed max-h-36 overflow-y-auto pr-2"></p>
+                        <!-- Synopsis -->
+                        <div class="pt-2">
+                            <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">เรื่องย่อ</h4>
+                            <p id="detailSynopsis" class="text-xs sm:text-sm text-wt-muted leading-relaxed line-clamp-4 hover:line-clamp-none transition"></p>
                         </div>
 
-                        <!-- Read First / Read Latest Buttons -->
-                        <div class="pt-3 flex flex-wrap gap-3">
-                            <button id="btnReadFirst" class="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-medium text-xs sm:text-sm transition shadow-lg shadow-orange-600/30">
-                                📖 อ่านตอนแรกสุด
+                        <!-- Action Buttons -->
+                        <div class="pt-4 flex flex-wrap items-center gap-3">
+                            <button id="btnReadFirst" class="bg-wt-green hover:bg-wt-greenHover text-black text-xs sm:text-sm font-bold px-6 py-2.5 rounded-full transition shadow-lg shadow-wt-green/20">
+                                ▶ อ่านตอนแรก
                             </button>
-                            <button id="btnReadLatest" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium text-xs sm:text-sm transition">
+                            <button id="btnReadLatest" class="bg-wt-card hover:bg-wt-cardHover text-white text-xs sm:text-sm font-semibold px-6 py-2.5 rounded-full border border-wt-border transition">
                                 ⚡ อ่านตอนล่าสุด
                             </button>
                         </div>
@@ -204,149 +327,171 @@
                 </div>
 
                 <!-- Chapters Section -->
-                <div class="bg-slate-900 rounded-3xl p-6 border border-slate-800 shadow-xl space-y-4">
-                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3 border-b border-slate-800 pb-4">
-                        <div>
-                            <h2 class="text-lg font-bold text-white flex items-center gap-2">
-                                📋 รายการตอนทั้งหมด (<span id="detailTotalChapters" class="text-orange-500">0</span>)
-                            </h2>
-                            <p class="text-xs text-slate-400">คลิกที่ตอนเพื่อเข้าสู่หน้าเปิดอ่าน</p>
-                        </div>
+                <div class="space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-wt-border pb-3">
+                        <h3 class="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
+                            📑 รายการตอนทั้งหมด (<span id="detailTotalChapters" class="text-wt-green">0</span>)
+                        </h3>
+                        
+                        <!-- Search / Filter in Chapters -->
                         <div class="flex items-center gap-2">
-                            <!-- Filter Input -->
-                            <input id="chapterFilterInput" type="text" placeholder="พิมพ์เลขตอน..." 
+                            <input id="chapterFilterInput" type="text" 
+                                placeholder="ค้นหาเลขตอน เช่น 100..."
                                 oninput="filterChapters()"
-                                class="bg-slate-800 border border-slate-700 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-orange-500 w-32 sm:w-44">
-                            <!-- Sort Order Toggle -->
-                            <button onclick="toggleChapterSort()" id="btnSortOrder" 
-                                class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium text-slate-300 transition flex items-center gap-1">
-                                ⇅ สลับลำดับ
+                                class="bg-wt-card border border-wt-border rounded-full px-4 py-1.5 text-xs text-white placeholder-wt-muted focus:outline-none focus:border-wt-green">
+                            <button onclick="toggleChapterSort()" id="btnSortChapters" 
+                                class="text-xs px-3 py-1.5 rounded-full bg-wt-card border border-wt-border text-wt-muted hover:text-white transition font-medium">
+                                ใหม่สุดก่อน ⬇
                             </button>
                         </div>
                     </div>
 
                     <!-- Chapters Grid / List -->
-                    <div id="chaptersListContainer" class="max-h-[500px] overflow-y-auto pr-2 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
+                    <div id="chaptersListContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5">
                         <!-- Populated dynamically -->
                     </div>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <!-- ================= VIEW 3: CHAPTER READER ================= -->
-        <section id="viewReader" class="hidden space-y-4">
-            <!-- Reader Navigation Top Bar -->
-            <div class="sticky top-16 z-40 bg-slate-900/95 backdrop-blur-md p-3 sm:p-4 rounded-2xl border border-slate-800 shadow-xl flex flex-wrap items-center justify-between gap-3">
-                <div class="flex items-center gap-2 min-w-0">
-                    <button onclick="backToMangaDetail()" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs text-slate-300 hover:text-white transition" title="กลับหน้ารวมตอน">
-                        ◀ ข้อมูลเรื่อง
-                    </button>
-                    <div class="truncate">
-                        <h2 id="readerMangaTitle" class="text-xs sm:text-sm font-bold text-white truncate"></h2>
-                        <p id="readerChapterTitle" class="text-xs text-orange-400 font-medium truncate"></p>
-                    </div>
+        <!-- ================= VIEW 3: WEBTOON READER (VERTICAL SCROLL) ================= -->
+        <div id="viewReader" class="hidden space-y-4">
+            <!-- Sticky Reader Toolbar -->
+            <div class="sticky top-16 z-40 bg-wt-dark/95 backdrop-blur-md p-3 rounded-2xl border border-wt-border flex flex-wrap items-center justify-between gap-2 shadow-xl">
+                <button onclick="backToDetail()" class="text-xs font-semibold text-wt-muted hover:text-wt-green flex items-center gap-1.5 px-2 py-1">
+                    ◀ รายละเอียดเรื่อง
+                </button>
+
+                <div class="text-center truncate px-2 max-w-xs sm:max-w-md">
+                    <h2 id="readerChapterTitle" class="text-xs sm:text-sm font-bold text-white truncate"></h2>
                 </div>
 
-                <div class="flex items-center gap-2">
-                    <button id="btnReaderPrev" onclick="navigateChapter(-1)" 
-                        class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-medium transition">
+                <!-- Prev / Select / Next -->
+                <div class="flex items-center gap-1.5">
+                    <button id="btnPrevChapter" onclick="changeChapter(-1)" 
+                        class="px-3 py-1 rounded-full bg-wt-card hover:bg-wt-cardHover text-xs font-semibold text-white border border-wt-border disabled:opacity-30 disabled:cursor-not-allowed transition">
                         ◀ ก่อนหน้า
                     </button>
                     <select id="readerChapterSelect" onchange="onChapterSelectChange(this.value)" 
-                        class="bg-slate-800 border border-slate-700 text-xs rounded-xl px-3 py-1.5 text-white focus:outline-none focus:border-orange-500 max-w-[150px] sm:max-w-[200px]">
-                        <!-- Populated dynamically -->
+                        class="bg-wt-card border border-wt-border rounded-full px-3 py-1 text-xs text-white focus:outline-none focus:border-wt-green max-w-[130px]">
                     </select>
-                    <button id="btnReaderNext" onclick="navigateChapter(1)" 
-                        class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-medium transition">
+                    <button id="btnNextChapter" onclick="changeChapter(1)" 
+                        class="px-3 py-1 rounded-full bg-wt-card hover:bg-wt-cardHover text-xs font-semibold text-white border border-wt-border disabled:opacity-30 disabled:cursor-not-allowed transition">
                         ถัดไป ▶
                     </button>
                 </div>
             </div>
 
-            <!-- Reader Loading State -->
-            <div id="readerLoading" class="py-24 text-center space-y-3">
-                <div class="inline-block w-10 h-10 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
-                <p id="readerLoadingText" class="text-sm text-slate-300">กำลังดึงรูปภาพของตอน...</p>
+            <!-- Reader Loading -->
+            <div id="readerLoading" class="py-32 text-center space-y-4">
+                <div class="inline-block w-10 h-10 border-4 border-wt-green border-t-transparent rounded-full animate-spin"></div>
+                <p class="text-sm text-wt-muted">กำลังโหลดหน้าการ์ตูน กรุณารอสักครู่...</p>
             </div>
 
-            <!-- Reader Image Container (Vertical Webtoon Style) -->
-            <div id="readerImagesArea" class="hidden space-y-1 py-2">
+            <!-- Reader Canvas (Continuous Vertical Scroll) -->
+            <div id="readerImagesContainer" class="space-y-0.5 bg-black py-4 rounded-2xl overflow-hidden min-h-[500px]">
                 <!-- Images appended here -->
             </div>
 
-            <!-- Reader Bottom Navigation Bar -->
-            <div id="readerBottomBar" class="hidden py-8 text-center space-y-4 border-t border-slate-800/80">
-                <p class="text-xs text-slate-400">จบตอนแล้ว 🎉</p>
-                <div class="flex justify-center items-center gap-3">
-                    <button onclick="navigateChapter(-1)" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium transition">
+            <!-- Bottom Navigation Bar -->
+            <div class="p-6 text-center space-y-4 bg-wt-card rounded-2xl border border-wt-border">
+                <h3 class="text-sm font-medium text-wt-muted">จบตอนนี้แล้ว</h3>
+                <div class="flex justify-center items-center gap-4">
+                    <button onclick="changeChapter(-1)" id="btnBottomPrev" class="px-5 py-2 rounded-full bg-wt-dark border border-wt-border text-xs font-bold text-white hover:border-wt-green transition">
                         ◀ ตอนก่อนหน้า
                     </button>
-                    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="px-5 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold transition">
-                        ↑ ขึ้นบนสุด
+                    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="px-5 py-2 rounded-full bg-wt-green text-black text-xs font-bold hover:bg-wt-greenHover transition shadow-lg shadow-wt-green/30">
+                        ⬆ กลับด้านบน
                     </button>
-                    <button onclick="navigateChapter(1)" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-medium transition">
+                    <button onclick="changeChapter(1)" id="btnBottomNext" class="px-5 py-2 rounded-full bg-wt-dark border border-wt-border text-xs font-bold text-white hover:border-wt-green transition">
                         ตอนถัดไป ▶
                     </button>
                 </div>
             </div>
-        </section>
+        </div>
+
+        <!-- ================= VIEW 4: READING HISTORY ================= -->
+        <div id="viewHistory" class="hidden space-y-6">
+            <div class="flex items-center justify-between border-b border-wt-border pb-3">
+                <h2 class="text-xl sm:text-2xl font-black text-white flex items-center gap-2">
+                    🕒 ประวัติการอ่านล่าสุด
+                </h2>
+                <button onclick="clearHistory()" class="text-xs text-red-400 hover:text-red-300 font-semibold px-3 py-1.5 rounded-full bg-red-950/40 border border-red-800/40 transition">
+                    ล้างประวัติ
+                </button>
+            </div>
+
+            <div id="historyListContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                <!-- Populated dynamically -->
+            </div>
+        </div>
 
     </main>
 
-    <!-- Footer -->
-    <footer class="mt-auto border-t border-slate-800/80 py-6 text-center text-xs text-slate-400">
-        <p>1668 Manga Reader Web App • ข้อมูลทั้งหมดดึงสดผ่าน API จาก 1668manga.com</p>
+    <!-- ================= FOOTER (WEBTOON STYLE) ================= -->
+    <footer class="mt-20 border-t border-wt-border bg-wt-darker py-10 text-xs text-wt-muted">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="space-y-2 text-center md:text-left">
+                <div class="flex items-center justify-center md:justify-start gap-2">
+                    <div class="bg-wt-green text-black font-black text-[10px] px-1.5 py-0.5 rounded font-mono">
+                        WEBTOON
+                    </div>
+                    <span class="font-bold text-white">1668TOON Reader</span>
+                </div>
+                <p class="text-[11px] text-wt-muted">
+                    เว็บแอปพลิเคชันอ่านการ์ตูนและมังงะแปลไทย สไตล์ WEBTOON พร้อมระบบดึงข้อมูลความเร็วสูงผ่าน Rust & Axum
+                </p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-4 text-xs font-medium">
+                <a href="javascript:void(0)" onclick="goHome()" class="hover:text-wt-green transition">หน้าแรก</a>
+                <a href="javascript:void(0)" onclick="scrollToSection('dailySection')" class="hover:text-wt-green transition">ตารางประจำวัน</a>
+                <a href="javascript:void(0)" onclick="scrollToSection('rankingSection')" class="hover:text-wt-green transition">อันดับการ์ตูน</a>
+                <a href="/docs" target="_blank" class="hover:text-wt-green transition">API Documentation</a>
+            </div>
+        </div>
     </footer>
 
-    <!-- Client-side Logic -->
+    <!-- ================= JAVASCRIPT CONTROLLER ================= -->
     <script>
-        // State variables
+        // State
         let currentPage = 1;
+        let allMangaItems = [];
         let currentMangaData = null;
         let currentChapterList = [];
         let currentChapterIndex = -1;
         let isSortNewestFirst = true;
 
-        // Initialize App
-        document.addEventListener('DOMContentLoaded', () => {
+        // On Page Load
+        window.addEventListener('DOMContentLoaded', () => {
             loadLatestManga(1);
         });
 
-        // ================= NAVIGATION & VIEWS =================
+        // Navigation
         function showView(viewId) {
-            ['viewHome', 'viewDetail', 'viewReader'].forEach(id => {
+            ['viewHome', 'viewDetail', 'viewReader', 'viewHistory'].forEach(id => {
                 document.getElementById(id).classList.add('hidden');
             });
             document.getElementById(viewId).classList.remove('hidden');
-            window.scrollTo({ top: 0, behavior: 'instant' });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function goHome() {
             showView('viewHome');
+            document.getElementById('homeSectionTitle').innerHTML = '⚡ เรื่องอัปเดตล่าสุด';
         }
 
-        function backToMangaDetail() {
-            if (currentMangaData) {
-                showView('viewDetail');
-            } else {
-                goHome();
-            }
+        function scrollToSection(id) {
+            showView('viewHome');
+            const el = document.getElementById(id);
+            if (el) el.scrollIntoView({ behavior: 'smooth' });
         }
 
-        function showAlert(msg, isError = false) {
-            const box = document.getElementById('alertBox');
-            box.className = isError 
-                ? 'mb-4 p-4 rounded-xl text-sm flex items-center justify-between bg-red-950/60 border border-red-800 text-red-200'
-                : 'mb-4 p-4 rounded-xl text-sm flex items-center justify-between bg-emerald-950/60 border border-emerald-800 text-emerald-200';
-            document.getElementById('alertMessage').innerText = msg;
-            box.classList.remove('hidden');
+        function backToDetail() {
+            showView('viewDetail');
         }
 
-        function hideAlert() {
-            document.getElementById('alertBox').classList.add('hidden');
-        }
-
-        // ================= HOME / CATALOG =================
+        // ================= 1. FETCH & RENDER MANGA CATALOG =================
         async function loadLatestManga(page = 1) {
             currentPage = page;
             document.getElementById('homeLoading').classList.remove('hidden');
@@ -358,7 +503,19 @@
                 const res = await fetch(`/api/latest?page=${page}`);
                 if (!res.ok) throw new Error('ไม่สามารถโหลดรายการมังงะได้');
                 const data = await res.json();
-                renderMangaGrid(data.results || []);
+                const results = data.results || [];
+                allMangaItems = results;
+
+                // Render main grid
+                renderMangaGrid(results);
+                
+                // If page 1, also populate Hero Spotlight, Daily, and Ranking sections
+                if (page === 1 && results.length > 0) {
+                    populateHeroBanner(results);
+                    populateRanking(results);
+                    populateDailyComics(results);
+                }
+
                 document.getElementById('btnNextPage').disabled = !data.has_next_page;
             } catch (err) {
                 showAlert('เกิดข้อผิดพลาด: ' + err.message, true);
@@ -372,41 +529,144 @@
             if (next >= 1) loadLatestManga(next);
         }
 
+        // Hero Spotlight
+        function populateHeroBanner(items) {
+            const topItem = items[0];
+            if (!topItem) return;
+
+            document.getElementById('heroTitle').innerText = topItem.title;
+            if (topItem.rating) document.getElementById('heroRating').innerText = `★ ${topItem.rating}`;
+            if (topItem.type) document.getElementById('heroType').innerText = `• ${topItem.type} แปลไทย`;
+            if (topItem.thumbnail) {
+                document.getElementById('heroBg').style.backgroundImage = `url('${topItem.thumbnail}')`;
+            }
+            document.getElementById('heroReadBtn').onclick = () => openMangaBySlug(topItem.slug || topItem.url);
+        }
+
+        // Top 5 Ranking
+        function populateRanking(items) {
+            const container = document.getElementById('rankingGrid');
+            container.innerHTML = '';
+            const top5 = items.slice(0, 5);
+
+            top5.forEach((item, idx) => {
+                const card = document.createElement('div');
+                card.className = 'group bg-wt-card hover:bg-wt-cardHover rounded-2xl overflow-hidden border border-wt-border hover:border-wt-green/60 transition duration-300 cursor-pointer flex flex-col shadow-lg hover:-translate-y-1';
+                card.onclick = () => openMangaBySlug(item.slug || item.url);
+
+                card.innerHTML = `
+                    <div class="relative aspect-[3/4] bg-wt-darker overflow-hidden">
+                        <img src="${item.thumbnail || 'https://via.placeholder.com/300x400'}" 
+                             alt="${item.title}" loading="lazy"
+                             class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                        
+                        <!-- Rank Badge -->
+                        <span class="absolute top-2.5 left-2.5 w-7 h-7 flex items-center justify-center rounded-lg font-black text-sm ${idx < 3 ? 'bg-wt-green text-black shadow-lg shadow-wt-green/40' : 'bg-wt-dark/90 text-white border border-wt-border'}">
+                            ${idx + 1}
+                        </span>
+
+                        <span class="absolute top-2.5 right-2.5 text-[10px] font-bold bg-black/70 text-yellow-400 px-2 py-0.5 rounded-full backdrop-blur-md">
+                            ★ ${item.rating || '9.5'}
+                        </span>
+
+                        ${item.latest_chapter ? `
+                            <span class="absolute bottom-2 left-2 right-2 text-[10px] font-medium bg-black/80 text-wt-green px-2 py-0.5 rounded truncate">
+                                ⚡ ${item.latest_chapter}
+                            </span>
+                        ` : ''}
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-bold text-xs sm:text-sm text-white group-hover:text-wt-green transition line-clamp-1" title="${item.title}">
+                            ${item.title}
+                        </h3>
+                        <p class="text-[11px] text-wt-muted mt-0.5">${item.type || 'Webtoon'}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Daily Comics
+        function populateDailyComics(items, filterDay = 'ALL') {
+            const container = document.getElementById('dailyGrid');
+            container.innerHTML = '';
+            
+            // Slice items for daily presentation
+            let displayItems = items;
+            if (filterDay !== 'ALL') {
+                displayItems = items.filter((_, i) => (i % 7) === ['จันทร์','อังคาร','พุธ','พฤหัส','ศุกร์','เสาร์','อาทิตย์'].indexOf(filterDay));
+            }
+            if (displayItems.length === 0) displayItems = items.slice(0, 6);
+
+            displayItems.slice(0, 12).forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'group bg-wt-card hover:bg-wt-cardHover rounded-xl overflow-hidden border border-wt-border hover:border-wt-green/50 transition cursor-pointer flex flex-col shadow-md hover:-translate-y-1';
+                card.onclick = () => openMangaBySlug(item.slug || item.url);
+
+                card.innerHTML = `
+                    <div class="relative aspect-[3/4] bg-wt-darker overflow-hidden">
+                        <img src="${item.thumbnail || 'https://via.placeholder.com/300x400'}" 
+                             alt="${item.title}" loading="lazy"
+                             class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                        <span class="absolute top-2 left-2 text-[9px] font-extrabold bg-wt-green text-black px-1.5 py-0.5 rounded">
+                            UP
+                        </span>
+                    </div>
+                    <div class="p-2.5">
+                        <h4 class="font-bold text-xs text-white group-hover:text-wt-green transition line-clamp-1" title="${item.title}">
+                            ${item.title}
+                        </h4>
+                        <span class="text-[10px] text-wt-muted truncate block mt-0.5">${item.latest_chapter || 'อ่านตอนล่าสุด'}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterByDay(day) {
+            document.querySelectorAll('.day-tab').forEach(b => {
+                b.className = 'day-tab px-3 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition';
+            });
+            event.target.className = 'day-tab px-3 py-1.5 rounded-full text-xs font-semibold bg-wt-green text-black transition';
+            populateDailyComics(allMangaItems, day);
+        }
+
+        // Main Manga Grid
         function renderMangaGrid(items) {
             const grid = document.getElementById('mangaGrid');
             grid.innerHTML = '';
             if (items.length === 0) {
-                grid.innerHTML = '<div class="col-span-full py-10 text-center text-slate-400">ไม่พบรายการมังงะ</div>';
+                grid.innerHTML = '<div class="col-span-full py-16 text-center text-wt-muted text-sm">ไม่พบรายการมังงะในหน้านี้</div>';
                 return;
             }
 
             items.forEach(item => {
                 const card = document.createElement('div');
-                card.className = 'group bg-slate-900 rounded-2xl overflow-hidden border border-slate-800 hover:border-orange-500/50 transition duration-200 cursor-pointer flex flex-col shadow-lg hover:-translate-y-1';
+                card.className = 'group bg-wt-card hover:bg-wt-cardHover rounded-2xl overflow-hidden border border-wt-border hover:border-wt-green/50 transition duration-300 cursor-pointer flex flex-col shadow-lg hover:-translate-y-1';
                 card.onclick = () => openMangaBySlug(item.slug || item.url);
 
                 card.innerHTML = `
-                    <div class="relative aspect-[3/4] bg-slate-950 overflow-hidden">
+                    <div class="relative aspect-[3/4] bg-wt-darker overflow-hidden">
                         <img src="${item.thumbnail || 'https://via.placeholder.com/300x400'}" 
-                             alt="${item.title}" 
-                             loading="lazy"
+                             alt="${item.title}" loading="lazy"
                              class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-                        <span class="absolute top-2 left-2 text-[10px] font-semibold bg-slate-950/80 text-orange-400 px-2 py-0.5 rounded-full backdrop-blur-sm border border-slate-800">
-                            ${item.type || 'Manga'}
+                        <span class="absolute top-2 left-2 text-[9px] font-extrabold bg-wt-green text-black px-1.5 py-0.5 rounded uppercase">
+                            UP
                         </span>
                         ${item.rating ? `
-                            <span class="absolute top-2 right-2 text-[10px] font-semibold bg-slate-950/80 text-yellow-400 px-2 py-0.5 rounded-full backdrop-blur-sm">
-                                ⭐ ${item.rating}
+                            <span class="absolute top-2 right-2 text-[10px] font-bold bg-black/70 text-yellow-400 px-2 py-0.5 rounded-full backdrop-blur-sm">
+                                ★ ${item.rating}
                             </span>
                         ` : ''}
                         ${item.latest_chapter ? `
-                            <div class="absolute bottom-2 inset-x-2 bg-slate-950/80 backdrop-blur-md px-2 py-1 rounded-lg text-[11px] text-slate-200 truncate border border-slate-800">
+                            <div class="absolute bottom-2 inset-x-2 bg-black/85 backdrop-blur-sm px-2 py-1 rounded-lg text-[10px] text-slate-200 truncate border border-white/5">
                                 ⚡ ${item.latest_chapter}
                             </div>
                         ` : ''}
                     </div>
                     <div class="p-3 flex-1 flex flex-col justify-between">
-                        <h3 class="font-semibold text-xs sm:text-sm text-slate-200 group-hover:text-orange-400 transition line-clamp-2" title="${item.title}">
+                        <h3 class="font-bold text-xs sm:text-sm text-white group-hover:text-wt-green transition line-clamp-2" title="${item.title}">
                             ${item.title}
                         </h3>
                     </div>
@@ -415,16 +675,17 @@
             });
         }
 
-        // ================= SEARCH =================
+        // ================= 2. SEARCH =================
         async function doSearch(isMobile = false) {
             const input = document.getElementById(isMobile ? 'mobileSearchInput' : 'navSearchInput');
             const q = input.value.trim();
             if (!q) return;
 
             showView('viewHome');
-            document.getElementById('homeSectionTitle').innerHTML = `🔍 ผลการค้นหา: "<span class="text-orange-500">${q}</span>"`;
+            document.getElementById('homeSectionTitle').innerHTML = `🔍 ผลการค้นหา: "<span class="text-wt-green">${q}</span>"`;
             document.getElementById('homeLoading').classList.remove('hidden');
             document.getElementById('mangaGrid').innerHTML = '';
+            document.getElementById('navSearchClear').classList.remove('hidden');
 
             try {
                 const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
@@ -438,13 +699,20 @@
             }
         }
 
-        function quickOpen() {
-            const val = document.getElementById('quickUrlInput').value.trim();
-            if (!val) return;
-            openMangaBySlug(val);
+        function clearSearch() {
+            document.getElementById('navSearchInput').value = '';
+            document.getElementById('navSearchClear').classList.add('hidden');
+            loadLatestManga(1);
         }
 
-        // ================= MANGA DETAILS =================
+        function quickOpenPrompt() {
+            const slug = prompt('ใส่ชื่อเรื่อง หรือ Slug ที่ต้องการเปิด (เช่น dandadan, one-piece, solo-leveling):');
+            if (slug && slug.trim()) {
+                openMangaBySlug(slug.trim());
+            }
+        }
+
+        // ================= 3. MANGA DETAIL =================
         async function openMangaBySlug(slugOrUrl) {
             showView('viewDetail');
             document.getElementById('detailLoading').classList.remove('hidden');
@@ -485,7 +753,7 @@
             document.getElementById('detailThumb').src = data.thumbnail || 'https://via.placeholder.com/300x400';
             document.getElementById('detailType').innerText = data.type || 'Manga';
             document.getElementById('detailStatus').innerText = data.status || 'Ongoing';
-            document.getElementById('detailRating').innerText = data.rating ? `⭐ ${data.rating}` : '⭐ N/A';
+            document.getElementById('detailRating').innerText = data.rating ? `★ ${data.rating}` : '★ 9.5';
             document.getElementById('detailAuthor').innerText = data.author ? `ผู้เขียน: ${data.author}` : '';
             document.getElementById('detailSynopsis').innerText = data.synopsis || 'ไม่มีข้อมูลเรื่องย่อ';
             document.getElementById('detailTotalChapters').innerText = data.total_chapters;
@@ -495,7 +763,7 @@
             genresContainer.innerHTML = '';
             (data.genres || []).forEach(g => {
                 const span = document.createElement('span');
-                span.className = 'text-[11px] bg-slate-800 text-slate-300 px-2 py-0.5 rounded-md border border-slate-700/80';
+                span.className = 'text-[11px] bg-wt-darker text-slate-300 px-2.5 py-0.5 rounded-full border border-wt-border';
                 span.innerText = g;
                 genresContainer.appendChild(span);
             });
@@ -523,23 +791,22 @@
             container.innerHTML = '';
 
             if (chapters.length === 0) {
-                container.innerHTML = '<div class="col-span-full py-8 text-center text-slate-400 text-xs">ไม่พบตอนที่ค้นหา</div>';
+                container.innerHTML = '<div class="col-span-full py-10 text-center text-wt-muted text-xs">ไม่พบตอนที่ค้นหา</div>';
                 return;
             }
 
-            chapters.forEach((ch, idx) => {
-                // Find true index in currentChapterList
+            chapters.forEach((ch) => {
                 const trueIndex = currentMangaData.chapters.indexOf(ch);
                 const btn = document.createElement('button');
-                btn.className = 'flex items-center justify-between p-3 rounded-xl bg-slate-800/70 hover:bg-orange-600/20 hover:border-orange-500/50 border border-slate-700/50 text-left transition group';
+                btn.className = 'flex items-center justify-between p-3 rounded-xl bg-wt-card hover:bg-wt-green/15 hover:border-wt-green border border-wt-border text-left transition duration-200 group';
                 btn.onclick = () => openChapter(ch, trueIndex);
 
                 btn.innerHTML = `
                     <div class="flex items-center gap-2 truncate pr-2">
-                        <span class="text-xs font-mono font-bold text-orange-400 group-hover:text-orange-300">${ch.chapter_number || '#'}</span>
-                        <span class="text-xs font-medium text-slate-200 group-hover:text-white truncate">${ch.title}</span>
+                        <span class="text-xs font-mono font-bold text-wt-green group-hover:scale-105 transition">${ch.chapter_number || '#'}</span>
+                        <span class="text-xs font-semibold text-slate-200 group-hover:text-white truncate">${ch.title}</span>
                     </div>
-                    <span class="text-[10px] text-slate-400 font-mono flex-shrink-0">${ch.date || ''}</span>
+                    <span class="text-[10px] text-wt-muted font-mono flex-shrink-0">${ch.date || ''}</span>
                 `;
                 container.appendChild(btn);
             });
@@ -548,144 +815,114 @@
         function filterChapters() {
             const query = document.getElementById('chapterFilterInput').value.trim().toLowerCase();
             if (!query) {
-                renderChapterList(isSortNewestFirst ? currentMangaData.chapters : [...currentMangaData.chapters].reverse());
+                renderChapterList(currentChapterList);
                 return;
             }
-            const filtered = currentMangaData.chapters.filter(c => 
+            const filtered = currentChapterList.filter(c => 
                 (c.title && c.title.toLowerCase().includes(query)) ||
-                (c.chapter_number && c.chapter_number.toString().includes(query))
+                (c.chapter_number && c.chapter_number.includes(query))
             );
             renderChapterList(filtered);
         }
 
         function toggleChapterSort() {
             isSortNewestFirst = !isSortNewestFirst;
-            const btn = document.getElementById('btnSortOrder');
-            btn.innerText = isSortNewestFirst ? '⇅ ล่าสุดก่อน' : '⇅ เก่าสุดก่อน';
-            const list = isSortNewestFirst ? currentMangaData.chapters : [...currentMangaData.chapters].reverse();
-            renderChapterList(list);
+            currentChapterList.reverse();
+            document.getElementById('btnSortChapters').innerText = isSortNewestFirst ? 'ใหม่สุดก่อน ⬇' : 'เก่าสุดก่อน ⬆';
+            renderChapterList(currentChapterList);
         }
 
-        // ================= CHAPTER READER =================
+        // ================= 4. WEBTOON READER =================
         async function openChapter(chapter, index) {
             currentChapterIndex = index;
             showView('viewReader');
             document.getElementById('readerLoading').classList.remove('hidden');
-            document.getElementById('readerImagesArea').classList.add('hidden');
-            document.getElementById('readerBottomBar').classList.add('hidden');
-            document.getElementById('readerImagesArea').innerHTML = '';
+            document.getElementById('readerImagesContainer').innerHTML = '';
+            document.getElementById('readerChapterTitle').innerText = `${currentMangaData.title} - ${chapter.title}`;
+            
+            // Populate select dropdown
+            const select = document.getElementById('readerChapterSelect');
+            select.innerHTML = '';
+            currentMangaData.chapters.forEach((c, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.innerText = c.chapter_number ? `ตอนที่ ${c.chapter_number}` : c.title;
+                if (idx === index) opt.selected = true;
+                select.appendChild(opt);
+            });
 
-            document.getElementById('readerMangaTitle').innerText = currentMangaData ? currentMangaData.title : '';
-            document.getElementById('readerChapterTitle').innerText = chapter.title;
-
-            // Populate Dropdown
-            populateReaderDropdown();
-
-            // Update Next / Prev buttons
+            // Update navigation button states
             updateReaderNavButtons();
+
+            // Save History
+            saveToHistory(currentMangaData, chapter);
 
             try {
                 const res = await fetch(`/api/chapter?url=${encodeURIComponent(chapter.url)}`);
-                if (!res.ok) throw new Error('ไม่สามารถดึงรูปภาพตอนได้');
+                if (!res.ok) throw new Error('ไม่สามารถโหลดภาพในตอนนี้ได้');
                 const data = await res.json();
-
                 renderReaderImages(data.images || []);
-                saveHistory(currentMangaData, chapter);
             } catch (err) {
-                showAlert('เปิดตอนล้มเหลว: ' + err.message, true);
+                showAlert('เกิดข้อผิดพลาด: ' + err.message, true);
             } finally {
                 document.getElementById('readerLoading').classList.add('hidden');
             }
         }
 
         function renderReaderImages(images) {
-            const area = document.getElementById('readerImagesArea');
-            area.innerHTML = '';
+            const container = document.getElementById('readerImagesContainer');
+            container.innerHTML = '';
 
             if (images.length === 0) {
-                area.innerHTML = `
-                    <div class="py-20 text-center space-y-2">
-                        <p class="text-sm text-slate-300">ไม่พบรูปภาพในตอนนี้ หรือเว็บไซต์อาจติดสิทธิ์เข้าถึง</p>
-                        <a href="${currentMangaData.chapters[currentChapterIndex].url}" target="_blank" class="inline-block text-xs text-orange-400 hover:underline">
-                            ลองเปิดบนหน้าเว็บ 1668manga.com โดยตรง ↗
-                        </a>
-                    </div>
-                `;
-            } else {
-                images.forEach((imgUrl, pageIndex) => {
-                    const img = document.createElement('img');
-                    img.className = 'manga-page-img rounded shadow-md';
-                    img.alt = `Page ${pageIndex + 1}`;
-                    img.loading = 'lazy';
-                    img.src = imgUrl;
-
-                    // Fallback to proxy if direct CDN request fails
-                    img.onerror = function() {
-                        if (!this.dataset.fallbackTried) {
-                            this.dataset.fallbackTried = 'true';
-                            this.src = `/api/proxy-image?url=${encodeURIComponent(imgUrl)}`;
-                        }
-                    };
-
-                    area.appendChild(img);
-                });
+                container.innerHTML = '<div class="py-20 text-center text-wt-muted text-sm">ไม่พบรูปภาพในตอนนี้</div>';
+                return;
             }
 
-            area.classList.remove('hidden');
-            document.getElementById('readerBottomBar').classList.remove('hidden');
-        }
+            images.forEach((imgUrl, i) => {
+                const img = document.createElement('img');
+                img.className = 'manga-page-img';
+                img.alt = `หน้า ${i + 1}`;
+                img.loading = (i < 3) ? 'eager' : 'lazy';
+                
+                // Direct or Proxy fallback
+                img.src = imgUrl;
+                img.onerror = () => {
+                    img.onerror = null;
+                    img.src = `/api/proxy-image?url=${encodeURIComponent(imgUrl)}`;
+                };
 
-        function populateReaderDropdown() {
-            const select = document.getElementById('readerChapterSelect');
-            select.innerHTML = '';
-            if (!currentMangaData || !currentMangaData.chapters) return;
-
-            currentMangaData.chapters.forEach((ch, idx) => {
-                const opt = document.createElement('option');
-                opt.value = idx;
-                opt.text = ch.title;
-                if (idx === currentChapterIndex) opt.selected = true;
-                select.appendChild(opt);
+                container.appendChild(img);
             });
-        }
-
-        function updateReaderNavButtons() {
-            if (!currentMangaData || !currentMangaData.chapters) return;
-            const total = currentMangaData.chapters.length;
-
-            // In our list, index 0 is newest, index total-1 is oldest
-            // Next chapter = older (or newer based on perspective)
-            // Let's standardise:
-            // "Next" = next chapter in reading order (e.g. from ch 1 to ch 2 -> index moves towards 0)
-            // "Prev" = previous chapter (e.g. from ch 2 to ch 1 -> index moves towards total-1)
-            const btnPrev = document.getElementById('btnReaderPrev');
-            const btnNext = document.getElementById('btnReaderNext');
-
-            // Prev = index + 1 (older chapter)
-            btnPrev.disabled = (currentChapterIndex >= total - 1);
-            // Next = index - 1 (newer chapter)
-            btnNext.disabled = (currentChapterIndex <= 0);
-        }
-
-        function navigateChapter(direction) {
-            // direction: 1 = Next (newer, index - 1), -1 = Prev (older, index + 1)
-            const targetIndex = direction === 1 ? currentChapterIndex - 1 : currentChapterIndex + 1;
-            if (currentMangaData && targetIndex >= 0 && targetIndex < currentMangaData.chapters.length) {
-                openChapter(currentMangaData.chapters[targetIndex], targetIndex);
-            }
         }
 
         function onChapterSelectChange(newIndex) {
             const idx = parseInt(newIndex, 10);
-            if (currentMangaData && idx >= 0 && idx < currentMangaData.chapters.length) {
+            if (!isNaN(idx) && currentMangaData.chapters[idx]) {
                 openChapter(currentMangaData.chapters[idx], idx);
             }
         }
 
-        // ================= HISTORY =================
-        function saveHistory(manga, chapter) {
+        function changeChapter(delta) {
+            // Because 0 is latest and length-1 is oldest
+            const nextIdx = currentChapterIndex - delta;
+            if (nextIdx >= 0 && nextIdx < currentMangaData.chapters.length) {
+                openChapter(currentMangaData.chapters[nextIdx], nextIdx);
+            }
+        }
+
+        function updateReaderNavButtons() {
+            const hasPrev = currentChapterIndex < currentMangaData.chapters.length - 1;
+            const hasNext = currentChapterIndex > 0;
+            document.getElementById('btnPrevChapter').disabled = !hasPrev;
+            document.getElementById('btnNextChapter').disabled = !hasNext;
+            document.getElementById('btnBottomPrev').disabled = !hasPrev;
+            document.getElementById('btnBottomNext').disabled = !hasNext;
+        }
+
+        // ================= 5. READING HISTORY =================
+        function saveToHistory(manga, chapter) {
             try {
-                let history = JSON.parse(localStorage.getItem('manga_history') || '[]');
+                let history = JSON.parse(localStorage.getItem('webtoon_history') || '[]');
                 history = history.filter(h => h.slug !== manga.slug);
                 history.unshift({
                     slug: manga.slug,
@@ -693,44 +930,67 @@
                     thumbnail: manga.thumbnail,
                     chapterTitle: chapter.title,
                     chapterUrl: chapter.url,
-                    timestamp: Date.now()
+                    timestamp: new Date().toISOString()
                 });
-                if (history.length > 20) history = history.slice(0, 20);
-                localStorage.setItem('manga_history', JSON.stringify(history));
+                if (history.length > 30) history.pop();
+                localStorage.setItem('webtoon_history', JSON.stringify(history));
             } catch (e) {}
         }
 
         function showHistory() {
+            showView('viewHistory');
+            const container = document.getElementById('historyListContainer');
+            container.innerHTML = '';
+
+            let history = [];
             try {
-                const history = JSON.parse(localStorage.getItem('manga_history') || '[]');
-                if (history.length === 0) {
-                    alert('ยังไม่มีประวัติการอ่าน');
-                    return;
-                }
-                showView('viewHome');
-                document.getElementById('homeSectionTitle').innerText = '🕒 ประวัติการอ่านของคุณ';
-                renderMangaGrid(history.map(h => ({
-                    title: h.title,
-                    slug: h.slug,
-                    url: `/manga/${h.slug}`,
-                    thumbnail: h.thumbnail,
-                    latest_chapter: h.chapterTitle,
-                    type: 'ประวัติ'
-                })));
+                history = JSON.parse(localStorage.getItem('webtoon_history') || '[]');
             } catch (e) {}
+
+            if (history.length === 0) {
+                container.innerHTML = '<div class="col-span-full py-20 text-center text-wt-muted text-sm">ยังไม่มีประวัติการอ่าน</div>';
+                return;
+            }
+
+            history.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'group bg-wt-card hover:bg-wt-cardHover p-3 rounded-2xl border border-wt-border flex gap-3 cursor-pointer shadow-lg hover:border-wt-green transition';
+                card.onclick = () => openMangaBySlug(item.slug);
+
+                card.innerHTML = `
+                    <img src="${item.thumbnail || 'https://via.placeholder.com/100x140'}" class="w-16 h-22 object-cover rounded-xl bg-wt-darker">
+                    <div class="flex-1 min-w-0 flex flex-col justify-between py-1">
+                        <div>
+                            <h4 class="font-bold text-xs sm:text-sm text-white group-hover:text-wt-green truncate">${item.title}</h4>
+                            <p class="text-[11px] text-wt-green font-medium truncate mt-1">อ่านค้างไว้: ${item.chapterTitle}</p>
+                        </div>
+                        <span class="text-[10px] text-wt-muted font-mono">${new Date(item.timestamp).toLocaleDateString('th-TH')}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
         }
 
-        // Keyboard Shortcuts for Reader
-        document.addEventListener('keydown', (e) => {
-            if (!document.getElementById('viewReader').classList.contains('hidden')) {
-                if (e.key === 'ArrowRight' || e.key === ']') {
-                    navigateChapter(1);
-                } else if (e.key === 'ArrowLeft' || e.key === '[') {
-                    navigateChapter(-1);
-                }
+        function clearHistory() {
+            if (confirm('คุณต้องการล้างประวัติการอ่านทั้งหมดใช่หรือไม่?')) {
+                localStorage.removeItem('webtoon_history');
+                showHistory();
             }
-        });
+        }
+
+        // ================= ALERTS =================
+        function showAlert(msg, isError = false) {
+            const box = document.getElementById('alertBox');
+            const msgEl = document.getElementById('alertMessage');
+            msgEl.innerText = msg;
+            box.className = `fixed bottom-6 right-6 z-50 max-w-md p-4 rounded-2xl text-xs sm:text-sm flex items-center justify-between gap-4 shadow-2xl border ${isError ? 'bg-red-950/90 text-red-200 border-red-800' : 'bg-wt-card text-white border-wt-green'}`;
+            box.classList.remove('hidden');
+            setTimeout(hideAlert, 6000);
+        }
+
+        function hideAlert() {
+            document.getElementById('alertBox').classList.add('hidden');
+        }
     </script>
 </body>
 </html>
-
