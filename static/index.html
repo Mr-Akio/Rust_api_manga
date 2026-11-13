@@ -49,15 +49,33 @@
         .hero-gradient {
             background: linear-gradient(180deg, rgba(15,16,21,0) 0%, rgba(15,16,21,0.85) 60%, rgba(15,16,21,1) 100%);
         }
+        #readerImagesContainer {
+            font-size: 0 !important;
+            line-height: 0 !important;
+            letter-spacing: 0 !important;
+            word-spacing: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+        }
         .manga-page-img {
-            display: block;
-            width: 100%;
-            max-width: 800px;
-            margin: 0 auto;
-            min-height: 200px;
-            background: #12131a;
+            display: block !important;
+            width: 100% !important;
+            max-width: 800px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+            padding: 0 !important;
+            border: 0 !important;
+            outline: none !important;
+            vertical-align: top !important;
             user-select: none;
             -webkit-user-drag: none;
+            image-rendering: -webkit-optimize-contrast;
+            transform: translateZ(0);
+        }
+        /* Completely eliminate subpixel rendering hairline gaps between spliced webtoon images */
+        .manga-page-img + .manga-page-img,
+        .manga-page-img:not(:first-child) {
+            margin-top: -1.5px !important;
         }
         .hide-scrollbar::-webkit-scrollbar {
             display: none;
@@ -435,7 +453,7 @@
             </div>
 
             <!-- Reader Canvas (Continuous Vertical Comic Strip - Tap to toggle toolbars) -->
-            <div id="readerImagesContainer" onclick="toggleViewerToolbars()" class="bg-black py-2 sm:py-6 overflow-hidden min-h-[500px] cursor-pointer">
+            <div id="readerImagesContainer" onclick="toggleViewerToolbars()" class="bg-black overflow-hidden min-h-[500px] cursor-pointer select-none">
                 <!-- Images appended here -->
             </div>
 
