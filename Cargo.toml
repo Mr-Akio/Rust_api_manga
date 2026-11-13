@@ -1,0 +1,20 @@
+[package]
+name = "manga_api"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+axum = { version = "0.8", features = ["macros"] }
+tower-http = { version = "0.6", features = ["cors", "fs"] }
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "gzip", "stream"] }
+scraper = "0.22"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+regex = "1.10"
+base64 = "0.22"
+url = "2.5"
+urlencoding = "2.1"
+tracing = "0.1"
+tracing-subscriber = "0.3"
+bytes = "1"
