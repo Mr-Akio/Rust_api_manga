@@ -38,6 +38,7 @@ impl MangaScraper {
         headers.insert(REFERER, HeaderValue::from_static("https://1668manga.com/"));
 
         let client = reqwest::Client::builder()
+            .http1_only()
             .default_headers(headers)
             .timeout(Duration::from_secs(15))
             .build()
@@ -72,6 +73,7 @@ impl MangaScraper {
         let curl_cmd = if cfg!(windows) { "curl.exe" } else { "curl" };
         let output = tokio::process::Command::new(curl_cmd)
             .args([
+                "--http1.1",
                 "-s",
                 "-L",
                 "--max-time",
@@ -114,8 +116,11 @@ impl MangaScraper {
             );
 
             if out.status.success() && !text.is_empty() {
-                if text.contains("Just a moment...") {
-                    eprintln!("Cloudflare bot challenge detected for {}", url);
+                if text.contains("Just a moment...")
+                    || text.contains("<title>403 Forbidden</title>")
+                    || text.contains("<title>Access denied</title>")
+                {
+                    eprintln!("Cloudflare bot challenge/403 detected for {}", url);
                 } else {
                     return Ok(text);
                 }
@@ -375,74 +380,160 @@ impl MangaScraper {
         Ok(results)
     }
 
+    pub async fn get_from_feed(&self) -> Result<Vec<MangaSearchResult>, String> {
+        let feed_url = format!("{}/feed/", BASE_URL);
+        let xml_text = self.fetch_html(&feed_url).await?;
+
+        let re_item = Regex::new(r"(?s)<item>(.*?)</item>").map_err(|e| e.to_string())?;
+        let re_title = Regex::new(r"<title>(.*?)</title>").map_err(|e| e.to_string())?;
+        let re_link = Regex::new(r"<link>(.*?)</link>").map_err(|e| e.to_string())?;
+        let re_cat = Regex::new(r"<category><!\[CDATA\[(.*?)\]\]></category>").map_err(|e| e.to_string())?;
+        let re_img = Regex::new(r#"<img[^>]+src=["']([^"']+)["']"#).map_err(|e| e.to_string())?;
+        let re_clean = Regex::new(r"(?i)-(?:ตอนที่|chapter)-\d+(?:\.\d+)?$").map_err(|e| e.to_string())?;
+
+        let mut items = Vec::new();
+        let mut seen = std::collections::HashSet::new();
+
+        for cap in re_item.captures_iter(&xml_text) {
+            let item_str = &cap[1];
+            let raw_title = re_title
+                .captures(item_str)
+                .and_then(|c| c.get(1))
+                .map(|m| m.as_str().to_string())
+                .unwrap_or_default();
+            let link = re_link
+                .captures(item_str)
+                .and_then(|c| c.get(1))
+                .map(|m| m.as_str().to_string())
+                .unwrap_or_default();
+            let cat = re_cat
+                .captures(item_str)
+                .and_then(|c| c.get(1))
+                .map(|m| m.as_str().to_string())
+                .unwrap_or_default();
+            let img = re_img
+                .captures(item_str)
+                .and_then(|c| c.get(1))
+                .map(|m| m.as_str().to_string())
+                .unwrap_or_default();
+
+            let manga_title = if !cat.is_empty() { cat } else { raw_title.clone() };
+            if seen.contains(&manga_title) {
+                continue;
+            }
+            seen.insert(manga_title.clone());
+
+            let mut slug = self.normalize_slug(&link);
+            slug = re_clean.replace(&slug, "").to_string();
+
+            let manga_url = format!("{}/manga/{}/", BASE_URL, slug);
+
+            items.push(MangaSearchResult {
+                title: manga_title,
+                slug,
+                url: manga_url,
+                thumbnail: img,
+                latest_chapter: raw_title,
+                manga_type: "Manga".to_string(),
+                rating: "9.0".to_string(),
+            });
+        }
+
+        Ok(items)
+    }
+
     pub async fn list_mangas(&self, page: u32, order: &str) -> Result<MangaListResponse, String> {
         let url = format!("{}/manga/?page={}&order={}", BASE_URL, page, order);
 
-        let html_content = self.fetch_html(&url).await?;
-        let document = Html::parse_document(&html_content);
-
-        let sel_bsx = Selector::parse(".bsx").map_err(|e| e.to_string())?;
-        let sel_a = Selector::parse("a").map_err(|e| e.to_string())?;
-        let sel_tt = Selector::parse(".tt").map_err(|e| e.to_string())?;
-        let sel_img = Selector::parse("img").map_err(|e| e.to_string())?;
-        let sel_epxs = Selector::parse(".epxs").map_err(|e| e.to_string())?;
-        let sel_type = Selector::parse(".type").map_err(|e| e.to_string())?;
-        let sel_rating = Selector::parse(".numscore").map_err(|e| e.to_string())?;
-
+        let html_res = self.fetch_html(&url).await;
         let mut results = Vec::new();
+        let mut has_next_page = false;
 
-        for item in document.select(&sel_bsx) {
-            if let Some(a) = item.select(&sel_a).next() {
-                let manga_url = a.value().attr("href").unwrap_or_default().to_string();
-                let title = item
-                    .select(&sel_tt)
-                    .next()
-                    .map(|el| el.text().collect::<Vec<_>>().join(" ").trim().to_string())
-                    .unwrap_or_else(|| a.value().attr("title").unwrap_or_default().to_string());
+        if let Ok(html_content) = html_res {
+            let document = Html::parse_document(&html_content);
 
-                let thumbnail = item
-                    .select(&sel_img)
-                    .next()
-                    .and_then(|el| el.value().attr("src").or_else(|| el.value().attr("data-src")))
-                    .unwrap_or_default()
-                    .to_string();
+            let sel_bsx = Selector::parse(".bsx").map_err(|e| e.to_string())?;
+            let sel_a = Selector::parse("a").map_err(|e| e.to_string())?;
+            let sel_tt = Selector::parse(".tt").map_err(|e| e.to_string())?;
+            let sel_img = Selector::parse("img").map_err(|e| e.to_string())?;
+            let sel_epxs = Selector::parse(".epxs").map_err(|e| e.to_string())?;
+            let sel_type = Selector::parse(".type").map_err(|e| e.to_string())?;
+            let sel_rating = Selector::parse(".numscore").map_err(|e| e.to_string())?;
 
-                let latest_chapter = item
-                    .select(&sel_epxs)
-                    .next()
-                    .map(|el| el.text().collect::<Vec<_>>().join(" ").trim().to_string())
-                    .unwrap_or_default();
+            for item in document.select(&sel_bsx) {
+                if let Some(a) = item.select(&sel_a).next() {
+                    let manga_url = a.value().attr("href").unwrap_or_default().to_string();
+                    let title = item
+                        .select(&sel_tt)
+                        .next()
+                        .map(|el| el.text().collect::<Vec<_>>().join(" ").trim().to_string())
+                        .unwrap_or_else(|| a.value().attr("title").unwrap_or_default().to_string());
 
-                let manga_type = item
-                    .select(&sel_type)
-                    .next()
-                    .map(|el| el.text().collect::<Vec<_>>().join(" ").trim().to_string())
-                    .unwrap_or_default();
+                    let thumbnail = item
+                        .select(&sel_img)
+                        .next()
+                        .and_then(|el| el.value().attr("src").or_else(|| el.value().attr("data-src")))
+                        .unwrap_or_default()
+                        .to_string();
 
-                let rating = item
-                    .select(&sel_rating)
-                    .next()
-                    .map(|el| el.text().collect::<Vec<_>>().join(" ").trim().to_string())
-                    .unwrap_or_default();
+                    let latest_chapter = item
+                        .select(&sel_epxs)
+                        .next()
+                        .map(|el| el.text().collect::<Vec<_>>().join(" ").trim().to_string())
+                        .unwrap_or_default();
 
-                let slug = self.normalize_slug(&manga_url);
+                    let manga_type = item
+                        .select(&sel_type)
+                        .next()
+                        .map(|el| el.text().collect::<Vec<_>>().join(" ").trim().to_string())
+                        .unwrap_or_default();
 
-                results.push(MangaSearchResult {
-                    title,
-                    slug,
-                    url: manga_url,
-                    thumbnail,
-                    latest_chapter,
-                    manga_type,
-                    rating,
-                });
+                    let rating = item
+                        .select(&sel_rating)
+                        .next()
+                        .map(|el| el.text().collect::<Vec<_>>().join(" ").trim().to_string())
+                        .unwrap_or_default();
+
+                    let slug = self.normalize_slug(&manga_url);
+
+                    results.push(MangaSearchResult {
+                        title,
+                        slug,
+                        url: manga_url,
+                        thumbnail,
+                        latest_chapter,
+                        manga_type,
+                        rating,
+                    });
+                }
+            }
+
+            if let Ok(sel_next) = Selector::parse(".r, a.next") {
+                has_next_page = document.select(&sel_next).next().is_some();
             }
         }
 
-        let sel_next = Selector::parse(".r, a.next").map_err(|e| e.to_string())?;
-        let has_next_page = document.select(&sel_next).next().is_some();
-        let count = results.len();
+        // If results empty on first page, fall back to RSS feed
+        if results.is_empty() && page == 1 {
+            if let Ok(feed_items) = self.get_from_feed().await {
+                if !feed_items.is_empty() {
+                    let count = feed_items.len();
+                    return Ok(MangaListResponse {
+                        page,
+                        order: order.to_string(),
+                        count,
+                        has_next_page: false,
+                        results: feed_items,
+                    });
+                }
+            }
+        }
 
+        if results.is_empty() && page > 1 {
+            return Err("ไม่สามารถโหลดรายการมังงะได้".to_string());
+        }
+
+        let count = results.len();
         Ok(MangaListResponse {
             page,
             order: order.to_string(),
