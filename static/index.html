@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="referrer" content="no-referrer">
-    <title>WEBTOON 1668 - อ่านการ์ตูน มังงะ มังฮวาแปลไทย อัปเดตทุกวัน</title>
+    <title>KUROMANGA - อ่านการ์ตูน มังงะ มังฮวาแปลไทย อัปเดตทุกวัน</title>
     
+    <!-- Font Awesome 6 Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -92,33 +95,33 @@
     <header id="mainHeader" class="fixed top-0 inset-x-0 z-40 bg-wt-dark/95 backdrop-blur-md border-b border-wt-border transition-transform duration-300 ease-in-out">
         <div class="max-w-7xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2 sm:gap-6">
             
-            <!-- Logo & Brand -->
+            <!-- Logo & Brand (KUROMANGA) -->
             <div class="flex items-center gap-4 sm:gap-6">
                 <a href="javascript:void(0)" onclick="goHome()" class="flex items-center gap-2 group flex-shrink-0">
-                    <div class="bg-wt-green text-black font-black text-[10px] sm:text-[11px] leading-tight px-1.5 py-1 rounded tracking-tighter uppercase font-mono shadow-md shadow-wt-green/30 group-hover:scale-105 transition">
-                        WEB<br>TOON
+                    <div class="bg-wt-green text-black font-black text-[10px] sm:text-[11px] leading-tight px-2 py-1 rounded tracking-tighter uppercase font-mono shadow-md shadow-wt-green/30 group-hover:scale-105 transition">
+                        KURO<br>MANGA
                     </div>
                     <span class="font-extrabold text-lg sm:text-xl tracking-tight text-white group-hover:text-wt-green transition flex items-center gap-0.5">
-                        1668<span class="text-wt-green">TOON</span>
+                        KURO<span class="text-wt-green">MANGA</span>
                     </span>
                 </a>
 
-                <!-- Desktop LNB Links -->
+                <!-- Desktop Navigation Links -->
                 <nav class="hidden md:flex items-center gap-1 font-medium text-sm">
-                    <button onclick="goHome()" class="px-3 py-2 rounded-lg text-white hover:text-wt-green transition flex items-center gap-1.5">
-                        <span class="w-1.5 h-1.5 rounded-full bg-wt-green inline-block"></span> หน้าแรก
+                    <button onclick="goHome()" class="px-3.5 py-2 rounded-lg text-white hover:text-wt-green transition flex items-center gap-2">
+                        <i class="fa-solid fa-house text-xs text-wt-green"></i> หน้าแรก
                     </button>
-                    <button onclick="scrollToSection('dailySection')" class="px-3 py-2 rounded-lg text-wt-muted hover:text-white transition">
-                        ตารางประจำวัน
+                    <button onclick="scrollToSection('dailySection')" class="px-3 py-2 rounded-lg text-wt-muted hover:text-white transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-calendar-days text-xs"></i> ตารางประจำวัน
                     </button>
-                    <button onclick="scrollToSection('rankingSection')" class="px-3 py-2 rounded-lg text-wt-muted hover:text-white transition">
-                        อันดับยอดนิยม
+                    <button onclick="scrollToSection('rankingSection')" class="px-3 py-2 rounded-lg text-wt-muted hover:text-white transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-trophy text-xs text-amber-400"></i> อันดับยอดนิยม
                     </button>
-                    <button onclick="scrollToSection('allMangaSection')" class="px-3 py-2 rounded-lg text-wt-muted hover:text-white transition">
-                        เรื่องทั้งหมด
+                    <button onclick="scrollToSection('allMangaSection')" class="px-3 py-2 rounded-lg text-wt-muted hover:text-white transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-bolt text-xs text-wt-green"></i> เรื่องทั้งหมด
                     </button>
-                    <button onclick="showHistory()" class="px-3 py-2 rounded-lg text-wt-muted hover:text-white transition">
-                        ประวัติการอ่าน
+                    <button onclick="showHistory()" class="px-3 py-2 rounded-lg text-wt-muted hover:text-white transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-clock-rotate-left text-xs"></i> ประวัติการอ่าน
                     </button>
                 </nav>
             </div>
@@ -130,8 +133,10 @@
                         placeholder="ค้นหาชื่อเรื่อง, ผู้แต่ง, หรือแนว..."
                         onkeydown="if(event.key === 'Enter') doSearch()"
                         class="w-full bg-wt-card border border-wt-border rounded-full px-4 py-1.5 pl-9 text-xs sm:text-sm text-white placeholder-wt-muted focus:outline-none focus:border-wt-green focus:ring-1 focus:ring-wt-green transition">
-                    <span class="absolute left-3 top-2 text-wt-muted text-xs">🔍</span>
-                    <button onclick="clearSearch()" id="navSearchClear" class="hidden absolute right-3 top-2 text-xs text-wt-muted hover:text-white">✕</button>
+                    <span class="absolute left-3 top-2.5 text-wt-muted text-xs"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <button onclick="clearSearch()" id="navSearchClear" class="hidden absolute right-3 top-2 text-xs text-wt-muted hover:text-white">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
             </div>
 
@@ -139,15 +144,15 @@
             <div class="flex items-center gap-1.5 sm:gap-2">
                 <!-- Mobile Search Toggle -->
                 <button onclick="toggleMobileSearch()" class="sm:hidden p-2 text-wt-muted hover:text-white rounded-lg active:scale-95 transition" title="ค้นหา">
-                    🔍
+                    <i class="fa-solid fa-magnifying-glass text-sm"></i>
                 </button>
                 <!-- History Icon -->
                 <button onclick="showHistory()" class="p-2 text-wt-muted hover:text-white rounded-lg active:scale-95 transition" title="ประวัติการอ่าน">
-                    🕒
+                    <i class="fa-solid fa-clock-rotate-left text-sm"></i>
                 </button>
                 <!-- API Docs -->
-                <a href="/docs" target="_blank" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-wt-card hover:bg-wt-green hover:text-black text-wt-green border border-wt-green/40 transition">
-                    API Docs
+                <a href="/docs" target="_blank" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-wt-card hover:bg-wt-green hover:text-black text-wt-green border border-wt-green/40 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-code text-[10px]"></i> API Docs
                 </a>
             </div>
         </div>
@@ -159,8 +164,10 @@
                     placeholder="พิมพ์ชื่อเรื่องที่ต้องการค้นหา..."
                     onkeydown="if(event.key === 'Enter') doSearch(true)"
                     class="w-full bg-wt-card border border-wt-border rounded-full px-4 py-2 pl-9 text-xs text-white placeholder-wt-muted focus:outline-none focus:border-wt-green">
-                <span class="absolute left-3 top-2.5 text-wt-muted text-xs">🔍</span>
-                <button onclick="clearSearch(true)" class="absolute right-3 top-2 text-xs text-wt-muted hover:text-white">✕</button>
+                <span class="absolute left-3 top-2.5 text-wt-muted text-xs"><i class="fa-solid fa-magnifying-glass"></i></span>
+                <button onclick="clearSearch(true)" class="absolute right-3 top-2 text-xs text-wt-muted hover:text-white">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
         </div>
     </header>
@@ -168,7 +175,9 @@
     <!-- Global Alert / Toast -->
     <div id="alertBox" class="hidden fixed bottom-6 inset-x-4 sm:inset-x-auto sm:right-6 z-50 max-w-md bg-wt-card border border-wt-border shadow-2xl p-4 rounded-2xl text-xs sm:text-sm flex items-center justify-between gap-4">
         <span id="alertMessage" class="text-white"></span>
-        <button onclick="hideAlert()" class="text-xs font-bold text-wt-muted hover:text-white px-2 py-1">✕</button>
+        <button onclick="hideAlert()" class="text-xs font-bold text-wt-muted hover:text-white px-2 py-1">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
     </div>
 
     <!-- Main Container -->
@@ -188,10 +197,12 @@
                     <!-- Content -->
                     <div class="relative z-10 max-w-2xl space-y-2 sm:space-y-3">
                         <div class="flex items-center gap-2">
-                            <span class="px-2 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-wt-green text-black uppercase tracking-wider">
-                                🔥 ฮิตที่สุดตอนนี้
+                            <span class="px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold bg-wt-green text-black uppercase tracking-wider flex items-center gap-1.5">
+                                <i class="fa-solid fa-fire text-black"></i> ฮิตที่สุดตอนนี้
                             </span>
-                            <span id="heroRating" class="text-xs font-semibold text-yellow-400">★ 9.8</span>
+                            <span id="heroRating" class="text-xs font-semibold text-yellow-400 flex items-center gap-1">
+                                <i class="fa-solid fa-star text-amber-400"></i> 9.8
+                            </span>
                             <span id="heroType" class="text-xs text-wt-muted hidden sm:inline">• Manhua แปลไทย</span>
                         </div>
                         <h1 id="heroTitle" class="text-xl sm:text-3xl lg:text-5xl font-black text-white tracking-tight line-clamp-2">
@@ -203,37 +214,37 @@
                         
                         <div class="pt-1 sm:pt-2 flex flex-wrap items-center gap-2.5 sm:gap-3">
                             <button id="heroReadBtn" onclick="openMangaBySlug('magic-emperor')" 
-                                class="bg-wt-green hover:bg-wt-greenHover active:scale-95 text-black text-xs sm:text-sm font-bold px-5 sm:px-6 py-2 sm:py-2.5 rounded-full transition shadow-lg shadow-wt-green/30 flex items-center gap-1.5">
-                                <span>▶</span> อ่านเลย
+                                class="bg-wt-green hover:bg-wt-greenHover active:scale-95 text-black text-xs sm:text-sm font-bold px-5 sm:px-6 py-2 sm:py-2.5 rounded-full transition shadow-lg shadow-wt-green/30 flex items-center gap-2">
+                                <i class="fa-solid fa-play text-xs"></i> อ่านเลย
                             </button>
                             <button onclick="quickOpenPrompt()" 
-                                class="bg-wt-card/80 hover:bg-wt-card active:scale-95 border border-wt-border hover:border-slate-500 text-white text-xs sm:text-sm font-medium px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-full transition">
-                                ⚡ วาง URL หรือ Slug
+                                class="bg-wt-card/80 hover:bg-wt-card active:scale-95 border border-wt-border hover:border-slate-500 text-white text-xs sm:text-sm font-medium px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-full transition flex items-center gap-1.5">
+                                <i class="fa-solid fa-bolt text-amber-400 text-xs"></i> วาง URL หรือ Slug
                             </button>
                         </div>
                     </div>
                 </div>
             </section>
 
-            <!-- 2. ตารางประจำวัน (DAILY WEBTOON SCHEDULE TABS) -->
+            <!-- 2. ตารางประจำวัน (DAILY SCHEDULE TABS) -->
             <section id="dailySection" class="space-y-3 sm:space-y-4">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-wt-border pb-3">
                     <div>
                         <h2 class="text-lg sm:text-2xl font-extrabold text-white flex items-center gap-2">
-                            <span class="text-wt-green">●</span> ตารางการ์ตูนประจำวัน
+                            <i class="fa-solid fa-calendar-days text-wt-green"></i> ตารางการ์ตูนประจำวัน
                         </h2>
                         <p class="text-xs text-wt-muted">อัปเดตตอนใหม่ล่าสุดทุกวันตามวันในสัปดาห์</p>
                     </div>
                     <!-- Day Navigation Tabs (Scrollable on Mobile) -->
                     <div class="flex items-center gap-1 overflow-x-auto pb-1 sm:pb-0 hide-scrollbar -mx-3 px-3 sm:mx-0 sm:px-0" id="weekdayTabs">
-                        <button onclick="filterByDay('ALL')" class="day-tab flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold bg-wt-green text-black transition">ทั้งหมด</button>
-                        <button onclick="filterByDay('จันทร์')" class="day-tab flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">จันทร์</button>
-                        <button onclick="filterByDay('อังคาร')" class="day-tab flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">อังคาร</button>
-                        <button onclick="filterByDay('พุธ')" class="day-tab flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">พุธ</button>
-                        <button onclick="filterByDay('พฤหัส')" class="day-tab flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">พฤหัส</button>
-                        <button onclick="filterByDay('ศุกร์')" class="day-tab flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">ศุกร์</button>
-                        <button onclick="filterByDay('เสาร์')" class="day-tab flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">เสาร์</button>
-                        <button onclick="filterByDay('อาทิตย์')" class="day-tab flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">อาทิตย์</button>
+                        <button onclick="filterByDay('ALL')" class="day-tab flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-wt-green text-black transition">ทั้งหมด</button>
+                        <button onclick="filterByDay('จันทร์')" class="day-tab flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">จันทร์</button>
+                        <button onclick="filterByDay('อังคาร')" class="day-tab flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">อังคาร</button>
+                        <button onclick="filterByDay('พุธ')" class="day-tab flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">พุธ</button>
+                        <button onclick="filterByDay('พฤหัส')" class="day-tab flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">พฤหัส</button>
+                        <button onclick="filterByDay('ศุกร์')" class="day-tab flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">ศุกร์</button>
+                        <button onclick="filterByDay('เสาร์')" class="day-tab flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">เสาร์</button>
+                        <button onclick="filterByDay('อาทิตย์')" class="day-tab flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition">อาทิตย์</button>
                     </div>
                 </div>
 
@@ -248,11 +259,11 @@
                 <div class="flex items-center justify-between border-b border-wt-border pb-3">
                     <div>
                         <h2 class="text-lg sm:text-2xl font-extrabold text-white flex items-center gap-2">
-                            🏆 5 อันดับการ์ตูนยอดนิยม
+                            <i class="fa-solid fa-trophy text-amber-400"></i> 5 อันดับการ์ตูนยอดนิยม
                         </h2>
                         <p class="text-xs text-wt-muted">เรื่องที่แฟนการ์ตูนติดตามอ่านมากที่สุดประจำสัปดาห์</p>
                     </div>
-                    <span class="text-xs font-bold text-wt-green">TOP 5</span>
+                    <span class="text-xs font-bold text-wt-green px-2 py-0.5 rounded-full bg-wt-green/10 border border-wt-green/30">TOP 5</span>
                 </div>
 
                 <div id="rankingGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-4">
@@ -262,47 +273,46 @@
 
             <!-- 4. ALL MANGA / LATEST UPDATES (เรื่องอัปเดตทั้งหมด) -->
             <section id="allMangaSection" class="space-y-4 sm:space-y-5">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-wt-border pb-3">
-                    <div>
-                        <h2 id="homeSectionTitle" class="text-lg sm:text-2xl font-extrabold text-white flex items-center gap-2">
-                            ⚡ เรื่องอัปเดตล่าสุด
-                        </h2>
-                        <p class="text-xs text-wt-muted">รวมการ์ตูนตอนใหม่ล่าสุดที่เพิ่งแปลเสร็จ</p>
-                    </div>
-
-                    <!-- Pagination Controller -->
-                    <div class="flex items-center gap-2 self-start sm:self-auto">
-                        <button id="btnPrevPage" onclick="changePage(-1)" 
-                            class="px-3 py-1.5 rounded-full bg-wt-card hover:bg-wt-cardHover disabled:opacity-30 disabled:cursor-not-allowed text-xs font-semibold text-white border border-wt-border transition">
-                            ◀ ก่อนหน้า
-                        </button>
-                        <span id="pageIndicator" class="text-xs font-mono px-3 py-1 rounded-full bg-wt-dark border border-wt-border text-wt-green font-bold">
-                            หน้า 1
-                        </span>
-                        <button id="btnNextPage" onclick="changePage(1)" 
-                            class="px-3 py-1.5 rounded-full bg-wt-card hover:bg-wt-cardHover disabled:opacity-30 disabled:cursor-not-allowed text-xs font-semibold text-white border border-wt-border transition">
-                            ถัดไป ▶
-                        </button>
-                    </div>
+                <!-- Section Header (Clean Title Only, Pagination Moved to Bottom) -->
+                <div class="border-b border-wt-border pb-3">
+                    <h2 id="homeSectionTitle" class="text-lg sm:text-2xl font-extrabold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-bolt text-wt-green"></i> เรื่องอัปเดตล่าสุด
+                    </h2>
+                    <p class="text-xs text-wt-muted">รวมการ์ตูนตอนใหม่ล่าสุดที่เพิ่งแปลเสร็จ</p>
                 </div>
 
                 <!-- Loading State -->
                 <div id="homeLoading" class="py-20 text-center space-y-4">
                     <div class="inline-block w-9 h-9 border-4 border-wt-green border-t-transparent rounded-full animate-spin"></div>
-                    <p class="text-xs sm:text-sm font-medium text-wt-muted">กำลังโหลดรายการการ์ตูนจาก 1668TOON...</p>
+                    <p class="text-xs sm:text-sm font-medium text-wt-muted">กำลังโหลดรายการการ์ตูนจาก KUROMANGA...</p>
                 </div>
 
                 <!-- Comics Grid: 2 columns on mobile, 3-6 on larger screens -->
                 <div id="mangaGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2.5 sm:gap-4">
                     <!-- Populated dynamically -->
                 </div>
+
+                <!-- Bottom Pagination Controller (ย้ายมาไว้ด้านล่างสุดตามที่สั่ง) -->
+                <div id="bottomPaginationContainer" class="pt-8 pb-4 flex justify-center items-center gap-3">
+                    <button id="btnPrevPage" onclick="changePage(-1)" 
+                        class="px-5 py-2.5 rounded-full bg-wt-card hover:bg-wt-cardHover disabled:opacity-25 disabled:cursor-not-allowed text-xs sm:text-sm font-semibold text-white border border-wt-border transition flex items-center gap-2 shadow-lg active:scale-95">
+                        <i class="fa-solid fa-chevron-left text-xs"></i> ก่อนหน้า
+                    </button>
+                    <span id="pageIndicator" class="text-xs sm:text-sm font-mono px-4 py-2 rounded-full bg-wt-dark border border-wt-border text-wt-green font-bold shadow-inner">
+                        หน้า 1
+                    </span>
+                    <button id="btnNextPage" onclick="changePage(1)" 
+                        class="px-5 py-2.5 rounded-full bg-wt-card hover:bg-wt-cardHover disabled:opacity-25 disabled:cursor-not-allowed text-xs sm:text-sm font-semibold text-white border border-wt-border transition flex items-center gap-2 shadow-lg active:scale-95">
+                        ถัดไป <i class="fa-solid fa-chevron-right text-xs"></i>
+                    </button>
+                </div>
             </section>
         </div>
 
-        <!-- ================= VIEW 2: MANGA DETAIL (WEBTOON STYLE) ================= -->
+        <!-- ================= VIEW 2: MANGA DETAIL ================= -->
         <div id="viewDetail" class="hidden space-y-6 sm:space-y-8">
-            <button onclick="goHome()" class="text-xs sm:text-sm text-wt-muted hover:text-wt-green flex items-center gap-1.5 transition font-medium">
-                ◀ กลับสู่หน้าหลัก
+            <button onclick="goHome()" class="text-xs sm:text-sm text-wt-muted hover:text-wt-green flex items-center gap-2 transition font-medium">
+                <i class="fa-solid fa-arrow-left"></i> กลับสู่หน้าหลัก
             </button>
 
             <!-- Loading Spinner for Detail -->
@@ -325,7 +335,9 @@
                         <div class="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2">
                             <span id="detailType" class="text-[10px] sm:text-[11px] font-bold bg-wt-green text-black px-2.5 py-0.5 rounded-full uppercase">Manga</span>
                             <span id="detailStatus" class="text-[10px] sm:text-[11px] font-medium bg-wt-darker text-slate-300 px-2.5 py-0.5 rounded-full border border-wt-border">Ongoing</span>
-                            <span id="detailRating" class="text-xs font-bold text-yellow-400">★ 9.5</span>
+                            <span id="detailRating" class="text-xs font-bold text-yellow-400 flex items-center gap-1">
+                                <i class="fa-solid fa-star text-amber-400"></i> 9.5
+                            </span>
                         </div>
 
                         <h1 id="detailTitle" class="text-xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight"></h1>
@@ -343,11 +355,11 @@
 
                         <!-- Action Buttons -->
                         <div class="pt-3 flex flex-wrap items-center justify-center sm:justify-start gap-2.5 sm:gap-3">
-                            <button id="btnReadFirst" class="bg-wt-green hover:bg-wt-greenHover active:scale-95 text-black text-xs sm:text-sm font-bold px-5 sm:px-6 py-2.5 rounded-full transition shadow-lg shadow-wt-green/20">
-                                ▶ อ่านตอนแรก
+                            <button id="btnReadFirst" class="bg-wt-green hover:bg-wt-greenHover active:scale-95 text-black text-xs sm:text-sm font-bold px-5 sm:px-6 py-2.5 rounded-full transition shadow-lg shadow-wt-green/20 flex items-center gap-2">
+                                <i class="fa-solid fa-play text-xs"></i> อ่านตอนแรก
                             </button>
-                            <button id="btnReadLatest" class="bg-wt-card hover:bg-wt-cardHover active:scale-95 text-white text-xs sm:text-sm font-semibold px-5 sm:px-6 py-2.5 rounded-full border border-wt-border transition">
-                                ⚡ อ่านตอนล่าสุด
+                            <button id="btnReadLatest" class="bg-wt-card hover:bg-wt-cardHover active:scale-95 text-white text-xs sm:text-sm font-semibold px-5 sm:px-6 py-2.5 rounded-full border border-wt-border transition flex items-center gap-2">
+                                <i class="fa-solid fa-bolt text-amber-400 text-xs"></i> อ่านตอนล่าสุด
                             </button>
                         </div>
                     </div>
@@ -357,7 +369,7 @@
                 <div class="space-y-4">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-wt-border pb-3">
                         <h3 class="text-base sm:text-xl font-bold text-white flex items-center gap-2">
-                            📑 รายการตอนทั้งหมด (<span id="detailTotalChapters" class="text-wt-green">0</span>)
+                            <i class="fa-solid fa-book-open text-wt-green"></i> รายการตอนทั้งหมด (<span id="detailTotalChapters" class="text-wt-green">0</span>)
                         </h3>
                         
                         <!-- Search / Filter in Chapters -->
@@ -367,8 +379,8 @@
                                 oninput="filterChapters()"
                                 class="bg-wt-card border border-wt-border rounded-full px-3.5 py-1.5 text-xs text-white placeholder-wt-muted focus:outline-none focus:border-wt-green w-36 sm:w-auto">
                             <button onclick="toggleChapterSort()" id="btnSortChapters" 
-                                class="text-xs px-3 py-1.5 rounded-full bg-wt-card border border-wt-border text-wt-muted hover:text-white transition font-medium flex-shrink-0">
-                                ใหม่สุดก่อน ⬇
+                                class="text-xs px-3 py-1.5 rounded-full bg-wt-card border border-wt-border text-wt-muted hover:text-white transition font-medium flex-shrink-0 flex items-center gap-1.5">
+                                <span>ใหม่สุดก่อน</span> <i class="fa-solid fa-arrow-down-short-wide text-xs"></i>
                             </button>
                         </div>
                     </div>
@@ -381,7 +393,7 @@
             </div>
         </div>
 
-        <!-- ================= VIEW 3: WEBTOON READER (REVERSE ENGINEERED FROM LINE WEBTOON) ================= -->
+        <!-- ================= VIEW 3: WEBTOON READER ================= -->
         <div id="viewReader" class="hidden -mx-3 sm:mx-0">
 
             <!-- 1. Top Floating Viewer Toolbar (Auto-hides on scroll down) -->
@@ -390,7 +402,7 @@
                 <!-- Left: Back Button & Comic Title -->
                 <div class="flex items-center gap-2 sm:gap-3 min-w-0">
                     <button onclick="backToDetail()" class="p-1.5 text-wt-muted hover:text-wt-green active:scale-95 transition" title="กลับไปหน้ารายละเอียด">
-                        <span class="text-lg">◀</span>
+                        <i class="fa-solid fa-arrow-left text-sm"></i>
                     </button>
                     <div class="truncate">
                         <h3 id="readerComicTitle" class="text-xs text-wt-muted font-medium truncate hidden sm:block"></h3>
@@ -401,32 +413,32 @@
                 <!-- Center: Episode Navigation Pill -->
                 <div class="flex items-center gap-1 sm:gap-2">
                     <button id="btnPrevChapter" onclick="changeChapter(-1)" 
-                        class="p-1 sm:px-2.5 py-1 rounded-full bg-wt-card hover:bg-wt-cardHover text-xs font-semibold text-white border border-wt-border disabled:opacity-25 disabled:cursor-not-allowed transition" title="ตอนก่อนหน้า">
-                        ◀
+                        class="p-1.5 sm:px-3 py-1 rounded-full bg-wt-card hover:bg-wt-cardHover text-xs font-semibold text-white border border-wt-border disabled:opacity-25 disabled:cursor-not-allowed transition" title="ตอนก่อนหน้า">
+                        <i class="fa-solid fa-chevron-left text-xs"></i>
                     </button>
                     
                     <!-- Episode selector drawer button -->
-                    <button onclick="toggleEpisodeDrawer()" id="btnEpisodePicker" class="px-3 py-1 rounded-full bg-wt-card hover:border-wt-green text-xs font-bold text-wt-green border border-wt-border flex items-center gap-1 transition">
+                    <button onclick="toggleEpisodeDrawer()" id="btnEpisodePicker" class="px-3 py-1 rounded-full bg-wt-card hover:border-wt-green text-xs font-bold text-wt-green border border-wt-border flex items-center gap-1.5 transition">
                         <span id="currentEpisodeBadge">#1</span>
-                        <span class="text-[10px] text-wt-muted">▼</span>
+                        <i class="fa-solid fa-caret-down text-[10px] text-wt-muted"></i>
                     </button>
 
                     <button id="btnNextChapter" onclick="changeChapter(1)" 
-                        class="p-1 sm:px-2.5 py-1 rounded-full bg-wt-card hover:bg-wt-cardHover text-xs font-semibold text-white border border-wt-border disabled:opacity-25 disabled:cursor-not-allowed transition" title="ตอนต่อไป">
-                        ▶
+                        class="p-1.5 sm:px-3 py-1 rounded-full bg-wt-card hover:bg-wt-cardHover text-xs font-semibold text-white border border-wt-border disabled:opacity-25 disabled:cursor-not-allowed transition" title="ตอนต่อไป">
+                        <i class="fa-solid fa-chevron-right text-xs"></i>
                     </button>
                 </div>
 
                 <!-- Right: Like Button & Episode Drawer Toggle -->
                 <div class="flex items-center gap-1 sm:gap-2">
                     <button onclick="toggleLikeCurrentEpisode()" id="btnLikeEpisode" class="p-2 text-xs text-slate-300 hover:text-red-400 active:scale-95 transition" title="ถูกใจตอนนี้">
-                        ♥
+                        <i class="fa-solid fa-heart"></i>
                     </button>
                     <button onclick="toggleEpisodeDrawer()" class="p-2 text-xs text-slate-300 hover:text-wt-green active:scale-95 transition" title="รายการตอนทั้งหมด">
-                        ☰
+                        <i class="fa-solid fa-bars"></i>
                     </button>
                     <button onclick="backToDetail()" class="p-2 text-xs text-slate-300 hover:text-white active:scale-95 transition" title="ปิด">
-                        ✕
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
             </div>
@@ -436,9 +448,11 @@
                 <div class="max-w-4xl mx-auto space-y-3">
                     <div class="flex items-center justify-between pb-2 border-b border-wt-border">
                         <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                            <span>☰</span> เลือกตอนการ์ตูน
+                            <i class="fa-solid fa-bars text-wt-green"></i> เลือกตอนการ์ตูน
                         </h4>
-                        <button onclick="toggleEpisodeDrawer()" class="text-xs text-wt-muted hover:text-white">✕ ปิด</button>
+                        <button onclick="toggleEpisodeDrawer()" class="text-xs text-wt-muted hover:text-white flex items-center gap-1">
+                            <i class="fa-solid fa-xmark"></i> ปิด
+                        </button>
                     </div>
                     <div id="drawerEpisodeGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
                         <!-- Populated dynamically -->
@@ -457,10 +471,12 @@
                 <!-- Images appended here -->
             </div>
 
-            <!-- 2. End-of-Chapter Webtoons Section (อยู่ข้างล่างสุดตอนอ่านจบ) -->
+            <!-- 2. End-of-Chapter Section (อยู่ข้างล่างสุดตอนอ่านจบ) -->
             <div id="readerEndSection" class="max-w-2xl mx-auto my-8 p-6 sm:p-8 bg-wt-card border border-wt-border rounded-3xl text-center space-y-5 shadow-2xl">
                 <div class="space-y-1">
-                    <span class="text-xs font-bold text-wt-green uppercase tracking-wider">🎉 จบตอนนี้แล้ว</span>
+                    <span class="text-xs font-bold text-wt-green uppercase tracking-wider flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-circle-check text-wt-green"></i> จบตอนนี้แล้ว
+                    </span>
                     <h3 id="endChapterName" class="text-lg sm:text-xl font-black text-white"></h3>
                     <p class="text-xs text-wt-muted">คุณได้อ่านตอนนี้เสร็จเรียบร้อยแล้ว และระบบบันทึกสถานะ "อ่านแล้ว" ให้คุณเรียบร้อย</p>
                 </div>
@@ -470,44 +486,44 @@
                     <button id="btnBottomNextPrimary" onclick="changeChapter(1)" 
                         class="w-full sm:w-auto bg-wt-green hover:bg-wt-greenHover active:scale-95 text-black font-extrabold text-sm sm:text-base py-3.5 px-8 rounded-full shadow-lg shadow-wt-green/30 transition flex items-center justify-center gap-2">
                         <span>ตอนต่อไป</span>
-                        <span id="nextEpisodeNumberText">❯</span>
+                        <span id="nextEpisodeNumberText"><i class="fa-solid fa-chevron-right text-xs"></i></span>
                     </button>
                     <button onclick="changeChapter(-1)" id="btnBottomPrevSecondary" 
-                        class="w-full sm:w-auto bg-wt-darker hover:bg-wt-card active:scale-95 text-white font-semibold text-xs sm:text-sm py-3.5 px-6 rounded-full border border-wt-border transition flex items-center justify-center gap-1.5">
-                        <span>❮ ตอนก่อนหน้า</span>
+                        class="w-full sm:w-auto bg-wt-darker hover:bg-wt-card active:scale-95 text-white font-semibold text-xs sm:text-sm py-3.5 px-6 rounded-full border border-wt-border transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-chevron-left text-xs"></i> <span>ตอนก่อนหน้า</span>
                     </button>
                 </div>
 
                 <!-- Additional Links -->
                 <div class="pt-3 border-t border-wt-border/60 flex items-center justify-center gap-4 text-xs">
-                    <button onclick="toggleLikeCurrentEpisode()" class="text-slate-300 hover:text-red-400 flex items-center gap-1 transition">
-                        <span>♥ ถูกใจตอนนี้</span>
+                    <button onclick="toggleLikeCurrentEpisode()" class="text-slate-300 hover:text-red-400 flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-heart text-red-500"></i> ถูกใจตอนนี้
                     </button>
                     <span class="text-wt-border">•</span>
-                    <button onclick="backToDetail()" class="text-wt-muted hover:text-white transition">
-                        ☰ รายการตอนทั้งหมด
+                    <button onclick="backToDetail()" class="text-wt-muted hover:text-white transition flex items-center gap-1.5">
+                        <i class="fa-solid fa-list-ul"></i> รายการตอนทั้งหมด
                     </button>
                     <span class="text-wt-border">•</span>
-                    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="text-wt-green hover:underline">
-                        ⬆ กลับด้านบน
+                    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="text-wt-green hover:underline flex items-center gap-1">
+                        <i class="fa-solid fa-arrow-up"></i> กลับด้านบน
                     </button>
                 </div>
             </div>
 
             <!-- 3. Bottom Floating Quick-Bar (Auto-hides on scroll down) -->
             <div id="readerBottomToolbar" class="fixed bottom-0 inset-x-0 z-40 bg-wt-darker/95 backdrop-blur-md border-t border-wt-border px-4 py-2.5 flex items-center justify-between max-w-lg mx-auto sm:rounded-t-2xl shadow-2xl transition-transform duration-300 ease-in-out">
-                <button onclick="changeChapter(-1)" id="btnFloatingPrev" class="px-3 py-1.5 rounded-full bg-wt-card hover:bg-wt-cardHover text-xs font-semibold text-white border border-wt-border disabled:opacity-20 transition">
-                    ❮ ตอนก่อน
+                <button onclick="changeChapter(-1)" id="btnFloatingPrev" class="px-3 py-1.5 rounded-full bg-wt-card hover:bg-wt-cardHover text-xs font-semibold text-white border border-wt-border disabled:opacity-20 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-chevron-left text-[10px]"></i> ตอนก่อน
                 </button>
                 
                 <span id="floatingEpisodeLabel" class="text-xs font-bold text-wt-green">ตอนที่ -</span>
 
-                <button onclick="changeChapter(1)" id="btnFloatingNext" class="px-3.5 py-1.5 rounded-full bg-wt-green hover:bg-wt-greenHover text-xs font-extrabold text-black disabled:opacity-20 transition shadow-md shadow-wt-green/20">
-                    ตอนต่อไป ❯
+                <button onclick="changeChapter(1)" id="btnFloatingNext" class="px-3.5 py-1.5 rounded-full bg-wt-green hover:bg-wt-greenHover text-xs font-extrabold text-black disabled:opacity-20 transition shadow-md shadow-wt-green/20 flex items-center gap-1.5">
+                    ตอนต่อไป <i class="fa-solid fa-chevron-right text-[10px]"></i>
                 </button>
 
-                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="p-1.5 rounded-full text-wt-muted hover:text-white" title="ขึ้นบนสุด">
-                    ⬆
+                <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="p-2 rounded-full text-wt-muted hover:text-white" title="ขึ้นบนสุด">
+                    <i class="fa-solid fa-arrow-up"></i>
                 </button>
             </div>
         </div>
@@ -516,10 +532,10 @@
         <div id="viewHistory" class="hidden space-y-6">
             <div class="flex items-center justify-between border-b border-wt-border pb-3">
                 <h2 class="text-lg sm:text-2xl font-black text-white flex items-center gap-2">
-                    🕒 ประวัติการอ่านล่าสุด
+                    <i class="fa-solid fa-clock-rotate-left text-wt-green"></i> ประวัติการอ่านล่าสุด
                 </h2>
-                <button onclick="clearHistory()" class="text-xs text-red-400 hover:text-red-300 font-semibold px-3 py-1.5 rounded-full bg-red-950/40 border border-red-800/40 transition">
-                    ล้างประวัติ
+                <button onclick="clearHistory()" class="text-xs text-red-400 hover:text-red-300 font-semibold px-3 py-1.5 rounded-full bg-red-950/40 border border-red-800/40 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-trash-can"></i> ล้างประวัติ
                 </button>
             </div>
 
@@ -536,12 +552,12 @@
             <div class="space-y-1.5 text-center md:text-left">
                 <div class="flex items-center justify-center md:justify-start gap-2">
                     <div class="bg-wt-green text-black font-black text-[10px] px-1.5 py-0.5 rounded font-mono">
-                        WEBTOON
+                        KUROMANGA
                     </div>
-                    <span class="font-bold text-white">1668TOON Reader</span>
+                    <span class="font-bold text-white">KUROMANGA Reader</span>
                 </div>
                 <p class="text-[11px] text-wt-muted">
-                    เว็บแอปพลิเคชันอ่านการ์ตูนและมังงะแปลไทย สไตล์ WEBTOON พร้อมระบบดึงข้อมูลความเร็วสูงผ่าน Rust & Axum
+                    เว็บแอปพลิเคชันอ่านการ์ตูนและมังงะแปลไทย สไตล์มินิมอล ดาร์กโหมดความเร็วสูงผ่าน Rust & Axum
                 </p>
             </div>
 
@@ -674,7 +690,7 @@
 
         function goHome() {
             showView('viewHome');
-            document.getElementById('homeSectionTitle').innerHTML = '⚡ เรื่องอัปเดตล่าสุด';
+            document.getElementById('homeSectionTitle').innerHTML = '<i class="fa-solid fa-bolt text-wt-green"></i> เรื่องอัปเดตล่าสุด';
         }
 
         function scrollToSection(id) {
@@ -734,7 +750,11 @@
 
         function changePage(delta) {
             const next = currentPage + delta;
-            if (next >= 1) loadLatestManga(next);
+            if (next >= 1) {
+                loadLatestManga(next);
+                const section = document.getElementById('allMangaSection');
+                if (section) section.scrollIntoView({ behavior: 'smooth' });
+            }
         }
 
         // Hero Spotlight
@@ -743,7 +763,7 @@
             if (!topItem) return;
 
             document.getElementById('heroTitle').innerText = topItem.title;
-            if (topItem.rating) document.getElementById('heroRating').innerText = `★ ${topItem.rating}`;
+            if (topItem.rating) document.getElementById('heroRating').innerHTML = `<i class="fa-solid fa-star text-amber-400"></i> ${topItem.rating}`;
             if (topItem.type) document.getElementById('heroType').innerText = `• ${topItem.type} แปลไทย`;
             if (topItem.thumbnail) {
                 document.getElementById('heroBg').style.backgroundImage = `url('${topItem.thumbnail}')`;
@@ -774,13 +794,13 @@
                             ${idx + 1}
                         </span>
 
-                        <span class="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 text-[9px] sm:text-[10px] font-bold bg-black/70 text-yellow-400 px-1.5 sm:px-2 py-0.5 rounded-full backdrop-blur-md">
-                            ★ ${item.rating || '9.5'}
+                        <span class="absolute top-2 right-2 sm:top-2.5 sm:right-2.5 text-[9px] sm:text-[10px] font-bold bg-black/70 text-yellow-400 px-1.5 sm:px-2 py-0.5 rounded-full backdrop-blur-md flex items-center gap-1">
+                            <i class="fa-solid fa-star text-amber-400 text-[8px]"></i> ${item.rating || '9.5'}
                         </span>
 
                         ${item.latest_chapter ? `
-                            <span class="absolute bottom-2 inset-x-2 text-[9px] sm:text-[10px] font-medium bg-black/80 text-wt-green px-2 py-0.5 rounded truncate">
-                                ⚡ ${item.latest_chapter}
+                            <span class="absolute bottom-2 inset-x-2 text-[9px] sm:text-[10px] font-medium bg-black/80 text-wt-green px-2 py-0.5 rounded truncate flex items-center gap-1">
+                                <i class="fa-solid fa-bolt text-[8px] text-amber-400"></i> ${item.latest_chapter}
                             </span>
                         ` : ''}
                     </div>
@@ -835,9 +855,9 @@
 
         function filterByDay(day) {
             document.querySelectorAll('.day-tab').forEach(b => {
-                b.className = 'day-tab flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition';
+                b.className = 'day-tab flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold text-wt-muted hover:text-white hover:bg-wt-card transition';
             });
-            event.target.className = 'day-tab flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-semibold bg-wt-green text-black transition';
+            event.target.className = 'day-tab flex-shrink-0 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-wt-green text-black transition';
             populateDailyComics(allMangaItems, day);
         }
 
@@ -864,13 +884,13 @@
                             UP
                         </span>
                         ${item.rating ? `
-                            <span class="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 text-[9px] sm:text-[10px] font-bold bg-black/70 text-yellow-400 px-1.5 sm:px-2 py-0.5 rounded-full backdrop-blur-sm">
-                                ★ ${item.rating}
+                            <span class="absolute top-1.5 right-1.5 sm:top-2 sm:right-2 text-[9px] sm:text-[10px] font-bold bg-black/70 text-yellow-400 px-1.5 sm:px-2 py-0.5 rounded-full backdrop-blur-sm flex items-center gap-1">
+                                <i class="fa-solid fa-star text-amber-400 text-[8px]"></i> ${item.rating}
                             </span>
                         ` : ''}
                         ${item.latest_chapter ? `
-                            <div class="absolute bottom-1.5 inset-x-1.5 sm:bottom-2 sm:inset-x-2 bg-black/85 backdrop-blur-sm px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] text-slate-200 truncate border border-white/5">
-                                ⚡ ${item.latest_chapter}
+                            <div class="absolute bottom-1.5 inset-x-1.5 sm:bottom-2 sm:inset-x-2 bg-black/85 backdrop-blur-sm px-2 py-0.5 sm:py-1 rounded text-[9px] sm:text-[10px] text-slate-200 truncate border border-white/5 flex items-center gap-1">
+                                <i class="fa-solid fa-bolt text-[8px] text-amber-400"></i> ${item.latest_chapter}
                             </div>
                         ` : ''}
                     </div>
@@ -891,7 +911,7 @@
             if (!q) return;
 
             showView('viewHome');
-            document.getElementById('homeSectionTitle').innerHTML = `🔍 ผลการค้นหา: "<span class="text-wt-green">${q}</span>"`;
+            document.getElementById('homeSectionTitle').innerHTML = `<i class="fa-solid fa-magnifying-glass text-wt-green"></i> ผลการค้นหา: "<span class="text-wt-green">${q}</span>"`;
             document.getElementById('homeLoading').classList.remove('hidden');
             document.getElementById('mangaGrid').innerHTML = '';
             document.getElementById('navSearchClear').classList.remove('hidden');
@@ -964,7 +984,7 @@
             document.getElementById('detailThumb').src = data.thumbnail || 'https://via.placeholder.com/300x400';
             document.getElementById('detailType').innerText = data.type || 'Manga';
             document.getElementById('detailStatus').innerText = data.status || 'Ongoing';
-            document.getElementById('detailRating').innerText = data.rating ? `★ ${data.rating}` : '★ 9.5';
+            document.getElementById('detailRating').innerHTML = `<i class="fa-solid fa-star text-amber-400"></i> ${data.rating || '9.5'}`;
             document.getElementById('detailAuthor').innerText = data.author ? `ผู้เขียน: ${data.author}` : '';
             document.getElementById('detailSynopsis').innerText = data.synopsis || 'ไม่มีข้อมูลเรื่องย่อ';
             document.getElementById('detailTotalChapters').innerText = data.total_chapters;
@@ -1026,14 +1046,14 @@
                         <span class="text-xs font-mono font-bold ${isRead ? 'text-zinc-500' : 'text-wt-green'} group-hover:scale-105 transition flex-shrink-0">
                             ${ch.chapter_number || '#'}
                         </span>
-                        <span class="text-xs font-semibold ${isRead ? 'text-zinc-400 line-through/none' : 'text-slate-200 group-hover:text-white'} truncate">
+                        <span class="text-xs font-semibold ${isRead ? 'text-zinc-400' : 'text-slate-200 group-hover:text-white'} truncate">
                             ${ch.title}
                         </span>
                     </div>
                     <div class="flex items-center gap-2 flex-shrink-0">
                         ${isRead ? `
-                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-wt-green/20 text-wt-green border border-wt-green/30">
-                                อ่านแล้ว ✓
+                            <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-wt-green/20 text-wt-green border border-wt-green/30 flex items-center gap-1">
+                                <i class="fa-solid fa-check text-[8px]"></i> อ่านแล้ว
                             </span>
                         ` : ''}
                         <span class="text-[9px] sm:text-[10px] text-wt-muted font-mono hidden sm:inline">${ch.date || ''}</span>
@@ -1059,11 +1079,13 @@
         function toggleChapterSort() {
             isSortNewestFirst = !isSortNewestFirst;
             currentChapterList.reverse();
-            document.getElementById('btnSortChapters').innerText = isSortNewestFirst ? 'ใหม่สุดก่อน ⬇' : 'เก่าสุดก่อน ⬆';
+            document.getElementById('btnSortChapters').innerHTML = isSortNewestFirst 
+                ? '<span>ใหม่สุดก่อน</span> <i class="fa-solid fa-arrow-down-short-wide text-xs"></i>' 
+                : '<span>เก่าสุดก่อน</span> <i class="fa-solid fa-arrow-up-short-wide text-xs"></i>';
             renderChapterList(currentChapterList);
         }
 
-        // ================= 4. WEBTOON READER (LINE WEBTOON STYLE) =================
+        // ================= 4. WEBTOON READER =================
         async function openChapter(chapter, index) {
             currentChapterIndex = index;
             showView('viewReader');
@@ -1163,7 +1185,7 @@
 
                 item.innerHTML = `
                     <span class="truncate">${ch.chapter_number ? `ตอนที่ ${ch.chapter_number}` : ch.title}</span>
-                    ${isRead && !isCurrent ? '<span class="text-[9px] text-wt-green">✓</span>' : ''}
+                    ${isRead && !isCurrent ? '<i class="fa-solid fa-check text-[10px] text-wt-green"></i>' : ''}
                 `;
                 grid.appendChild(item);
             });
@@ -1200,7 +1222,7 @@
                 const nextCh = currentMangaData.chapters[currentChapterIndex - 1];
                 btnBottomNext.disabled = false;
                 btnBottomNext.classList.remove('opacity-40', 'cursor-not-allowed');
-                nextLabel.innerText = nextCh.chapter_number ? `(ตอนที่ ${nextCh.chapter_number}) ❯` : '❯';
+                nextLabel.innerHTML = nextCh.chapter_number ? `(ตอนที่ ${nextCh.chapter_number}) <i class="fa-solid fa-chevron-right text-xs"></i>` : '<i class="fa-solid fa-chevron-right text-xs"></i>';
             } else {
                 btnBottomNext.disabled = true;
                 btnBottomNext.classList.add('opacity-40', 'cursor-not-allowed');
@@ -1219,7 +1241,7 @@
             } else {
                 btn.classList.add('text-red-500');
                 btn.classList.remove('text-slate-300');
-                showAlert('♥ บันทึกถูกใจตอนนี้แล้ว!');
+                showAlert('บันทึกถูกใจตอนนี้แล้ว!');
             }
         }
 
