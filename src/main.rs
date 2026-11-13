@@ -80,6 +80,7 @@ async fn main() {
         .route("/api/latest", get(list_latest))
         .route("/api/chapter", get(get_chapter_pages))
         .route("/api/proxy-image", get(proxy_image))
+        .route("/api/debug", get(debug_scrape))
         .layer(cors)
         .with_state(state);
 
@@ -264,5 +265,40 @@ async fn proxy_image(
             StatusCode::BAD_GATEWAY,
             Json(json!({ "detail": format!("Proxy error: {}", err) })),
         )),
+    }
+}
+
+async fn debug_scrape() -> Json<Value> {
+    let curl_cmd = if cfg!(windows) { "curl.exe" } else { "curl" };
+    let output = tokio::process::Command::new(curl_cmd)
+        .args([
+            "-4",
+            "--http1.1",
+            "-v",
+            "-s",
+            "-L",
+            "--max-time", "15",
+            "--compressed",
+            "-A", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+            "-H", "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
+            "-H", "Accept-Language: th-TH,th;q=0.9,en-US;q=0.8,en;q=0.7",
+            "https://1668manga.com/manga/?page=1&order=update",
+        ])
+        .output()
+        .await;
+
+    match output {
+        Ok(out) => {
+            let stdout = String::from_utf8_lossy(&out.stdout).to_string();
+            let stderr = String::from_utf8_lossy(&out.stderr).to_string();
+            Json(json!({
+                "exit_status": out.status.to_string(),
+                "stdout_len": stdout.len(),
+                "contains_bsx": stdout.contains(".bsx"),
+                "stdout_preview": stdout.chars().take(300).collect::<String>(),
+                "stderr": stderr,
+            }))
+        }
+        Err(e) => Json(json!({ "error": e.to_string() })),
     }
 }

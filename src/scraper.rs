@@ -22,7 +22,7 @@ impl MangaScraper {
         headers.insert(
             USER_AGENT,
             HeaderValue::from_static(
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
             ),
         );
         headers.insert(
@@ -73,6 +73,7 @@ impl MangaScraper {
         let curl_cmd = if cfg!(windows) { "curl.exe" } else { "curl" };
         let output = tokio::process::Command::new(curl_cmd)
             .args([
+                "-4",
                 "--http1.1",
                 "-s",
                 "-L",
@@ -80,27 +81,11 @@ impl MangaScraper {
                 "15",
                 "--compressed",
                 "-A",
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
+                "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36",
                 "-H",
                 "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
                 "-H",
                 "Accept-Language: th-TH,th;q=0.9,en-US;q=0.8,en;q=0.7",
-                "-H",
-                "Sec-Ch-Ua: \"Not A(Brand\";v=\"8\", \"Chromium\";v=\"132\", \"Google Chrome\";v=\"132\"",
-                "-H",
-                "Sec-Ch-Ua-Mobile: ?0",
-                "-H",
-                "Sec-Ch-Ua-Platform: \"Windows\"",
-                "-H",
-                "Sec-Fetch-Dest: document",
-                "-H",
-                "Sec-Fetch-Mode: navigate",
-                "-H",
-                "Sec-Fetch-Site: none",
-                "-H",
-                "Sec-Fetch-User: ?1",
-                "-H",
-                "Upgrade-Insecure-Requests: 1",
                 url,
             ])
             .output()
