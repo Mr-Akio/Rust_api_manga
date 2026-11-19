@@ -375,9 +375,24 @@
                     </div>
                 </div>
 
+                <!-- 3 Recent Read Chapters of this Manga (3 ตอนล่าสุดที่คุณอ่าน) -->
+                <div id="recentReadChaptersSection" class="hidden space-y-3 p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-wt-card via-wt-card to-wt-green/10 border border-wt-green/30 shadow-xl">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs sm:text-sm font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left text-wt-green"></i> 3 ตอนล่าสุดที่คุณอ่าน
+                        </h4>
+                        <span class="text-[10px] font-bold text-wt-green bg-wt-green/10 px-2 py-0.5 rounded-full border border-wt-green/30 flex items-center gap-1">
+                            <i class="fa-solid fa-bolt text-[8px] text-amber-400"></i> อ่านต่อได้ทันที
+                        </span>
+                    </div>
+                    <div id="recentReadChaptersGrid" class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        <!-- Populated dynamically with up to 3 cards -->
+                    </div>
+                </div>
+
                 <!-- Chapters Section -->
                 <div class="space-y-4">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-wt-border pb-3">
+                    <div id="allChaptersSectionHeader" class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-wt-border pb-3">
                         <h3 class="text-base sm:text-xl font-bold text-white flex items-center gap-2">
                             <i class="fa-solid fa-book-open text-wt-green"></i> รายการตอนทั้งหมด (<span id="detailTotalChapters" class="text-wt-green">0</span>)
                         </h3>
@@ -395,9 +410,29 @@
                         </div>
                     </div>
 
-                    <!-- Chapters Grid / List with "อ่านแล้ว" badges -->
-                    <div id="chaptersListContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 sm:gap-2.5">
-                        <!-- Populated dynamically with read status badges -->
+                    <!-- Chapters Grid / List with "อ่านแล้ว" badges (โชว์ 10 ตอนต่อหน้า) -->
+                    <div id="chaptersListContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-2.5">
+                        <!-- Populated dynamically with read status badges (10 items per page) -->
+                    </div>
+
+                    <!-- Chapters Pagination Controller (10 ตอนต่อหน้า) -->
+                    <div id="chaptersPagination" class="pt-3 flex flex-col sm:flex-row justify-between items-center gap-3 border-t border-wt-border/40 text-xs">
+                        <div class="text-wt-muted text-[11px]" id="chapterPageRangeText">
+                            แสดงตอนที่ 1 - 10
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button id="btnPrevChapterPage" onclick="changeChapterPage(-1)" 
+                                class="px-3.5 py-1.5 rounded-full bg-wt-card hover:bg-wt-cardHover disabled:opacity-20 disabled:cursor-not-allowed font-semibold text-white border border-wt-border transition flex items-center gap-1.5 active:scale-95">
+                                <i class="fa-solid fa-chevron-left text-[10px]"></i> ก่อนหน้า
+                            </button>
+                            <span id="chapterPageIndicator" class="font-mono font-bold text-wt-green px-3 py-1 rounded-full bg-wt-darker border border-wt-border">
+                                หน้า 1 / 1
+                            </span>
+                            <button id="btnNextChapterPage" onclick="changeChapterPage(1)" 
+                                class="px-3.5 py-1.5 rounded-full bg-wt-card hover:bg-wt-cardHover disabled:opacity-20 disabled:cursor-not-allowed font-semibold text-white border border-wt-border transition flex items-center gap-1.5 active:scale-95">
+                                ถัดไป <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -439,8 +474,34 @@
                     </button>
                 </div>
 
-                <!-- Right: Like Button & Episode Drawer Toggle -->
+                <!-- Right: Eye Comfort, Like Button & Episode Drawer Toggle -->
                 <div class="flex items-center gap-1 sm:gap-2">
+                    <!-- Eye Comfort Mode Toggle -->
+                    <div class="relative">
+                        <button onclick="toggleEyeComfortMenu()" id="btnEyeComfort" class="p-2 text-xs text-slate-300 hover:text-amber-300 active:scale-95 transition" title="โหมดถนอมสายตา">
+                            <i id="iconEyeComfort" class="fa-solid fa-moon text-xs"></i>
+                        </button>
+                        
+                        <!-- Eye Comfort Dropdown -->
+                        <div id="eyeComfortMenu" class="hidden absolute right-0 top-full mt-2 w-44 bg-wt-card border border-wt-border rounded-xl shadow-2xl p-1.5 space-y-1 z-50 text-xs">
+                            <div class="px-2.5 py-1 text-[10px] font-bold text-wt-muted uppercase tracking-wider border-b border-wt-border/40">
+                                โหมดถนอมสายตา
+                            </div>
+                            <button onclick="setEyeComfortMode('normal')" class="eye-mode-btn w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between text-white hover:bg-wt-darker transition">
+                                <span><i class="fa-solid fa-sun text-yellow-400 mr-1.5"></i> สีปกติ</span>
+                                <i id="checkEyeNormal" class="fa-solid fa-check text-[10px] text-wt-green"></i>
+                            </button>
+                            <button onclick="setEyeComfortMode('warm')" class="eye-mode-btn w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between text-white hover:bg-wt-darker transition">
+                                <span><i class="fa-solid fa-mug-saucer text-amber-400 mr-1.5"></i> แสงอุ่น (Warm)</span>
+                                <i id="checkEyeWarm" class="fa-solid fa-check text-[10px] text-wt-green hidden"></i>
+                            </button>
+                            <button onclick="setEyeComfortMode('dim')" class="eye-mode-btn w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between text-white hover:bg-wt-darker transition">
+                                <span><i class="fa-solid fa-moon text-indigo-400 mr-1.5"></i> มืดสบายตา (Dim)</span>
+                                <i id="checkEyeDim" class="fa-solid fa-check text-[10px] text-wt-green hidden"></i>
+                            </button>
+                        </div>
+                    </div>
+
                     <button onclick="toggleLikeCurrentEpisode()" id="btnLikeEpisode" class="p-2 text-xs text-slate-300 hover:text-red-400 active:scale-95 transition" title="ถูกใจตอนนี้">
                         <i class="fa-solid fa-heart"></i>
                     </button>
@@ -532,6 +593,10 @@
                     ตอนต่อไป <i class="fa-solid fa-chevron-right text-[10px]"></i>
                 </button>
 
+                <button onclick="cycleEyeComfortMode()" id="btnFloatingEyeComfort" class="p-2 rounded-full text-slate-300 hover:text-amber-300 transition" title="สลับโหมดถนอมสายตา">
+                    <i class="fa-solid fa-moon text-xs"></i>
+                </button>
+
                 <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="p-2 rounded-full text-wt-muted hover:text-white" title="ขึ้นบนสุด">
                     <i class="fa-solid fa-arrow-up"></i>
                 </button>
@@ -592,6 +657,18 @@
         let currentActiveView = 'viewHome';
         let appHistoryDepth = 0;
 
+        // Chapter Pagination State (10 ตอนต่อหน้า)
+        let chapterCurrentPage = 1;
+        const chaptersPerPage = 10;
+        let currentFilteredChapters = [];
+
+        // Eye Comfort Mode State
+        let currentEyeMode = localStorage.getItem('kuromanga_eye_mode') || 'normal';
+
+        // Preload Next Chapter State
+        let preloadedNextChapter = null;
+        let isPreloadingNext = false;
+
         // Auto-Hide Navbar on Scroll Variables
         let lastScrollY = window.scrollY;
         let isViewerToolbarsVisible = true;
@@ -599,6 +676,7 @@
         // On Page Load
         window.addEventListener('DOMContentLoaded', () => {
             setupScrollHandler();
+            applyEyeComfortFilter();
             handleRoute(true);
         });
 
@@ -717,6 +795,7 @@
                 const slug = decodeURIComponent(detailMatch[1]);
                 if (currentMangaData && currentMangaData.slug === slug) {
                     showView('viewDetail');
+                    renderRecentReadSection(slug);
                     renderChapterList(currentChapterList);
                 } else {
                     openMangaBySlug(slug, false);
@@ -764,6 +843,8 @@
                         if (readerBottom) readerBottom.style.transform = 'translateY(0)';
                         isViewerToolbarsVisible = true;
                     }
+                    // Smart Preload Next Chapter on Scroll
+                    checkAndPreloadNextChapter();
                 }
 
                 lastScrollY = currentScrollY;
@@ -779,6 +860,177 @@
             isViewerToolbarsVisible = !isViewerToolbarsVisible;
             if (readerTop) readerTop.style.transform = isViewerToolbarsVisible ? 'translateY(0)' : 'translateY(-100%)';
             if (readerBottom) readerBottom.style.transform = isViewerToolbarsVisible ? 'translateY(0)' : 'translateY(100%)';
+            
+            // Close eye menu if open
+            const eyeMenu = document.getElementById('eyeComfortMenu');
+            if (eyeMenu) eyeMenu.classList.add('hidden');
+        }
+
+        // ================= 🌙 EYE COMFORT MODE =================
+        function setEyeComfortMode(mode) {
+            currentEyeMode = mode;
+            localStorage.setItem('kuromanga_eye_mode', mode);
+            applyEyeComfortFilter();
+            
+            const menu = document.getElementById('eyeComfortMenu');
+            if (menu) menu.classList.add('hidden');
+
+            const modeNames = {
+                'normal': 'โหมดสีปกติ (100%)',
+                'warm': 'เปิดโหมดแสงอุ่น (Warm Sepia)',
+                'dim': 'เปิดโหมดมืดสบายตา (Night Dim)'
+            };
+            showAlert(modeNames[mode] || 'เปลี่ยนโหมดแล้ว');
+        }
+
+        function cycleEyeComfortMode() {
+            const modes = ['normal', 'warm', 'dim'];
+            const nextIdx = (modes.indexOf(currentEyeMode) + 1) % modes.length;
+            setEyeComfortMode(modes[nextIdx]);
+        }
+
+        function toggleEyeComfortMenu() {
+            const menu = document.getElementById('eyeComfortMenu');
+            if (menu) menu.classList.toggle('hidden');
+        }
+
+        function applyEyeComfortFilter() {
+            const container = document.getElementById('readerImagesContainer');
+            const icon = document.getElementById('iconEyeComfort');
+            const checkNormal = document.getElementById('checkEyeNormal');
+            const checkWarm = document.getElementById('checkEyeWarm');
+            const checkDim = document.getElementById('checkEyeDim');
+
+            if (checkNormal) checkNormal.classList.toggle('hidden', currentEyeMode !== 'normal');
+            if (checkWarm) checkWarm.classList.toggle('hidden', currentEyeMode !== 'warm');
+            if (checkDim) checkDim.classList.toggle('hidden', currentEyeMode !== 'dim');
+
+            if (icon) {
+                if (currentEyeMode === 'warm') {
+                    icon.className = 'fa-solid fa-mug-saucer text-amber-400 text-xs';
+                } else if (currentEyeMode === 'dim') {
+                    icon.className = 'fa-solid fa-moon text-indigo-400 text-xs';
+                } else {
+                    icon.className = 'fa-solid fa-moon text-slate-300 text-xs';
+                }
+            }
+
+            if (!container) return;
+            if (currentEyeMode === 'warm') {
+                container.style.filter = 'sepia(35%) brightness(92%)';
+            } else if (currentEyeMode === 'dim') {
+                container.style.filter = 'brightness(68%) contrast(95%)';
+            } else {
+                container.style.filter = 'none';
+            }
+        }
+
+        // ================= ⚡ SMART PRELOAD NEXT CHAPTER =================
+        function checkAndPreloadNextChapter() {
+            if (currentActiveView !== 'viewReader' || !currentMangaData || currentChapterIndex <= 0) return;
+
+            const nextIdx = currentChapterIndex - 1; // 0 is latest
+            const nextCh = currentMangaData.chapters[nextIdx];
+            if (!nextCh) return;
+
+            if (preloadedNextChapter && preloadedNextChapter.url === nextCh.url) return;
+            if (isPreloadingNext) return;
+
+            const docHeight = document.documentElement.scrollHeight;
+            const scrollPos = window.scrollY + window.innerHeight;
+            if (docHeight > 0 && (scrollPos / docHeight) >= 0.65) {
+                isPreloadingNext = true;
+                fetch(`/api/chapter?url=${encodeURIComponent(nextCh.url)}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data && data.images && data.images.length > 0) {
+                            preloadedNextChapter = {
+                                url: nextCh.url,
+                                index: nextIdx,
+                                images: data.images
+                            };
+                            // Preload first 3 images into browser cache
+                            data.images.slice(0, 3).forEach(src => {
+                                const img = new Image();
+                                img.src = src;
+                            });
+                        }
+                    })
+                    .catch(() => {})
+                    .finally(() => {
+                        isPreloadingNext = false;
+                    });
+            }
+        }
+
+        // ================= 📖 3 RECENT READ CHAPTERS PER MANGA =================
+        function recordMangaRecentChapterRead(slug, chapter) {
+            try {
+                const storeKey = 'kuromanga_recent_reads_' + slug;
+                let list = JSON.parse(localStorage.getItem(storeKey) || '[]');
+                list = list.filter(item => item.url !== chapter.url);
+                list.unshift({
+                    url: chapter.url,
+                    title: chapter.title,
+                    chapter_number: chapter.chapter_number,
+                    timestamp: new Date().toISOString()
+                });
+                if (list.length > 5) list.pop();
+                localStorage.setItem(storeKey, JSON.stringify(list));
+            } catch (e) {}
+        }
+
+        function getMangaRecentChapterReads(slug) {
+            try {
+                const storeKey = 'kuromanga_recent_reads_' + slug;
+                return JSON.parse(localStorage.getItem(storeKey) || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function renderRecentReadSection(slug) {
+            const section = document.getElementById('recentReadChaptersSection');
+            const grid = document.getElementById('recentReadChaptersGrid');
+            if (!section || !grid) return;
+
+            const recentReads = getMangaRecentChapterReads(slug);
+            if (!recentReads || recentReads.length === 0) {
+                section.classList.add('hidden');
+                return;
+            }
+
+            section.classList.remove('hidden');
+            grid.innerHTML = '';
+
+            recentReads.slice(0, 3).forEach((item, idx) => {
+                const chIndex = currentMangaData ? currentMangaData.chapters.findIndex(c => c.url === item.url) : -1;
+                const ch = (chIndex !== -1 && currentMangaData) ? currentMangaData.chapters[chIndex] : item;
+                const trueIdx = (chIndex !== -1) ? chIndex : 0;
+
+                const card = document.createElement('button');
+                card.className = 'group text-left p-3 rounded-xl bg-wt-darker/90 hover:bg-wt-green/10 border border-wt-border hover:border-wt-green transition flex items-center justify-between gap-3 shadow-md active:scale-95';
+                card.onclick = () => openChapter(ch, trueIdx);
+
+                card.innerHTML = `
+                    <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-1.5 text-wt-green text-[11px] font-mono font-bold">
+                            <i class="fa-solid fa-play text-[9px]"></i>
+                            <span>${item.chapter_number ? `ตอนที่ ${item.chapter_number}` : 'ตอนที่อ่าน'}</span>
+                        </div>
+                        <h5 class="text-xs font-semibold text-white group-hover:text-wt-green truncate mt-0.5">
+                            ${item.title || ('ตอนที่ ' + (item.chapter_number || ''))}
+                        </h5>
+                        <span class="text-[9px] text-wt-muted font-mono mt-0.5 block">
+                            ${idx === 0 ? 'อ่านล่าสุด' : 'อ่านแล้ว'}
+                        </span>
+                    </div>
+                    <div class="w-8 h-8 rounded-lg bg-wt-card group-hover:bg-wt-green group-hover:text-black text-wt-green flex items-center justify-center flex-shrink-0 border border-wt-border transition">
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
         }
 
         // ================= LOCAL STORAGE "อ่านแล้ว" TRACKER =================
@@ -1183,22 +1435,48 @@
                 btnLatest.classList.add('hidden');
             }
 
+            chapterCurrentPage = 1;
+            renderRecentReadSection(data.slug);
             renderChapterList(currentChapterList);
         }
 
-        // Render chapter list with "อ่านแล้ว" badges
+        // Render chapter list with "อ่านแล้ว" badges (โชว์ 10 ตอนต่อหน้า)
         function renderChapterList(chapters) {
+            currentFilteredChapters = chapters;
             const container = document.getElementById('chaptersListContainer');
+            const pagination = document.getElementById('chaptersPagination');
             container.innerHTML = '';
 
             if (chapters.length === 0) {
                 container.innerHTML = '<div class="col-span-full py-10 text-center text-wt-muted text-xs">ไม่พบตอนที่ค้นหา</div>';
+                if (pagination) pagination.classList.add('hidden');
                 return;
             }
 
+            if (pagination) pagination.classList.remove('hidden');
+
+            const totalPages = Math.ceil(chapters.length / chaptersPerPage) || 1;
+            if (chapterCurrentPage > totalPages) chapterCurrentPage = totalPages;
+            if (chapterCurrentPage < 1) chapterCurrentPage = 1;
+
+            const start = (chapterCurrentPage - 1) * chaptersPerPage;
+            const end = Math.min(start + chaptersPerPage, chapters.length);
+            const pageItems = chapters.slice(start, end);
+
+            // Update Pagination UI
+            const pageIndicator = document.getElementById('chapterPageIndicator');
+            const rangeText = document.getElementById('chapterPageRangeText');
+            const btnPrev = document.getElementById('btnPrevChapterPage');
+            const btnNext = document.getElementById('btnNextChapterPage');
+
+            if (pageIndicator) pageIndicator.innerText = `หน้า ${chapterCurrentPage} / ${totalPages}`;
+            if (rangeText) rangeText.innerText = `แสดงตอนที่ ${start + 1} - ${end} (จากทั้งหมด ${chapters.length} ตอน)`;
+            if (btnPrev) btnPrev.disabled = (chapterCurrentPage <= 1);
+            if (btnNext) btnNext.disabled = (chapterCurrentPage >= totalPages);
+
             const slug = currentMangaData.slug;
 
-            chapters.forEach((ch) => {
+            pageItems.forEach((ch) => {
                 const trueIndex = currentMangaData.chapters.indexOf(ch);
                 const isRead = isChapterRead(slug, ch.url);
                 const btn = document.createElement('button');
@@ -1232,9 +1510,24 @@
             });
         }
 
+        function changeChapterPage(delta) {
+            const totalPages = Math.ceil(currentFilteredChapters.length / chaptersPerPage) || 1;
+            const targetPage = chapterCurrentPage + delta;
+            if (targetPage >= 1 && targetPage <= totalPages) {
+                chapterCurrentPage = targetPage;
+                renderChapterList(currentFilteredChapters);
+                const section = document.getElementById('allChaptersSectionHeader');
+                if (section) {
+                    const top = section.getBoundingClientRect().top + window.pageYOffset - 75;
+                    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+                }
+            }
+        }
+
         function filterChapters() {
             const query = document.getElementById('chapterFilterInput').value.trim().toLowerCase();
             if (!query) {
+                chapterCurrentPage = 1;
                 renderChapterList(currentChapterList);
                 return;
             }
@@ -1242,6 +1535,7 @@
                 (c.title && c.title.toLowerCase().includes(query)) ||
                 (c.chapter_number && c.chapter_number.includes(query))
             );
+            chapterCurrentPage = 1;
             renderChapterList(filtered);
         }
 
@@ -1251,6 +1545,7 @@
             document.getElementById('btnSortChapters').innerHTML = isSortNewestFirst 
                 ? '<span>ใหม่สุดก่อน</span> <i class="fa-solid fa-arrow-down-short-wide text-xs"></i>' 
                 : '<span>เก่าสุดก่อน</span> <i class="fa-solid fa-arrow-up-short-wide text-xs"></i>';
+            chapterCurrentPage = 1;
             renderChapterList(currentChapterList);
         }
 
@@ -1265,8 +1560,9 @@
                 updateUrlHash('#/manga/' + encodeURIComponent(currentMangaData.slug) + '/ch/' + encodeURIComponent(chId));
             }
 
-            // Mark as Read immediately
+            // Mark as Read and record in recent read chapters of this manga
             markChapterAsRead(currentMangaData.slug, chapter.url);
+            recordMangaRecentChapterRead(currentMangaData.slug, chapter);
 
             document.getElementById('readerLoading').classList.remove('hidden');
             document.getElementById('readerImagesContainer').innerHTML = '';
@@ -1279,6 +1575,9 @@
             if (readerBottom) readerBottom.style.transform = 'translateY(0)';
             isViewerToolbarsVisible = true;
             lastScrollY = 0;
+
+            // Apply Eye Comfort Mode filter
+            applyEyeComfortFilter();
 
             // Top Toolbar Titles
             document.getElementById('readerComicTitle').innerText = currentMangaData.title;
@@ -1299,6 +1598,15 @@
 
             // Save History
             saveToHistory(currentMangaData, chapter);
+
+            // ⚡ Check if this chapter was already preloaded seamlessly!
+            if (preloadedNextChapter && preloadedNextChapter.url === chapter.url && preloadedNextChapter.images && preloadedNextChapter.images.length > 0) {
+                renderReaderImages(preloadedNextChapter.images);
+                document.getElementById('readerLoading').classList.add('hidden');
+                preloadedNextChapter = null;
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                return;
+            }
 
             try {
                 const res = await fetch(`/api/chapter?url=${encodeURIComponent(chapter.url)}`);
@@ -1322,6 +1630,7 @@
         function renderReaderImages(images) {
             const container = document.getElementById('readerImagesContainer');
             container.innerHTML = '';
+            applyEyeComfortFilter();
 
             if (images.length === 0) {
                 container.innerHTML = '<div class="py-20 text-center text-wt-muted text-sm">ไม่พบรูปภาพในตอนนี้</div>';
