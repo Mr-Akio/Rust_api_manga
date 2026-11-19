@@ -542,8 +542,16 @@
                 <!-- Images appended here -->
             </div>
 
-            <!-- 2. End-of-Chapter Section (อยู่ข้างล่างสุดตอนอ่านจบ) -->
-            <div id="readerEndSection" class="max-w-2xl mx-auto my-8 p-6 sm:p-8 bg-wt-card border border-wt-border rounded-3xl text-center space-y-5 shadow-2xl">
+            <!-- Infinite Scroll Loader (ต่อตอนให้อัตโนมัติแบบเว็บจีน) -->
+            <div id="infiniteScrollLoader" class="hidden py-8 text-center select-none">
+                <div class="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-wt-card border border-wt-green/40 text-wt-green text-xs font-bold shadow-xl shadow-wt-green/10">
+                    <i class="fa-solid fa-spinner animate-spin text-sm"></i>
+                    <span>กำลังต่อตอนถัดไปให้อัตโนมัติ...</span>
+                </div>
+            </div>
+
+            <!-- 2. End-of-Manga Section (แสดงเมื่อเลื่อนอ่านจนถึงตอนล่าสุดของเรื่องแล้ว) -->
+            <div id="readerEndSection" class="hidden max-w-2xl mx-auto my-8 p-6 sm:p-8 bg-wt-card border border-wt-border rounded-3xl text-center space-y-5 shadow-2xl">
                 <div class="space-y-1">
                     <span class="text-xs font-bold text-wt-green uppercase tracking-wider flex items-center justify-center gap-1.5">
                         <i class="fa-solid fa-circle-check text-wt-green"></i> จบตอนนี้แล้ว
@@ -668,6 +676,11 @@
         // Preload Next Chapter State
         let preloadedNextChapter = null;
         let isPreloadingNext = false;
+
+        // Continuous Endless Scroll State (ต่อตอนอัตโนมัติแบบเว็บจีน)
+        let loadedChaptersInViewer = [];
+        let isLoadingNextChapter = false;
+        let hasReachedMangaEnd = false;
 
         // Auto-Hide Navbar on Scroll Variables
         let lastScrollY = window.scrollY;
@@ -832,7 +845,7 @@
                     }
                 }
 
-                // 2. Reader Toolbars Auto-Hide
+                // 2. Reader Toolbars Auto-Hide & Continuous Scroll
                 if (currentActiveView === 'viewReader') {
                     if (isScrollingDown) {
                         if (readerTop) readerTop.style.transform = 'translateY(-100%)';
@@ -843,8 +856,15 @@
                         if (readerBottom) readerBottom.style.transform = 'translateY(0)';
                         isViewerToolbarsVisible = true;
                     }
-                    // Smart Preload Next Chapter on Scroll
-                    checkAndPreloadNextChapter();
+                    
+                    // Continuous Manhua Endless Scroll (ต่อตอนอัตโนมัติแบบเว็บจีน)
+                    const scrollBottom = document.documentElement.scrollHeight - (window.scrollY + window.innerHeight);
+                    if (scrollBottom < 1800 && !isLoadingNextChapter && !hasReachedMangaEnd) {
+                        loadNextChapterSeamlessly();
+                    }
+
+                    // Track active chapter in viewport
+                    updateViewportChapterTracker();
                 }
 
                 lastScrollY = currentScrollY;
@@ -960,6 +980,167 @@
                     .finally(() => {
                         isPreloadingNext = false;
                     });
+            }
+        }
+
+        // ================= 📜 CONTINUOUS ENDLESS CHAPTER SCROLL (ต่อตอนอัตโนมัติแบบเว็บจีน) =================
+        function appendChapterBlock(chapter, index, images, isSeamless = true) {
+            const container = document.getElementById('readerImagesContainer');
+            if (!container) return;
+
+            // 1. If seamless autoload, prepend a Manhua Chapter Transition Divider
+            if (isSeamless) {
+                const divider = document.createElement('div');
+                divider.className = 'chapter-divider my-10 py-5 px-4 text-center bg-gradient-to-r from-transparent via-wt-card to-transparent border-y border-wt-green/40 select-none';
+                divider.setAttribute('data-chapter-index', index);
+                divider.innerHTML = `
+                    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-wt-green text-black font-extrabold text-xs sm:text-sm shadow-lg shadow-wt-green/30">
+                        <i class="fa-solid fa-bolt text-xs"></i> ${chapter.chapter_number ? `ตอนที่ ${chapter.chapter_number}` : chapter.title}
+                    </div>
+                    <h4 class="text-xs sm:text-sm font-bold text-white mt-2">${chapter.title}</h4>
+                    <span class="text-[11px] text-wt-muted font-medium mt-0.5 block">
+                        <i class="fa-solid fa-arrow-down text-wt-green mr-1"></i> โหลดตอนถัดไปเรียบร้อยแล้ว เลื่อนอ่านต่อได้ทันที
+                    </span>
+                `;
+                container.appendChild(divider);
+            }
+
+            // 2. Create Chapter Block Container
+            const block = document.createElement('div');
+            block.className = 'chapter-block leading-none py-0 my-0';
+            block.setAttribute('data-chapter-index', index);
+            block.setAttribute('id', `chapter-block-${index}`);
+
+            images.forEach((imgUrl, i) => {
+                const img = document.createElement('img');
+                img.className = 'manga-page-img';
+                img.alt = `${chapter.chapter_number || ''} หน้า ${i + 1}`;
+                img.loading = (i < 3 && !isSeamless) ? 'eager' : 'lazy';
+                
+                img.src = imgUrl;
+                img.onerror = () => {
+                    img.onerror = null;
+                    img.src = `/api/proxy-image?url=${encodeURIComponent(imgUrl)}`;
+                };
+                block.appendChild(img);
+            });
+
+            container.appendChild(block);
+            applyEyeComfortFilter();
+        }
+
+        async function loadNextChapterSeamlessly() {
+            if (isLoadingNextChapter || hasReachedMangaEnd || currentActiveView !== 'viewReader' || !currentMangaData) return;
+            if (loadedChaptersInViewer.length === 0) return;
+
+            const lastLoaded = loadedChaptersInViewer[loadedChaptersInViewer.length - 1];
+            const nextIdx = lastLoaded.index - 1; // 0 is newest, so next chapter is - 1
+
+            if (nextIdx < 0) {
+                hasReachedMangaEnd = true;
+                const loader = document.getElementById('infiniteScrollLoader');
+                if (loader) loader.classList.add('hidden');
+                const endSection = document.getElementById('readerEndSection');
+                if (endSection) endSection.classList.remove('hidden');
+                return;
+            }
+
+            const nextCh = currentMangaData.chapters[nextIdx];
+            if (!nextCh) return;
+
+            isLoadingNextChapter = true;
+            const loader = document.getElementById('infiniteScrollLoader');
+            if (loader) loader.classList.remove('hidden');
+
+            try {
+                let images = [];
+                // If already preloaded
+                if (preloadedNextChapter && preloadedNextChapter.url === nextCh.url && preloadedNextChapter.images && preloadedNextChapter.images.length > 0) {
+                    images = preloadedNextChapter.images;
+                    preloadedNextChapter = null;
+                } else {
+                    const res = await fetch(`/api/chapter?url=${encodeURIComponent(nextCh.url)}`);
+                    if (!res.ok) throw new Error('โหลดตอนถัดไปไม่สำเร็จ');
+                    const data = await res.json();
+                    images = data.images || [];
+                }
+
+                if (images.length > 0) {
+                    appendChapterBlock(nextCh, nextIdx, images, true);
+                    loadedChaptersInViewer.push({ chapter: nextCh, index: nextIdx, images });
+
+                    // Preload the next one after this in the background!
+                    if (nextIdx > 0) {
+                        const afterNextCh = currentMangaData.chapters[nextIdx - 1];
+                        if (afterNextCh) {
+                            fetch(`/api/chapter?url=${encodeURIComponent(afterNextCh.url)}`)
+                                .then(r => r.json())
+                                .then(d => {
+                                    if (d && d.images) {
+                                        preloadedNextChapter = { url: afterNextCh.url, index: nextIdx - 1, images: d.images };
+                                    }
+                                }).catch(() => {});
+                        }
+                    } else {
+                        hasReachedMangaEnd = true;
+                        if (loader) loader.classList.add('hidden');
+                        const endSection = document.getElementById('readerEndSection');
+                        if (endSection) endSection.classList.remove('hidden');
+                    }
+                }
+            } catch (err) {
+                console.error('Seamless chapter autoload failed:', err);
+            } finally {
+                isLoadingNextChapter = false;
+                const loader = document.getElementById('infiniteScrollLoader');
+                if (loader && (nextIdx <= 0 || hasReachedMangaEnd)) {
+                    loader.classList.add('hidden');
+                }
+            }
+        }
+
+        // Track active chapter in viewport as user scrolls through endless chapters
+        function updateViewportChapterTracker() {
+            if (currentActiveView !== 'viewReader' || !currentMangaData || loadedChaptersInViewer.length === 0) return;
+
+            const blocks = document.querySelectorAll('.chapter-block');
+            let detectedIndex = currentChapterIndex;
+            const viewportFocusY = window.scrollY + 100; // top area under toolbar
+
+            blocks.forEach(block => {
+                const top = block.offsetTop;
+                const bottom = top + block.offsetHeight;
+                if (viewportFocusY >= top && viewportFocusY <= bottom) {
+                    const idx = parseInt(block.getAttribute('data-chapter-index'), 10);
+                    if (!isNaN(idx)) {
+                        detectedIndex = idx;
+                    }
+                }
+            });
+
+            if (detectedIndex !== currentChapterIndex && currentMangaData && currentMangaData.chapters[detectedIndex]) {
+                currentChapterIndex = detectedIndex;
+                const activeCh = currentMangaData.chapters[detectedIndex];
+
+                // Update Header titles
+                document.getElementById('readerComicTitle').innerText = currentMangaData.title;
+                document.getElementById('readerChapterTitle').innerText = activeCh.title;
+                document.getElementById('currentEpisodeBadge').innerText = activeCh.chapter_number ? `#${activeCh.chapter_number}` : '#ตอน';
+                document.getElementById('floatingEpisodeLabel').innerText = activeCh.chapter_number ? `ตอนที่ ${activeCh.chapter_number}` : activeCh.title;
+                document.getElementById('endChapterName').innerText = `${currentMangaData.title} - ${activeCh.title}`;
+
+                // Clean hash replace without creating unwanted back history entries
+                const chId = activeCh.chapter_number || detectedIndex;
+                const newHash = '#/manga/' + encodeURIComponent(currentMangaData.slug) + '/ch/' + encodeURIComponent(chId);
+                if (window.location.hash !== newHash) {
+                    history.replaceState({ hash: newHash }, '', newHash);
+                }
+
+                // Mark active chapter as read in storage
+                markChapterAsRead(currentMangaData.slug, activeCh.url);
+                recordMangaRecentChapterRead(currentMangaData.slug, activeCh);
+                saveToHistory(currentMangaData, activeCh);
+                updateReaderNavButtons();
             }
         }
 
@@ -1555,6 +1736,11 @@
             showView('viewReader');
             window.scrollTo({ top: 0, behavior: 'instant' });
             
+            // Reset continuous scroll state
+            loadedChaptersInViewer = [];
+            isLoadingNextChapter = false;
+            hasReachedMangaEnd = (index <= 0);
+
             if (pushHistory && currentMangaData && currentMangaData.slug) {
                 const chId = chapter.chapter_number || index;
                 updateUrlHash('#/manga/' + encodeURIComponent(currentMangaData.slug) + '/ch/' + encodeURIComponent(chId));
@@ -1568,6 +1754,12 @@
             document.getElementById('readerImagesContainer').innerHTML = '';
             document.getElementById('episodeDrawer').classList.add('hidden');
             
+            // Manage end section and infinite scroll loader
+            const endSection = document.getElementById('readerEndSection');
+            const loader = document.getElementById('infiniteScrollLoader');
+            if (endSection) endSection.classList.toggle('hidden', !hasReachedMangaEnd);
+            if (loader) loader.classList.toggle('hidden', hasReachedMangaEnd);
+
             // Ensure toolbars are visible and reset scroll tracker
             const readerTop = document.getElementById('readerTopToolbar');
             const readerBottom = document.getElementById('readerBottomToolbar');
@@ -1601,7 +1793,8 @@
 
             // ⚡ Check if this chapter was already preloaded seamlessly!
             if (preloadedNextChapter && preloadedNextChapter.url === chapter.url && preloadedNextChapter.images && preloadedNextChapter.images.length > 0) {
-                renderReaderImages(preloadedNextChapter.images);
+                appendChapterBlock(chapter, index, preloadedNextChapter.images, false);
+                loadedChaptersInViewer.push({ chapter, index, images: preloadedNextChapter.images });
                 document.getElementById('readerLoading').classList.add('hidden');
                 preloadedNextChapter = null;
                 window.scrollTo({ top: 0, behavior: 'instant' });
@@ -1612,7 +1805,10 @@
                 const res = await fetch(`/api/chapter?url=${encodeURIComponent(chapter.url)}`);
                 if (!res.ok) throw new Error('ไม่สามารถโหลดภาพในตอนนี้ได้');
                 const data = await res.json();
-                renderReaderImages(data.images || []);
+                const images = data.images || [];
+
+                appendChapterBlock(chapter, index, images, false);
+                loadedChaptersInViewer.push({ chapter, index, images });
 
                 // Once images are rendered, immediately jump to the top
                 window.scrollTo({ top: 0, behavior: 'instant' });
@@ -1637,21 +1833,9 @@
                 return;
             }
 
-            images.forEach((imgUrl, i) => {
-                const img = document.createElement('img');
-                img.className = 'manga-page-img';
-                img.alt = `หน้า ${i + 1}`;
-                img.loading = (i < 3) ? 'eager' : 'lazy';
-                
-                // Direct with automatic proxy fallback on CORS/403 error
-                img.src = imgUrl;
-                img.onerror = () => {
-                    img.onerror = null;
-                    img.src = `/api/proxy-image?url=${encodeURIComponent(imgUrl)}`;
-                };
-
-                container.appendChild(img);
-            });
+            if (currentMangaData && currentChapterIndex >= 0) {
+                appendChapterBlock(currentMangaData.chapters[currentChapterIndex], currentChapterIndex, images, false);
+            }
         }
 
         // Episode Drawer Toggle & Population
