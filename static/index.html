@@ -97,6 +97,13 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        @keyframes floatPrompt {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        .animate-bounce-subtle {
+            animation: floatPrompt 2.5s ease-in-out infinite;
+        }
     </style>
 </head>
 <body class="bg-wt-darker text-slate-100 min-h-screen flex flex-col selection:bg-wt-green selection:text-black pt-16">
@@ -365,6 +372,9 @@
 
                         <!-- Action Buttons -->
                         <div class="pt-3 flex flex-wrap items-center justify-center sm:justify-start gap-2.5 sm:gap-3">
+                            <button id="btnResumeRead" onclick="resumeMangaReading()" class="hidden bg-gradient-to-r from-wt-green via-emerald-400 to-teal-400 hover:brightness-110 active:scale-95 text-black text-xs sm:text-sm font-extrabold px-5 sm:px-6 py-2.5 rounded-full transition shadow-lg shadow-wt-green/30 flex items-center gap-2">
+                                <i class="fa-solid fa-bookmark text-xs"></i> <span>อ่านต่อ: ตอนที่ <span id="btnResumeChNum">-</span> (<span id="btnResumePercent">0%</span>)</span>
+                            </button>
                             <button id="btnReadFirst" class="bg-wt-green hover:bg-wt-greenHover active:scale-95 text-black text-xs sm:text-sm font-bold px-5 sm:px-6 py-2.5 rounded-full transition shadow-lg shadow-wt-green/20 flex items-center gap-2">
                                 <i class="fa-solid fa-play text-xs"></i> อ่านตอนแรก
                             </button>
@@ -441,6 +451,9 @@
         <!-- ================= VIEW 3: WEBTOON READER ================= -->
         <div id="viewReader" class="hidden -mx-3 sm:mx-0">
 
+            <!-- Real-time Top Reading Progress Bar (แถบความคืบหน้าระดับพิกเซล) -->
+            <div id="readerProgressBar" class="fixed top-0 inset-x-0 h-[3px] bg-gradient-to-r from-wt-green via-emerald-400 to-teal-300 z-[60] transition-all duration-100 pointer-events-none" style="width: 0%;"></div>
+
             <!-- 1. Top Floating Viewer Toolbar (Auto-hides on scroll down) -->
             <div id="readerTopToolbar" class="fixed top-0 inset-x-0 z-50 bg-wt-darker/95 backdrop-blur-md border-b border-wt-border px-3 sm:px-6 h-14 flex items-center justify-between gap-2 shadow-2xl transition-transform duration-300 ease-in-out">
                 
@@ -451,7 +464,10 @@
                     </button>
                     <div class="truncate">
                         <h3 id="readerComicTitle" class="text-xs text-wt-muted font-medium truncate hidden sm:block"></h3>
-                        <h2 id="readerChapterTitle" class="text-xs sm:text-sm font-bold text-white truncate"></h2>
+                        <div class="flex items-center gap-1.5 truncate">
+                            <h2 id="readerChapterTitle" class="text-xs sm:text-sm font-bold text-white truncate"></h2>
+                            <span id="readerScrollPercentBadge" class="text-[10px] font-mono font-bold text-wt-green bg-wt-darker px-1.5 py-0.5 rounded border border-wt-border select-none" title="ความคืบหน้าการอ่าน">0%</span>
+                        </div>
                     </div>
                 </div>
 
@@ -585,6 +601,27 @@
                     <span class="text-wt-border">•</span>
                     <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="text-wt-green hover:underline flex items-center gap-1">
                         <i class="fa-solid fa-arrow-up"></i> กลับด้านบน
+                    </button>
+                </div>
+            </div>
+
+            <!-- Floating Resume Reading Position Toast (จำจุดที่อ่านค้างไว้ระดับพิกเซล) -->
+            <div id="readerResumeToast" class="hidden fixed bottom-16 inset-x-4 max-w-sm mx-auto z-50 bg-wt-dark/95 backdrop-blur-xl border border-wt-green/60 text-white p-3 rounded-2xl shadow-2xl shadow-wt-green/20 flex items-center justify-between gap-3 animate-bounce-subtle">
+                <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-8 h-8 rounded-full bg-wt-green/20 border border-wt-green/40 flex items-center justify-center text-wt-green flex-shrink-0">
+                        <i class="fa-solid fa-bookmark text-xs"></i>
+                    </div>
+                    <div class="truncate text-left">
+                        <p class="text-[10px] text-wt-muted font-medium">อ่านค้างไว้ก่อนหน้านี้</p>
+                        <p class="text-xs font-bold text-white">ภาพที่ <span id="resumePageText" class="text-wt-green">1</span> • <span id="resumePercentText" class="text-wt-green font-mono font-black">0%</span></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1.5 flex-shrink-0">
+                    <button onclick="resumeReadingPosition()" class="bg-wt-green hover:bg-wt-greenHover active:scale-95 text-black font-extrabold text-xs px-3 py-1.5 rounded-full shadow-md shadow-wt-green/20 transition flex items-center gap-1">
+                        <i class="fa-solid fa-bolt text-[10px]"></i> ไปที่จุดเดิม
+                    </button>
+                    <button onclick="dismissResumeToast()" class="text-wt-muted hover:text-white p-1.5 rounded-full hover:bg-wt-card transition text-xs" title="ปิด">
+                        <i class="fa-solid fa-xmark"></i>
                     </button>
                 </div>
             </div>
@@ -865,6 +902,9 @@
 
                     // Track active chapter in viewport
                     updateViewportChapterTracker();
+
+                    // Track & save exact pixel-level reading progress (จำจุดที่อ่านค้างไว้ระดับพิกเซล)
+                    trackAndSaveExactScrollPosition();
                 }
 
                 lastScrollY = currentScrollY;
@@ -1015,6 +1055,8 @@
                 const img = document.createElement('img');
                 img.className = 'manga-page-img';
                 img.alt = `${chapter.chapter_number || ''} หน้า ${i + 1}`;
+                img.setAttribute('data-page-index', i);
+                img.setAttribute('id', `chapter-${index}-page-${i}`);
                 img.loading = (i < 3 && !isSeamless) ? 'eager' : 'lazy';
                 
                 img.src = imgUrl;
@@ -1144,6 +1186,177 @@
             }
         }
 
+        // ================= 📍 EXACT READING POSITION MEMORY (จำจุดที่อ่านค้างไว้ระดับพิกเซล) =================
+        let scrollPosSaveTimeout = null;
+
+        function getMangaExactPosition(slug) {
+            try {
+                const item = localStorage.getItem('kuromanga_resume_' + slug);
+                return item ? JSON.parse(item) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function getExactChapterPosition(slug, chapterUrl) {
+            try {
+                const item = localStorage.getItem('kuromanga_ch_pos_' + slug + '_' + encodeURIComponent(chapterUrl));
+                return item ? JSON.parse(item) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function trackAndSaveExactScrollPosition() {
+            if (currentActiveView !== 'viewReader' || !currentMangaData || currentChapterIndex < 0) return;
+
+            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+            const currentScroll = window.scrollY;
+            const percent = maxScroll > 0 ? Math.min(100, Math.max(0, Math.round((currentScroll / maxScroll) * 100))) : 0;
+
+            // 1. Live Progress Bar & Percentage Pill in Header
+            const progressBar = document.getElementById('readerProgressBar');
+            if (progressBar) progressBar.style.width = percent + '%';
+
+            const percentBadge = document.getElementById('readerScrollPercentBadge');
+            if (percentBadge) percentBadge.innerText = percent + '%';
+
+            // 2. Hide resume toast if user has scrolled past 400px from initial view
+            if (currentScroll > 400) {
+                const toast = document.getElementById('readerResumeToast');
+                if (toast && !toast.classList.contains('hidden')) {
+                    toast.classList.add('hidden');
+                }
+            }
+
+            // 3. Debounced saving (every 250ms)
+            clearTimeout(scrollPosSaveTimeout);
+            scrollPosSaveTimeout = setTimeout(() => {
+                saveCurrentPositionToStorage(percent);
+            }, 250);
+        }
+
+        function saveCurrentPositionToStorage(percent) {
+            if (currentActiveView !== 'viewReader' || !currentMangaData || currentChapterIndex < 0) return;
+            const activeCh = currentMangaData.chapters[currentChapterIndex];
+            if (!activeCh) return;
+
+            // Identify which image is near top/center of the viewport
+            const targetY = window.scrollY + 120;
+            const allImages = document.querySelectorAll('#readerImagesContainer .manga-page-img');
+            let targetPageIdx = 0;
+            let targetBlockIdx = currentChapterIndex;
+
+            for (let i = 0; i < allImages.length; i++) {
+                const img = allImages[i];
+                const rect = img.getBoundingClientRect();
+                const absTop = rect.top + window.scrollY;
+                const absBottom = absTop + rect.height;
+
+                if (targetY >= absTop && targetY <= absBottom) {
+                    targetPageIdx = parseInt(img.getAttribute('data-page-index') || i);
+                    const parentBlock = img.closest('.chapter-block');
+                    if (parentBlock) {
+                        targetBlockIdx = parseInt(parentBlock.getAttribute('data-chapter-index') || currentChapterIndex);
+                    }
+                    break;
+                }
+            }
+
+            const posRecord = {
+                mangaSlug: currentMangaData.slug,
+                mangaTitle: currentMangaData.title,
+                chapterUrl: activeCh.url,
+                chapterTitle: activeCh.title,
+                chapterNumber: activeCh.chapter_number || '',
+                chapterIndex: targetBlockIdx,
+                pageIndex: targetPageIdx,
+                scrollY: Math.round(window.scrollY),
+                percent: percent,
+                timestamp: Date.now()
+            };
+
+            try {
+                localStorage.setItem('kuromanga_resume_' + currentMangaData.slug, JSON.stringify(posRecord));
+                localStorage.setItem('kuromanga_ch_pos_' + currentMangaData.slug + '_' + encodeURIComponent(activeCh.url), JSON.stringify(posRecord));
+            } catch (e) {}
+        }
+
+        function resumeReadingPosition(savedPos) {
+            if (!savedPos) {
+                if (!currentMangaData) return;
+                const activeCh = currentMangaData.chapters[currentChapterIndex];
+                if (!activeCh) return;
+                savedPos = getExactChapterPosition(currentMangaData.slug, activeCh.url) || getMangaExactPosition(currentMangaData.slug);
+            }
+            if (!savedPos) return;
+
+            dismissResumeToast();
+
+            // Look for target image element in DOM
+            const block = document.querySelector(`.chapter-block[data-chapter-index="${savedPos.chapterIndex}"]`) || document.querySelector('.chapter-block');
+            let targetImg = null;
+            if (block) {
+                targetImg = block.querySelector(`img[data-page-index="${savedPos.pageIndex}"]`);
+            }
+
+            if (targetImg) {
+                const imgTop = targetImg.getBoundingClientRect().top + window.scrollY;
+                const targetScrollY = Math.max(0, imgTop - 56);
+                window.scrollTo({ top: targetScrollY, behavior: 'smooth' });
+                
+                // Flash neon highlight on resumed image
+                targetImg.classList.add('ring-4', 'ring-wt-green', 'ring-offset-2', 'ring-offset-black', 'transition-all', 'duration-500');
+                setTimeout(() => {
+                    targetImg.classList.remove('ring-4', 'ring-wt-green', 'ring-offset-2', 'ring-offset-black');
+                }, 1800);
+
+                showAlert(`📍 วาร์ปไปยังจุดเดิมที่อ่านค้างไว้แล้ว (ภาพที่ ${savedPos.pageIndex + 1} • ${savedPos.percent}%)`);
+            } else if (savedPos.scrollY > 0) {
+                window.scrollTo({ top: savedPos.scrollY, behavior: 'smooth' });
+                showAlert(`📍 วาร์ปไปยังจุดเดิมที่อ่านค้างไว้แล้ว (${savedPos.percent}%)`);
+            }
+        }
+
+        function checkAndShowResumeToast(chapter) {
+            if (!currentMangaData) return;
+            const savedPos = getExactChapterPosition(currentMangaData.slug, chapter.url);
+            if (savedPos && savedPos.percent >= 4 && savedPos.percent <= 96) {
+                const toast = document.getElementById('readerResumeToast');
+                const pText = document.getElementById('resumePercentText');
+                const pageText = document.getElementById('resumePageText');
+                if (toast && pText && pageText) {
+                    pText.innerText = savedPos.percent + '%';
+                    pageText.innerText = (savedPos.pageIndex + 1);
+                    toast.classList.remove('hidden');
+
+                    setTimeout(() => {
+                        if (toast) toast.classList.add('hidden');
+                    }, 8000);
+                }
+            }
+        }
+
+        function dismissResumeToast() {
+            const toast = document.getElementById('readerResumeToast');
+            if (toast) toast.classList.add('hidden');
+        }
+
+        function resumeMangaReading() {
+            if (!currentMangaData || !currentMangaData.chapters) return;
+            const saved = getMangaExactPosition(currentMangaData.slug);
+            if (!saved) return;
+
+            let chIdx = currentMangaData.chapters.findIndex(c => c.url === saved.chapterUrl);
+            if (chIdx === -1 && saved.chapterIndex >= 0 && saved.chapterIndex < currentMangaData.chapters.length) {
+                chIdx = saved.chapterIndex;
+            }
+            if (chIdx !== -1) {
+                const chapter = currentMangaData.chapters[chIdx];
+                openChapter(chapter, chIdx, true, true);
+            }
+        }
+
         // ================= 📖 3 RECENT READ CHAPTERS PER MANGA =================
         function recordMangaRecentChapterRead(slug, chapter) {
             try {
@@ -1189,22 +1402,35 @@
                 const ch = (chIndex !== -1 && currentMangaData) ? currentMangaData.chapters[chIndex] : item;
                 const trueIdx = (chIndex !== -1) ? chIndex : 0;
 
+                const pos = getExactChapterPosition(slug, item.url);
+                const hasPos = pos && pos.percent > 0;
+                const isOngoing = hasPos && pos.percent < 98;
+
                 const card = document.createElement('button');
                 card.className = 'group text-left p-3 rounded-xl bg-wt-darker/90 hover:bg-wt-green/10 border border-wt-border hover:border-wt-green transition flex items-center justify-between gap-3 shadow-md active:scale-95';
-                card.onclick = () => openChapter(ch, trueIdx);
+                card.onclick = () => openChapter(ch, trueIdx, true, isOngoing);
 
                 card.innerHTML = `
                     <div class="min-w-0 flex-1">
                         <div class="flex items-center gap-1.5 text-wt-green text-[11px] font-mono font-bold">
-                            <i class="fa-solid fa-play text-[9px]"></i>
+                            <i class="${isOngoing ? 'fa-solid fa-bookmark text-emerald-400' : 'fa-solid fa-play'} text-[9px]"></i>
                             <span>${item.chapter_number ? `ตอนที่ ${item.chapter_number}` : 'ตอนที่อ่าน'}</span>
                         </div>
                         <h5 class="text-xs font-semibold text-white group-hover:text-wt-green truncate mt-0.5">
                             ${item.title || ('ตอนที่ ' + (item.chapter_number || ''))}
                         </h5>
-                        <span class="text-[9px] text-wt-muted font-mono mt-0.5 block">
-                            ${idx === 0 ? 'อ่านล่าสุด' : 'อ่านแล้ว'}
-                        </span>
+                        ${isOngoing ? `
+                            <div class="mt-1.5 flex items-center gap-2">
+                                <div class="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                                    <div class="h-full bg-gradient-to-r from-wt-green to-emerald-400 rounded-full transition-all duration-300" style="width: ${pos.percent}%"></div>
+                                </div>
+                                <span class="text-[10px] text-wt-green font-mono font-bold">${pos.percent}%</span>
+                            </div>
+                        ` : `
+                            <span class="text-[9px] text-wt-muted font-mono mt-0.5 block">
+                                ${idx === 0 ? 'อ่านล่าสุด' : 'อ่านแล้ว'}
+                            </span>
+                        `}
                     </div>
                     <div class="w-8 h-8 rounded-lg bg-wt-card group-hover:bg-wt-green group-hover:text-black text-wt-green flex items-center justify-center flex-shrink-0 border border-wt-border transition">
                         <i class="fa-solid fa-arrow-right text-xs"></i>
@@ -1601,7 +1827,8 @@
                 genresContainer.appendChild(span);
             });
 
-            // Read First / Latest Buttons
+            // Read First / Latest & Resume Buttons
+            const btnResume = document.getElementById('btnResumeRead');
             const btnFirst = document.getElementById('btnReadFirst');
             const btnLatest = document.getElementById('btnReadLatest');
             if (data.chapters && data.chapters.length > 0) {
@@ -1611,7 +1838,33 @@
                 btnLatest.onclick = () => openChapter(latestCh, 0);
                 btnFirst.classList.remove('hidden');
                 btnLatest.classList.remove('hidden');
+
+                // Check exact saved position (จำจุดที่อ่านค้างไว้ระดับพิกเซล)
+                const savedResume = getMangaExactPosition(data.slug);
+                if (savedResume && savedResume.chapterUrl) {
+                    let chIdx = data.chapters.findIndex(c => c.url === savedResume.chapterUrl);
+                    if (chIdx === -1 && savedResume.chapterIndex >= 0 && savedResume.chapterIndex < data.chapters.length) {
+                        chIdx = savedResume.chapterIndex;
+                    }
+                    if (chIdx !== -1 && savedResume.percent > 0 && savedResume.percent < 98) {
+                        const targetCh = data.chapters[chIdx];
+                        btnResume.classList.remove('hidden');
+                        document.getElementById('btnResumeChNum').innerText = targetCh.chapter_number || savedResume.chapterNumber || (chIdx + 1);
+                        document.getElementById('btnResumePercent').innerText = savedResume.percent + '%';
+                        btnResume.onclick = () => openChapter(targetCh, chIdx, true, true);
+
+                        // Secondary styling for btnFirst so btnResume is the primary action
+                        btnFirst.className = 'bg-wt-card hover:bg-wt-cardHover active:scale-95 text-white text-xs sm:text-sm font-semibold px-4 sm:px-5 py-2.5 rounded-full border border-wt-border transition flex items-center gap-2';
+                    } else {
+                        btnResume.classList.add('hidden');
+                        btnFirst.className = 'bg-wt-green hover:bg-wt-greenHover active:scale-95 text-black text-xs sm:text-sm font-bold px-5 sm:px-6 py-2.5 rounded-full transition shadow-lg shadow-wt-green/20 flex items-center gap-2';
+                    }
+                } else {
+                    btnResume.classList.add('hidden');
+                    btnFirst.className = 'bg-wt-green hover:bg-wt-greenHover active:scale-95 text-black text-xs sm:text-sm font-bold px-5 sm:px-6 py-2.5 rounded-full transition shadow-lg shadow-wt-green/20 flex items-center gap-2';
+                }
             } else {
+                btnResume.classList.add('hidden');
                 btnFirst.classList.add('hidden');
                 btnLatest.classList.add('hidden');
             }
@@ -1660,26 +1913,35 @@
             pageItems.forEach((ch) => {
                 const trueIndex = currentMangaData.chapters.indexOf(ch);
                 const isRead = isChapterRead(slug, ch.url);
+                const pos = getExactChapterPosition(slug, ch.url);
+                const hasProgress = pos && pos.percent > 0 && pos.percent < 98;
+
                 const btn = document.createElement('button');
                 
                 btn.className = `flex items-center justify-between p-2.5 sm:p-3 rounded-xl border text-left transition duration-200 group ${
-                    isRead 
-                        ? 'bg-wt-dark/60 border-wt-border/60 hover:border-wt-green/60' 
-                        : 'bg-wt-card hover:bg-wt-green/10 hover:border-wt-green border-wt-border'
+                    hasProgress
+                        ? 'bg-emerald-950/20 border-emerald-500/40 hover:border-emerald-400'
+                        : isRead 
+                            ? 'bg-wt-dark/60 border-wt-border/60 hover:border-wt-green/60' 
+                            : 'bg-wt-card hover:bg-wt-green/10 hover:border-wt-green border-wt-border'
                 }`;
-                btn.onclick = () => openChapter(ch, trueIndex);
+                btn.onclick = () => openChapter(ch, trueIndex, true, hasProgress);
 
                 btn.innerHTML = `
                     <div class="flex items-center gap-2 truncate pr-2 min-w-0">
-                        <span class="text-xs font-mono font-bold ${isRead ? 'text-zinc-500' : 'text-wt-green'} group-hover:scale-105 transition flex-shrink-0">
+                        <span class="text-xs font-mono font-bold ${hasProgress ? 'text-emerald-400' : isRead ? 'text-zinc-500' : 'text-wt-green'} group-hover:scale-105 transition flex-shrink-0">
                             ${ch.chapter_number || '#'}
                         </span>
-                        <span class="text-xs font-semibold ${isRead ? 'text-zinc-400' : 'text-slate-200 group-hover:text-white'} truncate">
+                        <span class="text-xs font-semibold ${hasProgress ? 'text-emerald-200 group-hover:text-white' : isRead ? 'text-zinc-400' : 'text-slate-200 group-hover:text-white'} truncate">
                             ${ch.title}
                         </span>
                     </div>
                     <div class="flex items-center gap-2 flex-shrink-0">
-                        ${isRead ? `
+                        ${hasProgress ? `
+                            <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-900/40 text-emerald-300 border border-emerald-500/40 flex items-center gap-1 font-mono">
+                                <i class="fa-solid fa-bookmark text-[8px]"></i> ค้างไว้ ${pos.percent}%
+                            </span>
+                        ` : isRead ? `
                             <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-wt-green/20 text-wt-green border border-wt-green/30 flex items-center gap-1">
                                 <i class="fa-solid fa-check text-[8px]"></i> อ่านแล้ว
                             </span>
@@ -1731,10 +1993,12 @@
         }
 
         // ================= 4. WEBTOON READER =================
-        async function openChapter(chapter, index, pushHistory = true) {
+        async function openChapter(chapter, index, pushHistory = true, autoResumePosition = false) {
             currentChapterIndex = index;
             showView('viewReader');
-            window.scrollTo({ top: 0, behavior: 'instant' });
+            if (!autoResumePosition) {
+                window.scrollTo({ top: 0, behavior: 'instant' });
+            }
             
             // Reset continuous scroll state
             loadedChaptersInViewer = [];
@@ -1797,7 +2061,16 @@
                 loadedChaptersInViewer.push({ chapter, index, images: preloadedNextChapter.images });
                 document.getElementById('readerLoading').classList.add('hidden');
                 preloadedNextChapter = null;
-                window.scrollTo({ top: 0, behavior: 'instant' });
+
+                if (autoResumePosition) {
+                    const savedPos = getExactChapterPosition(currentMangaData.slug, chapter.url) || getMangaExactPosition(currentMangaData.slug);
+                    if (savedPos) {
+                        setTimeout(() => resumeReadingPosition(savedPos), 80);
+                    }
+                } else {
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                    checkAndShowResumeToast(chapter);
+                }
                 return;
             }
 
@@ -1810,16 +2083,29 @@
                 appendChapterBlock(chapter, index, images, false);
                 loadedChaptersInViewer.push({ chapter, index, images });
 
-                // Once images are rendered, immediately jump to the top
-                window.scrollTo({ top: 0, behavior: 'instant' });
-                requestAnimationFrame(() => {
+                if (autoResumePosition) {
+                    const savedPos = getExactChapterPosition(currentMangaData.slug, chapter.url) || getMangaExactPosition(currentMangaData.slug);
+                    if (savedPos) {
+                        setTimeout(() => resumeReadingPosition(savedPos), 120);
+                        setTimeout(() => {
+                            const block = document.querySelector(`.chapter-block[data-chapter-index="${savedPos.chapterIndex}"]`);
+                            const img = block ? block.querySelector(`img[data-page-index="${savedPos.pageIndex}"]`) : null;
+                            if (img && Math.abs(window.scrollY - (img.getBoundingClientRect().top + window.scrollY - 56)) > 150) {
+                                resumeReadingPosition(savedPos);
+                            }
+                        }, 550);
+                    }
+                } else {
                     window.scrollTo({ top: 0, behavior: 'instant' });
-                });
+                    checkAndShowResumeToast(chapter);
+                }
             } catch (err) {
                 showAlert('เกิดข้อผิดพลาด: ' + err.message, true);
             } finally {
                 document.getElementById('readerLoading').classList.add('hidden');
-                window.scrollTo({ top: 0, behavior: 'instant' });
+                if (!autoResumePosition) {
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                }
             }
         }
 
@@ -1970,12 +2256,23 @@
                 card.className = 'group bg-wt-card hover:bg-wt-cardHover p-2.5 sm:p-3 rounded-2xl border border-wt-border flex gap-3 cursor-pointer shadow-lg hover:border-wt-green transition';
                 card.onclick = () => openMangaBySlug(item.slug);
 
+                const pos = getExactChapterPosition(item.slug, item.chapterUrl) || getMangaExactPosition(item.slug);
+                const hasPos = pos && pos.percent > 0 && pos.percent < 98;
+
                 card.innerHTML = `
                     <img src="${item.thumbnail || 'https://via.placeholder.com/100x140'}" class="w-16 h-22 object-cover rounded-xl bg-wt-darker flex-shrink-0">
                     <div class="flex-1 min-w-0 flex flex-col justify-between py-1">
                         <div>
                             <h4 class="font-bold text-xs sm:text-sm text-white group-hover:text-wt-green truncate">${item.title}</h4>
                             <p class="text-[11px] text-wt-green font-medium truncate mt-1">อ่านค้างไว้: ${item.chapterTitle}</p>
+                            ${hasPos ? `
+                                <div class="mt-1.5 flex items-center gap-2">
+                                    <div class="flex-1 h-1.5 rounded-full bg-slate-800 overflow-hidden">
+                                        <div class="h-full bg-gradient-to-r from-wt-green to-emerald-400 rounded-full" style="width: ${pos.percent}%"></div>
+                                    </div>
+                                    <span class="text-[10px] text-wt-green font-mono font-bold">${pos.percent}%</span>
+                                </div>
+                            ` : ''}
                         </div>
                         <span class="text-[10px] text-wt-muted font-mono">${new Date(item.timestamp).toLocaleDateString('th-TH')}</span>
                     </div>
