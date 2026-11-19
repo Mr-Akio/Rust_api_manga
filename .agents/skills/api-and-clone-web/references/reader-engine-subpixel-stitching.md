@@ -135,3 +135,4 @@ At the bottom of the comic strip, place a prominent End Card:
 - Primary CTA: **`ตอนต่อไป (ตอนที่ X) ❯`** (Large green button with `active:scale-95`).
 - Secondary CTA: **`❮ ตอนก่อนหน้า`**
 - Utility links: **`♥ ถูกใจตอนนี้`**, **`☰ รายการตอนทั้งหมด`**, **`⬆ กลับด้านบน`**.
+

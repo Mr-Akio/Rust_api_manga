@@ -141,3 +141,4 @@ Replace all emojis with Font Awesome 6 icons:
 <i class="fa-solid fa-chevron-left"></i>
 <i class="fa-solid fa-chevron-right"></i>
 ```
+

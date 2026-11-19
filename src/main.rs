@@ -73,6 +73,7 @@ async fn main() {
     let app = Router::new()
         .route("/", get(serve_index))
         .route("/reader", get(serve_index))
+        .route("/docs", get(serve_index))
         .nest_service("/static", ServeDir::new("static"))
         .route("/api/manga/{slug}", get(get_manga_by_slug))
         .route("/api/manga", get(get_manga_by_query))
