@@ -6,6 +6,16 @@
     <meta name="referrer" content="no-referrer">
     <title>KUROMANGA - อ่านการ์ตูน มังงะ มังฮวาแปลไทย อัปเดตทุกวัน</title>
     
+    <!-- PWA & Mobile Web App Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0a0a0d">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="KUROMANGA">
+    <link rel="apple-touch-icon" href="/static/apple-touch-icon.png">
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+
     <!-- Font Awesome 6 Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -150,9 +160,9 @@
                 <button onclick="showHistory()" class="p-2 text-wt-muted hover:text-white rounded-lg active:scale-95 transition" title="ประวัติการอ่าน">
                     <i class="fa-solid fa-clock-rotate-left text-sm"></i>
                 </button>
-                <!-- API Docs -->
-                <button onclick="openApiDocsModal()" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-wt-card hover:bg-wt-green hover:text-black text-wt-green border border-wt-green/40 transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-code text-[10px]"></i> API Docs
+                <!-- Install App Button (PWA) -->
+                <button id="btnInstallApp" onclick="triggerAppInstall()" class="px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full text-[11px] sm:text-xs font-semibold bg-wt-card hover:bg-wt-green hover:text-black text-wt-green border border-wt-green/40 transition flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-mobile-screen-button text-[10px]"></i> ติดตั้งแอป
                 </button>
             </div>
         </div>
@@ -178,100 +188,6 @@
         <button onclick="hideAlert()" class="text-xs font-bold text-wt-muted hover:text-white px-2 py-1">
             <i class="fa-solid fa-xmark"></i>
         </button>
-    </div>
-
-    <!-- API Documentation Modal -->
-    <div id="apiDocsModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-        <div class="bg-wt-card border border-wt-border rounded-2xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            <!-- Modal Header -->
-            <div class="px-5 py-4 border-b border-wt-border flex items-center justify-between bg-wt-darker">
-                <div class="flex items-center gap-2">
-                    <div class="bg-wt-green text-black font-black text-[10px] px-1.5 py-0.5 rounded font-mono">
-                        KUROMANGA
-                    </div>
-                    <h3 class="font-bold text-white text-sm sm:text-base flex items-center gap-2">
-                        <i class="fa-solid fa-code text-wt-green"></i> Rust API Documentation
-                    </h3>
-                </div>
-                <button onclick="closeApiDocsModal()" class="p-1.5 text-wt-muted hover:text-white rounded-lg transition">
-                    <i class="fa-solid fa-xmark text-base"></i>
-                </button>
-            </div>
-            
-            <!-- Modal Body -->
-            <div class="p-5 overflow-y-auto space-y-4 text-xs sm:text-sm">
-                <p class="text-wt-muted text-xs leading-relaxed">
-                    KUROMANGA ให้บริการ RESTful API ประสิทธิภาพสูง พัฒนาด้วย Rust (Axum Framework) พร้อมระบบ In-memory Caching และ Header Spoofing
-                </p>
-
-                <div class="space-y-3 font-mono text-xs">
-                    <!-- Endpoint 1 -->
-                    <div class="p-3 bg-wt-darker rounded-xl border border-wt-border space-y-1.5">
-                        <div class="flex items-center justify-between">
-                            <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-bold text-[10px]">GET</span>
-                            <span class="text-[11px] text-wt-muted font-sans">รวมการ์ตูนตอนใหม่ล่าสุด</span>
-                        </div>
-                        <div class="flex items-center justify-between bg-black/40 p-2 rounded-lg text-slate-200 break-all select-all">
-                            <code>/api/latest?page=1</code>
-                            <a href="/api/latest?page=1" target="_blank" class="ml-2 text-wt-green hover:underline font-sans text-[11px] flex-shrink-0">ทดสอบ <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i></a>
-                        </div>
-                    </div>
-
-                    <!-- Endpoint 2 -->
-                    <div class="p-3 bg-wt-darker rounded-xl border border-wt-border space-y-1.5">
-                        <div class="flex items-center justify-between">
-                            <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-bold text-[10px]">GET</span>
-                            <span class="text-[11px] text-wt-muted font-sans">รายละเอียดมังงะและรายการตอน</span>
-                        </div>
-                        <div class="flex items-center justify-between bg-black/40 p-2 rounded-lg text-slate-200 break-all select-all">
-                            <code>/api/manga/{slug}</code>
-                            <a href="/api/manga/magic-emperor" target="_blank" class="ml-2 text-wt-green hover:underline font-sans text-[11px] flex-shrink-0">ทดสอบ <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i></a>
-                        </div>
-                    </div>
-
-                    <!-- Endpoint 3 -->
-                    <div class="p-3 bg-wt-darker rounded-xl border border-wt-border space-y-1.5">
-                        <div class="flex items-center justify-between">
-                            <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-bold text-[10px]">GET</span>
-                            <span class="text-[11px] text-wt-muted font-sans">ดึงรูปภาพทั้งหมดในตอน</span>
-                        </div>
-                        <div class="flex items-center justify-between bg-black/40 p-2 rounded-lg text-slate-200 break-all select-all">
-                            <code>/api/chapter?url={chapter_url}</code>
-                        </div>
-                    </div>
-
-                    <!-- Endpoint 4 -->
-                    <div class="p-3 bg-wt-darker rounded-xl border border-wt-border space-y-1.5">
-                        <div class="flex items-center justify-between">
-                            <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-bold text-[10px]">GET</span>
-                            <span class="text-[11px] text-wt-muted font-sans">ค้นหามังงะตามชื่อเรื่อง</span>
-                        </div>
-                        <div class="flex items-center justify-between bg-black/40 p-2 rounded-lg text-slate-200 break-all select-all">
-                            <code>/api/search?q={keyword}</code>
-                            <a href="/api/search?q=solo" target="_blank" class="ml-2 text-wt-green hover:underline font-sans text-[11px] flex-shrink-0">ทดสอบ <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i></a>
-                        </div>
-                    </div>
-
-                    <!-- Endpoint 5 -->
-                    <div class="p-3 bg-wt-darker rounded-xl border border-wt-border space-y-1.5">
-                        <div class="flex items-center justify-between">
-                            <span class="px-2 py-0.5 rounded bg-blue-500/20 text-blue-400 font-bold text-[10px]">GET</span>
-                            <span class="text-[11px] text-wt-muted font-sans">Image Proxy ข้าม CORS / Hotlink</span>
-                        </div>
-                        <div class="flex items-center justify-between bg-black/40 p-2 rounded-lg text-slate-200 break-all select-all">
-                            <code>/api/proxy-image?url={image_url}</code>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal Footer -->
-            <div class="px-5 py-3 border-t border-wt-border bg-wt-darker flex justify-end">
-                <button onclick="closeApiDocsModal()" class="px-4 py-1.5 rounded-full bg-wt-green hover:bg-wt-greenHover text-black text-xs font-bold transition">
-                    ปิดหน้าต่าง
-                </button>
-            </div>
-        </div>
     </div>
 
     <!-- Main Container -->
@@ -659,7 +575,7 @@
                 <a href="javascript:void(0)" onclick="goHome()" class="hover:text-wt-green transition">หน้าแรก</a>
                 <a href="javascript:void(0)" onclick="scrollToSection('dailySection')" class="hover:text-wt-green transition">ตารางประจำวัน</a>
                 <a href="javascript:void(0)" onclick="scrollToSection('rankingSection')" class="hover:text-wt-green transition">อันดับการ์ตูน</a>
-                <button onclick="openApiDocsModal()" class="hover:text-wt-green transition">API Documentation</button>
+                <button onclick="triggerAppInstall()" class="hover:text-wt-green transition flex items-center gap-1.5"><i class="fa-solid fa-mobile-screen-button text-[10px]"></i> ติดตั้งแอปบนมือถือ</button>
             </div>
         </div>
     </footer>
@@ -706,41 +622,47 @@
             }
         }
 
-        function openApiDocsModal() {
-            const modal = document.getElementById('apiDocsModal');
-            if (modal) modal.classList.remove('hidden');
+        // ================= PWA & SERVICE WORKER =================
+        let deferredPrompt = null;
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js', { scope: '/' })
+                    .catch(() => {});
+            });
         }
 
-        function closeApiDocsModal() {
-            const modal = document.getElementById('apiDocsModal');
-            if (modal) modal.classList.add('hidden');
-            if (window.location.hash === '#/docs') {
-                if (appHistoryDepth > 0) {
-                    history.back();
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const btn = document.getElementById('btnInstallApp');
+            if (btn) btn.classList.remove('hidden');
+        });
+
+        async function triggerAppInstall() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                const choice = await deferredPrompt.userChoice;
+                if (choice && choice.outcome === 'accepted') {
+                    showAlert('กำลังติดตั้งแอป KUROMANGA ลงบนอุปกรณ์ของคุณ...');
+                }
+                deferredPrompt = null;
+            } else {
+                // If on iOS or browser without native prompt
+                const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                if (isIOS) {
+                    showAlert('วิธีติดตั้งบน iPhone/iPad: แตะปุ่มแชร์ ⎋ ของ Safari แล้วเลือก "เพิ่มไปยังหน้าจอโฮม (Add to Home Screen)"');
                 } else {
-                    updateUrlHash('#/', true);
+                    showAlert('เพื่อติดตั้งแอป ให้แตะเมนู ⋮ ของเบราว์เซอร์ แล้วเลือก "ติดตั้งแอป" หรือ "เพิ่มไปยังหน้าจอหลัก"');
                 }
             }
         }
 
         async function handleRoute(initialLoad = false) {
-            // Check if user landed on /docs
-            if (window.location.pathname === '/docs') {
-                history.replaceState(null, '', '/#/');
-                openApiDocsModal();
-            }
-
             const hash = window.location.hash || '';
 
             // 1. History view
             if (hash === '#/history') {
                 showHistory(false);
-                return;
-            }
-
-            // 2. Docs modal
-            if (hash === '#/docs') {
-                openApiDocsModal();
                 return;
             }
 

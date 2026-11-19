@@ -73,7 +73,8 @@ async fn main() {
     let app = Router::new()
         .route("/", get(serve_index))
         .route("/reader", get(serve_index))
-        .route("/docs", get(serve_index))
+        .route("/manifest.json", get(serve_manifest))
+        .route("/sw.js", get(serve_sw))
         .nest_service("/static", ServeDir::new("static"))
         .route("/api/manga/{slug}", get(get_manga_by_slug))
         .route("/api/manga", get(get_manga_by_query))
@@ -113,6 +114,31 @@ async fn serve_index() -> impl IntoResponse {
             "static/index.html not found. Please ensure static/index.html exists.",
         )
             .into_response(),
+    }
+}
+
+async fn serve_manifest() -> impl IntoResponse {
+    match tokio::fs::read_to_string("static/manifest.json").await {
+        Ok(content) => (
+            [(header::CONTENT_TYPE, HeaderValue::from_static("application/manifest+json"))],
+            content,
+        )
+            .into_response(),
+        Err(_) => (StatusCode::NOT_FOUND, "manifest.json not found").into_response(),
+    }
+}
+
+async fn serve_sw() -> impl IntoResponse {
+    match tokio::fs::read_to_string("static/sw.js").await {
+        Ok(content) => (
+            [
+                (header::CONTENT_TYPE, HeaderValue::from_static("application/javascript")),
+                (header::HeaderName::from_static("service-worker-allowed"), HeaderValue::from_static("/")),
+            ],
+            content,
+        )
+            .into_response(),
+        Err(_) => (StatusCode::NOT_FOUND, "sw.js not found").into_response(),
     }
 }
 
