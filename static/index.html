@@ -1468,28 +1468,76 @@
             }
         }
 
+        function markChapterComplete(slug, chapter) {
+            if (!slug || !chapter) return;
+            try {
+                const completedRecord = {
+                    mangaSlug: slug,
+                    mangaTitle: currentMangaData ? currentMangaData.title : '',
+                    chapterUrl: chapter.url,
+                    chapterTitle: chapter.title,
+                    chapterNumber: chapter.chapter_number || '',
+                    chapterIndex: currentChapterIndex,
+                    pageIndex: 999,
+                    scrollY: 0,
+                    percent: 100,
+                    completed: true,
+                    timestamp: Date.now()
+                };
+                localStorage.setItem('kuromanga_ch_pos_' + slug + '_' + encodeURIComponent(chapter.url), JSON.stringify(completedRecord));
+                markChapterAsRead(slug, chapter.url);
+            } catch (e) {}
+        }
+
+        function calculateCurrentChapterProgress(blockIdx) {
+            const block = document.getElementById(`chapter-block-${blockIdx}`) || document.querySelector(`.chapter-block[data-chapter-index="${blockIdx}"]`);
+            if (!block) return 0;
+
+            const blockTop = block.offsetTop;
+            const blockHeight = block.offsetHeight;
+            if (blockHeight <= 0) return 0;
+
+            const currentViewY = window.scrollY + (window.innerHeight * 0.45);
+            const travel = currentViewY - blockTop;
+
+            const percent = Math.min(100, Math.max(0, Math.round((travel / blockHeight) * 100)));
+            return percent;
+        }
+
         // Track active chapter in viewport as user scrolls through endless chapters
         function updateViewportChapterTracker() {
             if (currentActiveView !== 'viewReader' || !currentMangaData || loadedChaptersInViewer.length === 0) return;
 
             const blocks = document.querySelectorAll('.chapter-block');
             let detectedIndex = currentChapterIndex;
-            const viewportFocusY = window.scrollY + 100; // top area under toolbar
+            const viewportFocusY = window.scrollY + 120; // top area under toolbar
 
             blocks.forEach(block => {
                 const top = block.offsetTop;
                 const bottom = top + block.offsetHeight;
+                const idx = parseInt(block.getAttribute('data-chapter-index'), 10);
+
                 if (viewportFocusY >= top && viewportFocusY <= bottom) {
-                    const idx = parseInt(block.getAttribute('data-chapter-index'), 10);
                     if (!isNaN(idx)) {
                         detectedIndex = idx;
                     }
                 }
+
+                // If user has already scrolled completely past this chapter into the next, mark as 100% complete
+                if (window.scrollY > bottom - 100 && !isNaN(idx) && currentMangaData.chapters[idx]) {
+                    markChapterComplete(currentMangaData.slug, currentMangaData.chapters[idx]);
+                }
             });
 
             if (detectedIndex !== currentChapterIndex && currentMangaData && currentMangaData.chapters[detectedIndex]) {
+                const prevIndex = currentChapterIndex;
                 currentChapterIndex = detectedIndex;
                 const activeCh = currentMangaData.chapters[detectedIndex];
+
+                // If moved into next chapter, previous chapter was completed 100%
+                if (prevIndex >= 0 && currentMangaData.chapters[prevIndex] && prevIndex !== detectedIndex) {
+                    markChapterComplete(currentMangaData.slug, currentMangaData.chapters[prevIndex]);
+                }
 
                 // Update Header titles
                 document.getElementById('readerComicTitle').innerText = currentMangaData.title;
@@ -1537,9 +1585,8 @@
         function trackAndSaveExactScrollPosition() {
             if (currentActiveView !== 'viewReader' || !currentMangaData || currentChapterIndex < 0) return;
 
-            const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-            const currentScroll = window.scrollY;
-            const percent = maxScroll > 0 ? Math.min(100, Math.max(0, Math.round((currentScroll / maxScroll) * 100))) : 0;
+            // Calculate percentage relative to the CURRENT ACTIVE CHAPTER (0% - 100%)
+            const percent = calculateCurrentChapterProgress(currentChapterIndex);
 
             // 1. Live Progress Bar & Percentage Pill in Header
             const progressBar = document.getElementById('readerProgressBar');
@@ -1549,7 +1596,7 @@
             if (percentBadge) percentBadge.innerText = percent + '%';
 
             // 2. Hide resume toast if user has scrolled past 400px from initial view
-            if (currentScroll > 400) {
+            if (window.scrollY > 400) {
                 const toast = document.getElementById('readerResumeToast');
                 if (toast && !toast.classList.contains('hidden')) {
                     toast.classList.add('hidden');
@@ -1584,28 +1631,34 @@
                     targetPageIdx = parseInt(img.getAttribute('data-page-index') || i);
                     const parentBlock = img.closest('.chapter-block');
                     if (parentBlock) {
-                        targetBlockIdx = parseInt(parentBlock.getAttribute('data-chapter-index') || currentChapterIndex);
+                        const bIdx = parseInt(parentBlock.getAttribute('data-chapter-index'), 10);
+                        if (!isNaN(bIdx)) targetBlockIdx = bIdx;
                     }
                     break;
                 }
             }
 
+            const savingCh = currentMangaData.chapters[targetBlockIdx] || activeCh;
+            const chapterPercent = (targetBlockIdx === currentChapterIndex) ? percent : calculateCurrentChapterProgress(targetBlockIdx);
+
             const posRecord = {
                 mangaSlug: currentMangaData.slug,
                 mangaTitle: currentMangaData.title,
-                chapterUrl: activeCh.url,
-                chapterTitle: activeCh.title,
-                chapterNumber: activeCh.chapter_number || '',
+                chapterUrl: savingCh.url,
+                chapterTitle: savingCh.title,
+                chapterNumber: savingCh.chapter_number || '',
                 chapterIndex: targetBlockIdx,
                 pageIndex: targetPageIdx,
                 scrollY: Math.round(window.scrollY),
-                percent: percent,
+                percent: chapterPercent,
                 timestamp: Date.now()
             };
 
             try {
+                // Save manga-level latest position
                 localStorage.setItem('kuromanga_resume_' + currentMangaData.slug, JSON.stringify(posRecord));
-                localStorage.setItem('kuromanga_ch_pos_' + currentMangaData.slug + '_' + encodeURIComponent(activeCh.url), JSON.stringify(posRecord));
+                // Save chapter-level position
+                localStorage.setItem('kuromanga_ch_pos_' + currentMangaData.slug + '_' + encodeURIComponent(savingCh.url), JSON.stringify(posRecord));
             } catch (e) {}
         }
 
