@@ -108,6 +108,28 @@
 </head>
 <body class="bg-wt-darker text-slate-100 min-h-screen flex flex-col selection:bg-wt-green selection:text-black pt-16">
 
+    <!-- SVG Convolution Matrix Filters for Real-time Image Sharpening & Upscaling (ฟิลเตอร์เพิ่มความคมชัด GPU) -->
+    <svg class="absolute w-0 h-0 overflow-hidden pointer-events-none -z-50" aria-hidden="true" style="position: absolute; width: 0; height: 0;">
+        <defs>
+            <!-- Level 1: Natural Crisp Sharpen (คมชัดอย่างเป็นธรรมชาติ) -->
+            <filter id="filterSharpen" color-interpolation-filters="sRGB">
+                <feConvolveMatrix order="3" preserveAlpha="true" kernelMatrix="
+                     0   -0.22   0
+                    -0.22 1.88  -0.22
+                     0   -0.22   0
+                "/>
+            </filter>
+            <!-- Level 2: Ultra HD Edge & Ink Lines Sharpen (คมกริบ ลายเส้นหมึกและตัวอักษรชัดเจน) -->
+            <filter id="filterUltraSharpen" color-interpolation-filters="sRGB">
+                <feConvolveMatrix order="3" preserveAlpha="true" kernelMatrix="
+                     0   -0.4    0
+                    -0.4  2.6   -0.4
+                     0   -0.4    0
+                "/>
+            </filter>
+        </defs>
+    </svg>
+
     <!-- ================= 1. GNB HEADER (AUTO-HIDE ON SCROLL) ================= -->
     <header id="mainHeader" class="fixed top-0 inset-x-0 z-40 bg-wt-dark/95 backdrop-blur-md border-b border-wt-border transition-transform duration-300 ease-in-out">
         <div class="max-w-7xl mx-auto px-3 sm:px-6 h-16 flex items-center justify-between gap-2 sm:gap-6">
@@ -518,6 +540,38 @@
                         </div>
                     </div>
 
+                    <!-- Image Sharpen / Upscale Filter Toggle (ฟิลเตอร์เพิ่มความคมชัดของภาพ) -->
+                    <div class="relative">
+                        <button onclick="toggleSharpenMenu()" id="btnSharpenFilter" class="p-1 sm:px-2 text-xs text-slate-300 hover:text-wt-green active:scale-95 transition rounded-lg border border-wt-border/70 bg-wt-card/60 flex items-center gap-1 shadow-sm" title="ฟิลเตอร์เพิ่มความคมชัดของภาพ (Image Sharpen)">
+                            <i class="fa-solid fa-wand-magic-sparkles text-[11px] text-wt-green"></i>
+                            <span id="labelSharpenCurrent" class="text-[10px] font-bold">HD</span>
+                        </button>
+                        
+                        <!-- Sharpen Filter Dropdown -->
+                        <div id="sharpenFilterMenu" class="hidden absolute right-0 top-full mt-2 w-52 bg-wt-card border border-wt-border rounded-xl shadow-2xl p-1.5 space-y-1 z-50 text-xs">
+                            <div class="px-2.5 py-1 text-[10px] font-bold text-wt-muted uppercase tracking-wider border-b border-wt-border/40 flex items-center justify-between">
+                                <span>ความคมชัดของภาพ</span>
+                                <span class="text-wt-green font-mono font-bold text-[9px] bg-wt-green/10 px-1.5 py-0.5 rounded border border-wt-green/20">GPU FX</span>
+                            </div>
+                            <button onclick="setSharpenFilter('off')" class="sharpen-mode-btn w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between text-white hover:bg-wt-darker transition">
+                                <span><i class="fa-solid fa-ban text-slate-400 mr-1.5"></i> ปิด (ต้นฉบับ)</span>
+                                <i id="checkSharpenOff" class="fa-solid fa-check text-[10px] text-wt-green"></i>
+                            </button>
+                            <button onclick="setSharpenFilter('sharp')" class="sharpen-mode-btn w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between text-white hover:bg-wt-darker transition">
+                                <span><i class="fa-solid fa-wand-magic-sparkles text-emerald-400 mr-1.5"></i> คมชัด (Sharp)</span>
+                                <i id="checkSharpenSharp" class="fa-solid fa-check text-[10px] text-wt-green hidden"></i>
+                            </button>
+                            <button onclick="setSharpenFilter('ultra')" class="sharpen-mode-btn w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between text-white hover:bg-wt-darker transition">
+                                <span><i class="fa-solid fa-bolt text-amber-400 mr-1.5"></i> Ultra HD (คมกริบ)</span>
+                                <i id="checkSharpenUltra" class="fa-solid fa-check text-[10px] text-wt-green hidden"></i>
+                            </button>
+                            <button onclick="setSharpenFilter('ink')" class="sharpen-mode-btn w-full text-left px-2.5 py-1.5 rounded-lg flex items-center justify-between text-white hover:bg-wt-darker transition">
+                                <span><i class="fa-solid fa-pen-nib text-cyan-400 mr-1.5"></i> ลายเส้นเข้ม (Ink Lines)</span>
+                                <i id="checkSharpenInk" class="fa-solid fa-check text-[10px] text-wt-green hidden"></i>
+                            </button>
+                        </div>
+                    </div>
+
                     <button onclick="toggleLikeCurrentEpisode()" id="btnLikeEpisode" class="p-2 text-xs text-slate-300 hover:text-red-400 active:scale-95 transition" title="ถูกใจตอนนี้">
                         <i class="fa-solid fa-heart"></i>
                     </button>
@@ -642,6 +696,10 @@
                     <i class="fa-solid fa-moon text-xs"></i>
                 </button>
 
+                <button onclick="cycleSharpenFilter()" id="btnFloatingSharpen" class="p-2 rounded-full text-slate-300 hover:text-wt-green transition" title="สลับโหมดความคมชัด HD">
+                    <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+                </button>
+
                 <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="p-2 rounded-full text-wt-muted hover:text-white" title="ขึ้นบนสุด">
                     <i class="fa-solid fa-arrow-up"></i>
                 </button>
@@ -710,6 +768,9 @@
         // Eye Comfort Mode State
         let currentEyeMode = localStorage.getItem('kuromanga_eye_mode') || 'normal';
 
+        // Image Sharpen & Upscale Filter State (GPU FX)
+        let currentSharpenMode = localStorage.getItem('kuromanga_sharpen_mode') || 'off';
+
         // Preload Next Chapter State
         let preloadedNextChapter = null;
         let isPreloadingNext = false;
@@ -726,8 +787,23 @@
         // On Page Load
         window.addEventListener('DOMContentLoaded', () => {
             setupScrollHandler();
-            applyEyeComfortFilter();
+            applyVisualFilters();
             handleRoute(true);
+
+            // Close dropdown menus on outside click
+            window.addEventListener('click', (e) => {
+                const eyeMenu = document.getElementById('eyeComfortMenu');
+                const eyeBtn = document.getElementById('btnEyeComfort');
+                if (eyeMenu && !eyeMenu.classList.contains('hidden') && !eyeMenu.contains(e.target) && (!eyeBtn || !eyeBtn.contains(e.target))) {
+                    eyeMenu.classList.add('hidden');
+                }
+
+                const sharpMenu = document.getElementById('sharpenFilterMenu');
+                const sharpBtn = document.getElementById('btnSharpenFilter');
+                if (sharpMenu && !sharpMenu.classList.contains('hidden') && !sharpMenu.contains(e.target) && (!sharpBtn || !sharpBtn.contains(e.target))) {
+                    sharpMenu.classList.add('hidden');
+                }
+            });
         });
 
         // Browser Back / Forward Handling (Popstate)
@@ -926,11 +1002,11 @@
             if (eyeMenu) eyeMenu.classList.add('hidden');
         }
 
-        // ================= 🌙 EYE COMFORT MODE =================
+        // ================= 🌙 EYE COMFORT & ✨ IMAGE SHARPEN/UPSCALE FILTERS =================
         function setEyeComfortMode(mode) {
             currentEyeMode = mode;
             localStorage.setItem('kuromanga_eye_mode', mode);
-            applyEyeComfortFilter();
+            applyVisualFilters();
             
             const menu = document.getElementById('eyeComfortMenu');
             if (menu) menu.classList.add('hidden');
@@ -951,12 +1027,50 @@
 
         function toggleEyeComfortMenu() {
             const menu = document.getElementById('eyeComfortMenu');
+            const sharpMenu = document.getElementById('sharpenFilterMenu');
+            if (sharpMenu) sharpMenu.classList.add('hidden');
+            if (menu) menu.classList.toggle('hidden');
+        }
+
+        function setSharpenFilter(mode) {
+            currentSharpenMode = mode;
+            localStorage.setItem('kuromanga_sharpen_mode', mode);
+            applyVisualFilters();
+
+            const menu = document.getElementById('sharpenFilterMenu');
+            if (menu) menu.classList.add('hidden');
+
+            const names = {
+                'off': 'ปิดฟิลเตอร์คมชัด (ภาพต้นฉบับ)',
+                'sharp': '✨ เปิดโหมดภาพคมชัด (Sharp)',
+                'ultra': '⚡ เปิดโหมด Ultra HD คมชัดพิเศษ (Convolution Kernel)',
+                'ink': '🖋️ เปิดโหมดลายเส้นหมึกเข้ม (Ink Lines Boost)'
+            };
+            showAlert(names[mode] || 'เปลี่ยนฟิลเตอร์แล้ว');
+        }
+
+        function cycleSharpenFilter() {
+            const modes = ['off', 'sharp', 'ultra', 'ink'];
+            const nextIdx = (modes.indexOf(currentSharpenMode) + 1) % modes.length;
+            setSharpenFilter(modes[nextIdx]);
+        }
+
+        function toggleSharpenMenu() {
+            const menu = document.getElementById('sharpenFilterMenu');
+            const eyeMenu = document.getElementById('eyeComfortMenu');
+            if (eyeMenu) eyeMenu.classList.add('hidden');
             if (menu) menu.classList.toggle('hidden');
         }
 
         function applyEyeComfortFilter() {
+            applyVisualFilters();
+        }
+
+        function applyVisualFilters() {
             const container = document.getElementById('readerImagesContainer');
-            const icon = document.getElementById('iconEyeComfort');
+            
+            // 1. Eye Comfort UI updates
+            const iconEye = document.getElementById('iconEyeComfort');
             const checkNormal = document.getElementById('checkEyeNormal');
             const checkWarm = document.getElementById('checkEyeWarm');
             const checkDim = document.getElementById('checkEyeDim');
@@ -965,24 +1079,86 @@
             if (checkWarm) checkWarm.classList.toggle('hidden', currentEyeMode !== 'warm');
             if (checkDim) checkDim.classList.toggle('hidden', currentEyeMode !== 'dim');
 
-            if (icon) {
+            if (iconEye) {
                 if (currentEyeMode === 'warm') {
-                    icon.className = 'fa-solid fa-mug-saucer text-amber-400 text-xs';
+                    iconEye.className = 'fa-solid fa-mug-saucer text-amber-400 text-xs';
                 } else if (currentEyeMode === 'dim') {
-                    icon.className = 'fa-solid fa-moon text-indigo-400 text-xs';
+                    iconEye.className = 'fa-solid fa-moon text-indigo-400 text-xs';
                 } else {
-                    icon.className = 'fa-solid fa-moon text-slate-300 text-xs';
+                    iconEye.className = 'fa-solid fa-moon text-slate-300 text-xs';
+                }
+            }
+
+            // 2. Sharpen UI updates
+            ['off', 'sharp', 'ultra', 'ink'].forEach(m => {
+                const el = document.getElementById('checkSharpen' + m.charAt(0).toUpperCase() + m.slice(1));
+                if (el) el.classList.toggle('hidden', currentSharpenMode !== m);
+            });
+
+            const labelSharpen = document.getElementById('labelSharpenCurrent');
+            const btnSharpen = document.getElementById('btnSharpenFilter');
+            const floatSharpen = document.getElementById('btnFloatingSharpen');
+
+            if (labelSharpen) {
+                const textMap = { 'off': 'HD', 'sharp': 'SHARP', 'ultra': 'ULTRA', 'ink': 'INK' };
+                labelSharpen.innerText = textMap[currentSharpenMode] || 'HD';
+                labelSharpen.className = currentSharpenMode === 'off' 
+                    ? 'text-[10px] font-bold text-slate-300' 
+                    : 'text-[10px] font-black text-wt-green';
+            }
+            if (btnSharpen) {
+                if (currentSharpenMode !== 'off') {
+                    btnSharpen.classList.add('border-wt-green/60', 'bg-wt-green/10', 'text-wt-green');
+                } else {
+                    btnSharpen.classList.remove('border-wt-green/60', 'bg-wt-green/10', 'text-wt-green');
+                }
+            }
+            if (floatSharpen) {
+                if (currentSharpenMode !== 'off') {
+                    floatSharpen.classList.add('text-wt-green');
+                    floatSharpen.classList.remove('text-slate-300');
+                } else {
+                    floatSharpen.classList.remove('text-wt-green');
+                    floatSharpen.classList.add('text-slate-300');
                 }
             }
 
             if (!container) return;
+
+            // 3. Build GPU filter pipeline
+            const filterParts = [];
+            let imageRendering = '-webkit-optimize-contrast';
+
+            // Sharpen Filter Effects
+            if (currentSharpenMode === 'sharp') {
+                filterParts.push('url(#filterSharpen)', 'contrast(1.05)', 'brightness(1.01)');
+                imageRendering = '-webkit-optimize-contrast';
+            } else if (currentSharpenMode === 'ultra') {
+                filterParts.push('url(#filterUltraSharpen)', 'contrast(1.08)', 'brightness(1.02)');
+                imageRendering = 'crisp-edges';
+            } else if (currentSharpenMode === 'ink') {
+                filterParts.push('contrast(1.22)', 'brightness(1.03)', 'saturate(0.92)');
+                imageRendering = '-webkit-optimize-contrast';
+            }
+
+            // Eye Comfort Filter Effects
             if (currentEyeMode === 'warm') {
-                container.style.filter = 'sepia(35%) brightness(92%)';
+                filterParts.push('sepia(35%)', 'brightness(92%)');
             } else if (currentEyeMode === 'dim') {
-                container.style.filter = 'brightness(68%) contrast(95%)';
+                filterParts.push('brightness(68%)', 'contrast(95%)');
+            }
+
+            if (filterParts.length > 0) {
+                container.style.filter = filterParts.join(' ');
             } else {
                 container.style.filter = 'none';
             }
+
+            // Apply Crisp Image Rendering directly on individual manga pages
+            const pageImages = container.querySelectorAll('.manga-page-img');
+            pageImages.forEach(img => {
+                img.style.imageRendering = imageRendering;
+            });
         }
 
         // ================= ⚡ SMART PRELOAD NEXT CHAPTER =================
