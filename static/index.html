@@ -1477,52 +1477,59 @@
             }
         }
 
-        // ================= AUTO-HIDE NAVBAR ON SCROLL =================
+        // ================= 🚀 HIGH-PERFORMANCE SCROLL HANDLER (REQUESTANIMATIONFRAME THROTTLED) =================
+        let isScrollTicking = false;
         function setupScrollHandler() {
             window.addEventListener('scroll', () => {
-                const currentScrollY = window.scrollY;
-                const mainHeader = document.getElementById('mainHeader');
-                const readerTop = document.getElementById('readerTopToolbar');
-                const readerBottom = document.getElementById('readerBottomToolbar');
-
-                // Determine scroll direction
-                const isScrollingDown = currentScrollY > lastScrollY && currentScrollY > 60;
-
-                // 1. Main Header Auto-Hide
-                if (mainHeader && currentActiveView !== 'viewReader') {
-                    if (isScrollingDown) {
-                        mainHeader.style.transform = 'translateY(-100%)';
-                    } else {
-                        mainHeader.style.transform = 'translateY(0)';
-                    }
+                if (!isScrollTicking) {
+                    window.requestAnimationFrame(() => {
+                        handleScrollTick();
+                        isScrollTicking = false;
+                    });
+                    isScrollTicking = true;
                 }
-
-                // 2. Reader Toolbars Auto-Hide & Continuous Scroll
-                if (currentActiveView === 'viewReader') {
-                    if (isScrollingDown) {
-                        if (readerTop) readerTop.style.transform = 'translateY(-100%)';
-                        if (readerBottom) readerBottom.style.transform = 'translateY(100%)';
-                        isViewerToolbarsVisible = false;
-                    } else {
-                        if (readerTop) readerTop.style.transform = 'translateY(0)';
-                        if (readerBottom) readerBottom.style.transform = 'translateY(0)';
-                        isViewerToolbarsVisible = true;
-                    }
-                    
-                    // Continuous Manhua Endless Scroll (ต่อตอนอัตโนมัติแบบเว็บจีน: ต้องโหลดรูปตอนปัจจุบันให้เรียบร้อยก่อนเสมอ)
-                    if (canAutoloadNextChapter()) {
-                        loadNextChapterSeamlessly();
-                    }
-
-                    // Track active chapter in viewport
-                    updateViewportChapterTracker();
-
-                    // Track & save exact pixel-level reading progress (จำจุดที่อ่านค้างไว้ระดับพิกเซล)
-                    trackAndSaveExactScrollPosition();
-                }
-
-                lastScrollY = currentScrollY;
             }, { passive: true });
+        }
+
+        function handleScrollTick() {
+            const currentScrollY = window.scrollY;
+            const mainHeader = document.getElementById('mainHeader');
+            const readerTop = document.getElementById('readerTopToolbar');
+            const readerBottom = document.getElementById('readerBottomToolbar');
+
+            // Determine scroll direction
+            const isScrollingDown = currentScrollY > lastScrollY && currentScrollY > 60;
+
+            // 1. Main Header Auto-Hide
+            if (mainHeader && currentActiveView !== 'viewReader') {
+                mainHeader.style.transform = isScrollingDown ? 'translateY(-100%)' : 'translateY(0)';
+            }
+
+            // 2. Reader Toolbars Auto-Hide & Continuous Scroll
+            if (currentActiveView === 'viewReader') {
+                if (isScrollingDown) {
+                    if (readerTop) readerTop.style.transform = 'translateY(-100%)';
+                    if (readerBottom) readerBottom.style.transform = 'translateY(100%)';
+                    isViewerToolbarsVisible = false;
+                } else {
+                    if (readerTop) readerTop.style.transform = 'translateY(0)';
+                    if (readerBottom) readerBottom.style.transform = 'translateY(0)';
+                    isViewerToolbarsVisible = true;
+                }
+                
+                // Continuous Manhua Endless Scroll (ต่อตอนอัตโนมัติแบบเว็บจีน: ต้องโหลดรูปตอนปัจจุบันให้เรียบร้อยก่อนเสมอ)
+                if (canAutoloadNextChapter()) {
+                    loadNextChapterSeamlessly();
+                }
+
+                // Track active chapter in viewport
+                updateViewportChapterTracker();
+
+                // Track & save exact pixel-level reading progress (จำจุดที่อ่านค้างไว้ระดับพิกเซล)
+                trackAndSaveExactScrollPosition();
+            }
+
+            lastScrollY = currentScrollY;
         }
 
         // Tap screen to toggle reader toolbars
@@ -1667,12 +1674,23 @@
             const filterParts = [];
             let imageRendering = '-webkit-optimize-contrast';
 
-            // Sharpen Filter Effects
+            // Sharpen Filter Effects (Optimized for Mobile Battery & Thermals)
+            const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
             if (currentSharpenMode === 'sharp') {
-                filterParts.push('url(#filterSharpen)', 'contrast(1.05)', 'brightness(1.01)');
+                if (isMobile) {
+                    // Mobile: Hardware-accelerated contrast curve without expensive 3x3 convolution shader
+                    filterParts.push('contrast(1.08)', 'brightness(1.01)');
+                } else {
+                    filterParts.push('url(#filterSharpen)', 'contrast(1.05)', 'brightness(1.01)');
+                }
                 imageRendering = '-webkit-optimize-contrast';
             } else if (currentSharpenMode === 'ultra') {
-                filterParts.push('url(#filterUltraSharpen)', 'contrast(1.08)', 'brightness(1.02)');
+                if (isMobile) {
+                    // Mobile: Ink boost curve without heating GPU
+                    filterParts.push('contrast(1.15)', 'brightness(1.02)');
+                } else {
+                    filterParts.push('url(#filterUltraSharpen)', 'contrast(1.08)', 'brightness(1.02)');
+                }
                 imageRendering = 'crisp-edges';
             } else if (currentSharpenMode === 'ink') {
                 filterParts.push('contrast(1.22)', 'brightness(1.03)', 'saturate(0.92)');
@@ -2145,8 +2163,13 @@
             }
         }
 
+        const completedChaptersMemoryCache = new Set();
         function markChapterComplete(slug, chapter) {
             if (!slug || !chapter) return;
+            const memoryKey = slug + '_' + chapter.url;
+            if (completedChaptersMemoryCache.has(memoryKey)) return;
+            completedChaptersMemoryCache.add(memoryKey);
+
             try {
                 const completedRecord = {
                     mangaSlug: slug,
