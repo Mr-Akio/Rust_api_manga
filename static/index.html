@@ -74,6 +74,8 @@
             display: block !important;
             width: 100% !important;
             max-width: 800px !important;
+            min-height: 250px;
+            background-color: #0b0f19;
             margin-left: auto !important;
             margin-right: auto !important;
             padding: 0 !important;
@@ -1451,9 +1453,8 @@
                         isViewerToolbarsVisible = true;
                     }
                     
-                    // Continuous Manhua Endless Scroll (ต่อตอนอัตโนมัติแบบเว็บจีน)
-                    const scrollBottom = document.documentElement.scrollHeight - (window.scrollY + window.innerHeight);
-                    if (scrollBottom < 1800 && !isLoadingNextChapter && !hasReachedMangaEnd) {
+                    // Continuous Manhua Endless Scroll (ต่อตอนอัตโนมัติแบบเว็บจีน: ต้องโหลดรูปตอนปัจจุบันให้เรียบร้อยก่อนเสมอ)
+                    if (canAutoloadNextChapter()) {
                         loadNextChapterSeamlessly();
                     }
 
@@ -1716,11 +1717,18 @@
                 img.setAttribute('id', `chapter-${index}-page-${i}`);
                 img.loading = (i < 3 && !isSeamless) ? 'eager' : 'lazy';
                 
-                img.src = imgUrl;
+                img.onload = () => {
+                    img.style.minHeight = '0px';
+                    checkTriggerAutoloadIfNearBottom();
+                };
                 img.onerror = () => {
-                    img.onerror = null;
+                    img.onerror = () => {
+                        img.style.minHeight = '0px';
+                        checkTriggerAutoloadIfNearBottom();
+                    };
                     img.src = `/api/proxy-image?url=${encodeURIComponent(imgUrl)}`;
                 };
+                img.src = imgUrl;
                 block.appendChild(img);
             });
 
@@ -1728,9 +1736,74 @@
             applyEyeComfortFilter();
         }
 
+        // ================= 🔍 ตรวจสอบความพร้อมของตอนปัจจุบันก่อนโหลดตอนถัดไป =================
+        function canAutoloadNextChapter() {
+            if (isLoadingNextChapter || hasReachedMangaEnd || currentActiveView !== 'viewReader' || !currentMangaData) {
+                return false;
+            }
+            if (loadedChaptersInViewer.length === 0) {
+                return false;
+            }
+
+            // 1. ตรวจสอบบล็อกของตอนล่าสุดที่กำลังเปิดอ่านอยู่
+            const lastLoaded = loadedChaptersInViewer[loadedChaptersInViewer.length - 1];
+            const currentBlock = document.getElementById(`chapter-block-${lastLoaded.index}`);
+            if (!currentBlock) {
+                return false;
+            }
+
+            // 2. ตรวจสอบรูปภาพทั้งหมดในตอนปัจจุบัน
+            const imgs = currentBlock.querySelectorAll('img.manga-page-img');
+            if (imgs.length === 0) {
+                return false;
+            }
+
+            // นับจำนวนรูปภาพที่ดาวน์โหลดและแสดงผลเสร็จเรียบร้อยแล้ว (naturalHeight > 0)
+            let loadedCount = 0;
+            imgs.forEach(img => {
+                if (img.complete && img.naturalHeight > 0) {
+                    loadedCount++;
+                }
+            });
+
+            // เงื่อนไขสำคัญ: ต้องโหลดรูปภาพในตอนปัจจุบันให้ได้อย่างน้อย 70% (และอย่างน้อย 3 รูปแรก)
+            // ป้องกันไม่ให้ภาพยังไม่ขึ้นแล้วไปโหลดตอนถัดไปทันที
+            const requiredCount = Math.min(imgs.length, Math.max(3, Math.ceil(imgs.length * 0.7)));
+            if (loadedCount < requiredCount) {
+                // หากผู้ใช้เลื่อนลงมาถึงด้านล่างแล้ว แต่รูปตอนปัจจุบันยังโหลดไม่ครบ ให้แจ้งสถานะใน loader
+                const loader = document.getElementById('infiniteScrollLoader');
+                const loaderText = document.getElementById('infiniteScrollLoaderText');
+                const blockRect = currentBlock.getBoundingClientRect();
+                if (loader && loaderText && blockRect.bottom <= window.innerHeight + 1500) {
+                    loaderText.innerText = `กำลังโหลดภาพตอนปัจจุบัน (${loadedCount}/${imgs.length} รูป)...`;
+                    loader.classList.remove('hidden');
+                }
+                return false;
+            }
+
+            // 3. ตรวจสอบความคืบหน้าการอ่าน: ผู้ใช้ต้องเลื่อนอ่านมาอย่างน้อย 60% ของตอนปัจจุบันแล้ว
+            const progress = calculateCurrentChapterProgress(lastLoaded.index);
+            if (progress < 60) {
+                return false;
+            }
+
+            // 4. ตรวจสอบระยะห่างจากขอบล่างของบล็อกตอนปัจจุบัน (ต้องอยู่ใกล้ขอบล่างไม่เกิน 1500px)
+            const blockRect = currentBlock.getBoundingClientRect();
+            if (blockRect.bottom > window.innerHeight + 1500) {
+                return false;
+            }
+
+            return true;
+        }
+
+        function checkTriggerAutoloadIfNearBottom() {
+            if (canAutoloadNextChapter()) {
+                loadNextChapterSeamlessly();
+            }
+        }
+
         async function loadNextChapterSeamlessly() {
-            if (isLoadingNextChapter || hasReachedMangaEnd || currentActiveView !== 'viewReader' || !currentMangaData) return;
-            if (loadedChaptersInViewer.length === 0) return;
+            if (!canAutoloadNextChapter()) return;
 
             const lastLoaded = loadedChaptersInViewer[loadedChaptersInViewer.length - 1];
             const nextIdx = lastLoaded.index - 1; // 0 is newest, so next chapter is - 1
@@ -1749,7 +1822,11 @@
 
             isLoadingNextChapter = true;
             const loader = document.getElementById('infiniteScrollLoader');
-            if (loader) loader.classList.remove('hidden');
+            const loaderText = document.getElementById('infiniteScrollLoaderText');
+            if (loader) {
+                if (loaderText) loaderText.innerText = `กำลังต่อตอนถัดไป: ${nextCh.chapter_number ? `ตอนที่ ${nextCh.chapter_number}` : nextCh.title}...`;
+                loader.classList.remove('hidden');
+            }
 
             try {
                 let images = [];
@@ -1792,7 +1869,7 @@
             } finally {
                 isLoadingNextChapter = false;
                 const loader = document.getElementById('infiniteScrollLoader');
-                if (loader && (nextIdx <= 0 || hasReachedMangaEnd)) {
+                if (loader) {
                     loader.classList.add('hidden');
                 }
             }
@@ -3042,7 +3119,7 @@
             const endSection = document.getElementById('readerEndSection');
             const loader = document.getElementById('infiniteScrollLoader');
             if (endSection) endSection.classList.toggle('hidden', !hasReachedMangaEnd);
-            if (loader) loader.classList.toggle('hidden', hasReachedMangaEnd);
+            if (loader) loader.classList.add('hidden');
 
             // Ensure toolbars are visible and reset scroll tracker
             const readerTop = document.getElementById('readerTopToolbar');
