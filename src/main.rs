@@ -233,13 +233,21 @@ async fn list_latest(
 ) -> Result<Json<Value>, (StatusCode, Json<Value>)> {
     let page = query.page.unwrap_or(1);
     let order = query.order.unwrap_or_else(|| "update".to_string());
-    let cache_key = format!("list:{}:{}", page, order);
+    let manga_type = query.manga_type.as_deref();
+    let genre = query.genre.as_deref();
+    let cache_key = format!(
+        "list:{}:{}:{}:{}",
+        page,
+        order,
+        manga_type.unwrap_or(""),
+        genre.unwrap_or("")
+    );
 
     if let Some(cached) = state.get_cached(&cache_key).await {
         return Ok(Json(cached));
     }
 
-    match state.scraper.list_mangas(page, &order).await {
+    match state.scraper.list_mangas(page, &order, manga_type, genre).await {
         Ok(data) => {
             let json_val = serde_json::to_value(&data).unwrap_or(Value::Null);
             state.set_cached(cache_key, json_val.clone()).await;

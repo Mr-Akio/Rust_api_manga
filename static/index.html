@@ -378,13 +378,13 @@
                                 <i class="fa-solid fa-book text-wt-green text-[10px]"></i> ประเภทการ์ตูน (Type)
                             </span>
                             <div class="flex flex-wrap gap-1.5" id="filterTypePills">
-                                <button onclick="toggleFilterTag('type', 'Manhwa')" class="filter-tag px-3 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95" data-filter="type" data-val="Manhwa">
-                                    🇰🇷 Manhwa (มันฮวาเกาหลี)
+                                <button onclick="toggleFilterTag('type', 'manhwa')" class="filter-tag px-3 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="type" data-val="manhwa">
+                                    🇰🇷 Manhwa (มังฮวาเกาหลี)
                                 </button>
-                                <button onclick="toggleFilterTag('type', 'Manhua')" class="filter-tag px-3 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95" data-filter="type" data-val="Manhua">
-                                    🇨🇳 Manhua (มันฮวาจีน)
+                                <button onclick="toggleFilterTag('type', 'manhua')" class="filter-tag px-3 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="type" data-val="manhua">
+                                    🇨🇳 Manhua (มังฮวาจีน)
                                 </button>
-                                <button onclick="toggleFilterTag('type', 'Manga')" class="filter-tag px-3 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95" data-filter="type" data-val="Manga">
+                                <button onclick="toggleFilterTag('type', 'manga')" class="filter-tag px-3 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="type" data-val="manga">
                                     🇯🇵 Manga (มังงะญี่ปุ่น)
                                 </button>
                             </div>
@@ -396,26 +396,47 @@
                                 <i class="fa-solid fa-tags text-wt-green text-[10px]"></i> แนวเรื่องยอดนิยม (Genres)
                             </span>
                             <div class="flex flex-wrap gap-1.5" id="filterGenrePills">
-                                <button onclick="toggleFilterTag('genre', 'Action')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95" data-filter="genre" data-val="Action">
+                                <button onclick="toggleFilterTag('genre', 'action')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="genre" data-val="action">
                                     ⚔️ Action (ต่อสู้)
                                 </button>
-                                <button onclick="toggleFilterTag('genre', 'Fantasy')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95" data-filter="genre" data-val="Fantasy">
-                                    🧙 Fantasy (แฟนตาซี)
+                                <button onclick="toggleFilterTag('genre', 'martial-arts')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="genre" data-val="martial-arts">
+                                    🥋 วรยุทธ์ / กำลังภายใน
                                 </button>
-                                <button onclick="toggleFilterTag('genre', 'Reincarnation')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95" data-filter="genre" data-val="Reincarnation">
-                                    🌀 เกิดใหม่ / ต่างโลก
+                                <button onclick="toggleFilterTag('genre', 'fantasy')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="genre" data-val="fantasy">
+                                    🧙 แฟนตาซี (Fantasy)
                                 </button>
-                                <button onclick="toggleFilterTag('genre', 'System')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95" data-filter="genre" data-val="System">
+                                <button onclick="toggleFilterTag('genre', 'reincarnation')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="genre" data-val="reincarnation">
+                                    🌀 เกิดใหม่ / ย้อนเวลา
+                                </button>
+                                <button onclick="toggleFilterTag('genre', 'system')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="genre" data-val="system">
                                     🎮 ระบบ / ดันเจี้ยน
                                 </button>
-                                <button onclick="toggleFilterTag('genre', 'Romance')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95" data-filter="genre" data-val="Romance">
-                                    💖 Romance (โรแมนติก)
+                                <button onclick="toggleFilterTag('genre', 'romance')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="genre" data-val="romance">
+                                    💖 โรแมนติก (Romance)
                                 </button>
-                                <button onclick="toggleFilterTag('genre', 'Comedy')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95" data-filter="genre" data-val="Comedy">
-                                    🤣 Comedy (ตลก)
+                                <button onclick="toggleFilterTag('genre', 'adventure')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="genre" data-val="adventure">
+                                    🗺️ ผจญภัย (Adventure)
                                 </button>
-                                <button onclick="toggleFilterTag('genre', 'Martial Arts')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95" data-filter="genre" data-val="Martial Arts">
-                                    🥋 กำลังภายใน / วรยุทธ์
+                                <button onclick="toggleFilterTag('genre', 'comedy')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="genre" data-val="comedy">
+                                    🤣 ตลก (Comedy)
+                                </button>
+                                <button onclick="toggleFilterTag('genre', 'drama')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="genre" data-val="drama">
+                                    🎭 ดราม่า (Drama)
+                                </button>
+                                <button onclick="toggleFilterTag('genre', 'isekai')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="genre" data-val="isekai">
+                                    🌌 ต่างโลก (Isekai)
+                                </button>
+                                <button onclick="toggleFilterTag('genre', 'sci-fi')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="genre" data-val="sci-fi">
+                                    🚀 ไซไฟ (Sci-Fi)
+                                </button>
+                                <button onclick="toggleFilterTag('genre', 'school-life')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="genre" data-val="school-life">
+                                    🏫 โรงเรียน (School Life)
+                                </button>
+                                <button onclick="toggleFilterTag('genre', 'seinen')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="genre" data-val="seinen">
+                                    🔥 เข้มข้น (Seinen)
+                                </button>
+                                <button onclick="toggleFilterTag('genre', 'supernatural')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="genre" data-val="supernatural">
+                                    👻 เหนือธรรมชาติ (Supernatural)
                                 </button>
                             </div>
                         </div>
@@ -427,10 +448,10 @@
                                     <i class="fa-solid fa-star text-amber-400 text-[10px]"></i> คะแนนรีวิว (Rating)
                                 </span>
                                 <div class="flex flex-wrap gap-1.5" id="filterRatingPills">
-                                    <button onclick="toggleFilterTag('rating', '9.5')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95" data-filter="rating" data-val="9.5">
+                                    <button onclick="toggleFilterTag('rating', '9.5')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="rating" data-val="9.5">
                                         ⭐ 9.5+ เท่านั้น
                                     </button>
-                                    <button onclick="toggleFilterTag('rating', '9.0')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95" data-filter="rating" data-val="9.0">
+                                    <button onclick="toggleFilterTag('rating', '9.0')" class="filter-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-filter="rating" data-val="9.0">
                                         ⭐ 9.0+ ขึ้นไป
                                     </button>
                                 </div>
@@ -441,14 +462,17 @@
                                     <i class="fa-solid fa-arrow-down-wide-short text-wt-green text-[10px]"></i> การเรียงลำดับ (Sort)
                                 </span>
                                 <div class="flex flex-wrap gap-1.5" id="filterSortPills">
-                                    <button onclick="setFilterSort('latest')" class="filter-sort-tag px-2.5 py-1 rounded-full text-xs font-bold bg-wt-green text-black border border-wt-green transition active:scale-95 shadow-md shadow-wt-green/20" data-sort="latest">
+                                    <button onclick="setFilterSort('update')" class="filter-sort-tag px-2.5 py-1 rounded-full text-xs font-bold bg-wt-green text-black border border-wt-green transition active:scale-95 shadow-md shadow-wt-green/20 cursor-pointer" data-sort="update">
                                         ⚡ อัปเดตล่าสุด
                                     </button>
-                                    <button onclick="setFilterSort('rating')" class="filter-sort-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95" data-sort="rating">
-                                        ⭐ คะแนนสูงสุด
+                                    <button onclick="setFilterSort('popular')" class="filter-sort-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-sort="popular">
+                                        🔥 ยอดนิยม
                                     </button>
-                                    <button onclick="setFilterSort('title')" class="filter-sort-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95" data-sort="title">
+                                    <button onclick="setFilterSort('title')" class="filter-sort-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-sort="title">
                                         🔤 ชื่อ A-Z
+                                    </button>
+                                    <button onclick="setFilterSort('latest')" class="filter-sort-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer" data-sort="latest">
+                                        🆕 เพิ่มล่าสุด
                                     </button>
                                 </div>
                             </div>
@@ -457,9 +481,11 @@
                     </div>
 
                     <!-- Filter Status Bar (จำนวนเรื่องที่ตรงตามเงื่อนไข) -->
-                    <div id="filterResultCountBar" class="hidden text-xs text-wt-muted pt-2 border-t border-wt-border/40 flex items-center justify-between">
-                        <span>ผลลัพธ์ที่ตรงตามเงื่อนไข: <b id="filterMatchCount" class="text-wt-green">0</b> เรื่อง</span>
-                        <span class="text-[11px] text-zinc-500">กรองแบบ Real-time</span>
+                    <div id="filterResultCountBar" class="hidden text-xs text-wt-muted pt-2 border-t border-wt-border/40 flex items-center justify-between flex-wrap gap-2">
+                        <span>ผลลัพธ์ที่ตรงตามเงื่อนไข: <b id="filterMatchCount" class="text-wt-green font-bold">0</b> เรื่อง</span>
+                        <button onclick="resetAdvancedFilters()" class="text-[11px] text-red-400 hover:text-red-300 font-semibold flex items-center gap-1 cursor-pointer hover:underline">
+                            <i class="fa-solid fa-xmark text-[10px]"></i> ล้างตัวกรอง
+                        </button>
                     </div>
 
                 </div>
@@ -516,7 +542,9 @@
                     <!-- Information -->
                     <div class="flex-1 space-y-2.5 sm:space-y-3 text-center sm:text-left w-full">
                         <div class="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2">
-                            <span id="detailType" class="text-[10px] sm:text-[11px] font-bold bg-wt-green text-black px-2.5 py-0.5 rounded-full uppercase">Manga</span>
+                            <button id="detailType" onclick="filterFromDetail('type')" title="กดเพื่อดูการ์ตูนประเภทนี้ทั้งหมด" class="text-[10px] sm:text-[11px] font-bold bg-wt-green text-black px-2.5 py-0.5 rounded-full uppercase hover:brightness-110 active:scale-95 transition flex items-center gap-1 cursor-pointer shadow-sm">
+                                <i class="fa-solid fa-layer-group text-[9px]"></i> <span id="detailTypeText">Manga</span>
+                            </button>
                             <span id="detailStatus" class="text-[10px] sm:text-[11px] font-medium bg-wt-darker text-slate-300 px-2.5 py-0.5 rounded-full border border-wt-border">Ongoing</span>
                             <span id="detailRating" class="text-xs font-bold text-yellow-400 flex items-center gap-1">
                                 <i class="fa-solid fa-star text-amber-400"></i> 9.5
@@ -1350,6 +1378,21 @@
             // 1. History view
             if (hash === '#/history') {
                 showHistory(false);
+                return;
+            }
+
+            // 2. Type and Genre Filter views (#/type/:name or #/genre/:name)
+            const typeMatch = hash.match(/^#\/type\/([^/?#]+)$/);
+            if (typeMatch) {
+                const typeName = decodeURIComponent(typeMatch[1]);
+                filterByTag('type', typeName, false);
+                return;
+            }
+
+            const genreMatch = hash.match(/^#\/genre\/([^/?#]+)$/);
+            if (genreMatch) {
+                const genreName = decodeURIComponent(genreMatch[1]);
+                filterByTag('genre', genreName, false);
                 return;
             }
 
@@ -2291,6 +2334,14 @@
             if (pushHistory) {
                 updateUrlHash('#/');
             }
+            if (advancedFilters.types.size > 0 || advancedFilters.genres.size > 0 || advancedFilters.rating || (advancedFilters.sort && advancedFilters.sort !== 'update')) {
+                advancedFilters.types.clear();
+                advancedFilters.genres.clear();
+                advancedFilters.rating = null;
+                advancedFilters.sort = 'update';
+                updateFilterUIElements();
+                loadLatestManga(1);
+            }
             showView('viewHome');
             document.getElementById('homeSectionTitle').innerHTML = '<i class="fa-solid fa-bolt text-wt-green"></i> เรื่องอัปเดตล่าสุด';
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -2414,12 +2465,23 @@
             }
         }
 
-        // ================= 🎯 MULTI-TAG ADVANCED FILTER CONTROLLER =================
+        // ================= 🎯 MULTI-TAG ADVANCED FILTER CONTROLLER (SERVER-BACKED) =================
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>"']/g, m => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#39;'
+            }[m]));
+        }
+
         let advancedFilters = {
             types: new Set(),
             genres: new Set(),
             rating: null,
-            sort: 'latest'
+            sort: 'update'
         };
 
         function toggleAdvancedFilterPanel() {
@@ -2433,41 +2495,88 @@
         }
 
         function toggleFilterTag(category, value) {
+            const val = (value || '').toLowerCase();
             if (category === 'type') {
-                if (advancedFilters.types.has(value)) {
-                    advancedFilters.types.delete(value);
+                if (advancedFilters.types.has(val)) {
+                    advancedFilters.types.delete(val);
                 } else {
-                    advancedFilters.types.add(value);
+                    advancedFilters.types.clear(); // One active type for accurate server query
+                    advancedFilters.types.add(val);
                 }
             } else if (category === 'genre') {
-                if (advancedFilters.genres.has(value)) {
-                    advancedFilters.genres.delete(value);
+                if (advancedFilters.genres.has(val)) {
+                    advancedFilters.genres.delete(val);
                 } else {
-                    advancedFilters.genres.add(value);
+                    advancedFilters.genres.clear(); // One active genre for accurate server query
+                    advancedFilters.genres.add(val);
                 }
             } else if (category === 'rating') {
                 advancedFilters.rating = (advancedFilters.rating === value) ? null : value;
             }
 
             updateFilterUIElements();
-            applyAdvancedFilter();
+            loadLatestManga(1);
         }
 
         function setFilterSort(sortValue) {
             advancedFilters.sort = sortValue;
             updateFilterUIElements();
-            applyAdvancedFilter();
+            loadLatestManga(1);
         }
 
         function resetAdvancedFilters() {
             advancedFilters.types.clear();
             advancedFilters.genres.clear();
             advancedFilters.rating = null;
-            advancedFilters.sort = 'latest';
+            advancedFilters.sort = 'update';
 
             updateFilterUIElements();
-            applyAdvancedFilter();
+            updateUrlHash('#/');
+            loadLatestManga(1);
             showAlert('รีเซ็ตตัวกรองทั้งหมดแล้ว');
+        }
+
+        function filterFromDetail(category, value) {
+            if (!value) return;
+            filterByTag(category, value);
+        }
+
+        function filterByTag(category, value, updateHash = true) {
+            if (!value) return;
+            const cat = category.toLowerCase();
+            const val = value.trim();
+            const valKey = val.toLowerCase();
+
+            // Reset filters
+            advancedFilters.types.clear();
+            advancedFilters.genres.clear();
+            advancedFilters.rating = null;
+            advancedFilters.sort = 'update';
+
+            if (cat === 'type') {
+                advancedFilters.types.add(valKey);
+                if (updateHash) updateUrlHash(`#/type/${encodeURIComponent(valKey)}`);
+            } else if (cat === 'genre') {
+                advancedFilters.genres.add(valKey);
+                if (updateHash) updateUrlHash(`#/genre/${encodeURIComponent(valKey)}`);
+            }
+
+            updateFilterUIElements();
+
+            // Switch to Home View
+            showView('viewHome');
+
+            // Scroll to catalog section
+            const section = document.getElementById('allMangaSection');
+            if (section) {
+                const top = section.getBoundingClientRect().top + window.pageYOffset - 75;
+                window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+            } else {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            loadLatestManga(1);
+            showAlert(`กำลังแสดงมังงะในหมวด "${val}"`);
         }
 
         function updateFilterUIElements() {
@@ -2475,17 +2584,17 @@
             const allFilterTags = document.querySelectorAll('.filter-tag');
             allFilterTags.forEach(btn => {
                 const cat = btn.getAttribute('data-filter');
-                const val = btn.getAttribute('data-val');
+                const val = (btn.getAttribute('data-val') || '').toLowerCase();
                 let isActive = false;
 
                 if (cat === 'type') isActive = advancedFilters.types.has(val);
                 else if (cat === 'genre') isActive = advancedFilters.genres.has(val);
-                else if (cat === 'rating') isActive = (advancedFilters.rating === val);
+                else if (cat === 'rating') isActive = (advancedFilters.rating === btn.getAttribute('data-val'));
 
                 if (isActive) {
-                    btn.className = 'filter-tag px-2.5 sm:px-3 py-1 rounded-full text-xs font-bold bg-wt-green text-black border border-wt-green shadow-md shadow-wt-green/20 transition active:scale-95';
+                    btn.className = 'filter-tag px-2.5 sm:px-3 py-1 rounded-full text-xs font-bold bg-wt-green text-black border border-wt-green shadow-md shadow-wt-green/20 transition active:scale-95 cursor-pointer';
                 } else {
-                    btn.className = 'filter-tag px-2.5 sm:px-3 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95';
+                    btn.className = 'filter-tag px-2.5 sm:px-3 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer';
                 }
             });
 
@@ -2495,14 +2604,14 @@
                 const s = btn.getAttribute('data-sort');
                 const isSelected = (advancedFilters.sort === s);
                 if (isSelected) {
-                    btn.className = 'filter-sort-tag px-2.5 py-1 rounded-full text-xs font-bold bg-wt-green text-black border border-wt-green shadow-md shadow-wt-green/20 transition active:scale-95';
+                    btn.className = 'filter-sort-tag px-2.5 py-1 rounded-full text-xs font-bold bg-wt-green text-black border border-wt-green shadow-md shadow-wt-green/20 transition active:scale-95 cursor-pointer';
                 } else {
-                    btn.className = 'filter-sort-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95';
+                    btn.className = 'filter-sort-tag px-2.5 py-1 rounded-full text-xs font-semibold bg-wt-darker text-slate-300 hover:text-white border border-wt-border transition active:scale-95 cursor-pointer';
                 }
             });
 
             // 3. Count active filter conditions
-            const totalActive = advancedFilters.types.size + advancedFilters.genres.size + (advancedFilters.rating ? 1 : 0) + (advancedFilters.sort !== 'latest' ? 1 : 0);
+            const totalActive = advancedFilters.types.size + advancedFilters.genres.size + (advancedFilters.rating ? 1 : 0) + (advancedFilters.sort && advancedFilters.sort !== 'update' ? 1 : 0);
             
             const badge = document.getElementById('activeFilterBadge');
             const btnReset = document.getElementById('btnResetFilters');
@@ -2520,83 +2629,6 @@
             }
         }
 
-        function applyAdvancedFilter() {
-            if (!allMangaItems || allMangaItems.length === 0) return;
-
-            let filtered = [...allMangaItems];
-
-            // 1. Filter by Type
-            if (advancedFilters.types.size > 0) {
-                filtered = filtered.filter(item => {
-                    const t = (item.type || '').toLowerCase();
-                    for (const selectedType of advancedFilters.types) {
-                        if (t.includes(selectedType.toLowerCase())) return true;
-                    }
-                    return false;
-                });
-            }
-
-            // 2. Filter by Genres (keyword / title / type analysis)
-            if (advancedFilters.genres.size > 0) {
-                const genreKeywords = {
-                    'Action': ['action', 'ต่อสู้', 'ฮีโร่', 'ศึก', 'ดาบ', 'เทพ', 'ยุทธ์', 'war', 'fight', 'power', 'slayer', 'blade', 'martial', 'emperor'],
-                    'Fantasy': ['fantasy', 'แฟนตาซี', 'เวท', 'ปีศาจ', 'จอมเวท', 'ดันเจี้ยน', 'มังกร', 'magic', 'dragon', 'god', 'demon', 'sword', 'archmage'],
-                    'Reincarnation': ['เกิดใหม่', 'ต่างโลก', 'reincarnat', 'return', 'isekai', 'จักรพรรดิ', 'ย้อนเวลา', 'เกิด', 'ย้อนอดีต', 'จุติ', 'revive'],
-                    'System': ['system', 'ระบบ', 'level', 'player', 'เลเวล', 'เกม', 'ดันเจี้ยน', 'เควสต์', 'rank', 'status', 'game', 'hunter'],
-                    'Romance': ['romance', 'รัก', 'โรแมนติก', 'เจ้าหญิง', 'นางเอก', 'love', 'sweet', 'marry', 'queen'],
-                    'Comedy': ['comedy', 'ตลก', 'ฮา', 'เกรียน', 'funny', 'ชีวิตประจำวัน'],
-                    'Martial Arts': ['martial', 'มวย', 'ยุทธ์', 'สำนัก', 'เซียน', 'กระบี่', 'วรยุทธ์', 'กำลังภายใน', 'murim', 'cultivat', 'sect']
-                };
-
-                filtered = filtered.filter(item => {
-                    const fullText = (item.title + ' ' + (item.type || '') + ' ' + (item.slug || '')).toLowerCase();
-                    for (const genre of advancedFilters.genres) {
-                        const kwList = genreKeywords[genre] || [genre.toLowerCase()];
-                        const matches = kwList.some(kw => fullText.includes(kw));
-                        if (matches) return true;
-                    }
-                    return false;
-                });
-            }
-
-            // 3. Filter by Rating
-            if (advancedFilters.rating) {
-                const minRating = parseFloat(advancedFilters.rating);
-                filtered = filtered.filter(item => {
-                    const r = parseFloat(item.rating || 0);
-                    return r >= minRating;
-                });
-            }
-
-            // 4. Sort
-            if (advancedFilters.sort === 'rating') {
-                filtered.sort((a, b) => parseFloat(b.rating || 0) - parseFloat(a.rating || 0));
-            } else if (advancedFilters.sort === 'title') {
-                filtered.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
-            }
-
-            // 5. Update Results Counter
-            const countEl = document.getElementById('filterMatchCount');
-            if (countEl) countEl.innerText = filtered.length;
-
-            // 6. Render
-            const container = document.getElementById('mangaGrid');
-            if (filtered.length === 0) {
-                container.innerHTML = `
-                    <div class="col-span-full py-16 text-center text-wt-muted text-sm space-y-2">
-                        <i class="fa-solid fa-filter-circle-xmark text-4xl text-zinc-600 block"></i>
-                        <p class="font-bold text-white">ไม่พบการ์ตูนที่ตรงกับเงื่อนไขที่เลือก</p>
-                        <p class="text-xs text-zinc-500">ลองปลดบางแท็กออก หรือกดปุ่มรีเซ็ตเพื่อดูรายการทั้งหมด</p>
-                        <button onclick="resetAdvancedFilters()" class="mt-3 px-4 py-1.5 rounded-full bg-wt-green text-black font-extrabold text-xs shadow-md shadow-wt-green/20 hover:bg-wt-greenHover transition">
-                            ล้างตัวกรองทั้งหมด
-                        </button>
-                    </div>
-                `;
-            } else {
-                renderMangaGrid(filtered);
-            }
-        }
-
         // ================= 1. FETCH & RENDER MANGA CATALOG =================
         async function loadLatestManga(page = 1) {
             currentPage = page;
@@ -2605,25 +2637,78 @@
             document.getElementById('pageIndicator').innerText = `หน้า ${page}`;
             document.getElementById('btnPrevPage').disabled = (page <= 1);
 
+            // Construct server query URL
+            let apiUrl = `/api/latest?page=${page}`;
+            if (advancedFilters.sort && advancedFilters.sort !== 'update') {
+                apiUrl += `&order=${encodeURIComponent(advancedFilters.sort)}`;
+            } else {
+                apiUrl += `&order=update`;
+            }
+            if (advancedFilters.types.size > 0) {
+                const selectedType = Array.from(advancedFilters.types)[0];
+                apiUrl += `&type=${encodeURIComponent(selectedType)}`;
+            }
+            if (advancedFilters.genres.size > 0) {
+                const selectedGenre = Array.from(advancedFilters.genres)[0];
+                apiUrl += `&genre=${encodeURIComponent(selectedGenre)}`;
+            }
+
+            // Update title to show active filter
+            const titleEl = document.getElementById('homeSectionTitle');
+            if (titleEl) {
+                if (advancedFilters.types.size > 0 || advancedFilters.genres.size > 0) {
+                    const tagNames = [];
+                    if (advancedFilters.types.size > 0) {
+                        const t = Array.from(advancedFilters.types)[0];
+                        const tLabel = t === 'manhwa' ? '🇰🇷 มังฮวาเกาหลี (Manhwa)' : t === 'manhua' ? '🇨🇳 มังฮวาจีน (Manhua)' : '🇯🇵 มังงะญี่ปุ่น (Manga)';
+                        tagNames.push(tLabel);
+                    }
+                    if (advancedFilters.genres.size > 0) {
+                        tagNames.push('แนว ' + Array.from(advancedFilters.genres)[0]);
+                    }
+                    titleEl.innerHTML = `<i class="fa-solid fa-filter text-wt-green"></i> กำลังแสดง: <span class="text-wt-green font-bold">${escapeHtml(tagNames.join(' + '))}</span>`;
+                } else {
+                    titleEl.innerHTML = '<i class="fa-solid fa-bolt text-wt-green"></i> เรื่องอัปเดตล่าสุด';
+                }
+            }
+
             armServerWakeupDetector();
             try {
-                const res = await fetch(`/api/latest?page=${page}`);
+                const res = await fetch(apiUrl);
                 if (!res.ok) throw new Error('ไม่สามารถโหลดรายการมังงะได้');
                 disarmServerWakeupDetector(true);
                 const data = await res.json();
-                const results = data.results || [];
+                let results = data.results || [];
+
+                // Optional local rating filter
+                if (advancedFilters.rating) {
+                    const minR = parseFloat(advancedFilters.rating);
+                    results = results.filter(item => parseFloat(item.rating || 0) >= minR);
+                }
+
                 allMangaItems = results;
 
-                // Render main grid (or apply active advanced filters)
-                const totalActive = advancedFilters.types.size + advancedFilters.genres.size + (advancedFilters.rating ? 1 : 0) + (advancedFilters.sort !== 'latest' ? 1 : 0);
-                if (totalActive > 0) {
-                    applyAdvancedFilter();
+                const countEl = document.getElementById('filterMatchCount');
+                if (countEl) countEl.innerText = results.length;
+
+                const grid = document.getElementById('mangaGrid');
+                if (results.length === 0) {
+                    grid.innerHTML = `
+                        <div class="col-span-full py-16 text-center text-wt-muted text-sm space-y-2">
+                            <i class="fa-solid fa-filter-circle-xmark text-4xl text-zinc-600 block"></i>
+                            <p class="font-bold text-white">ไม่พบการ์ตูนที่ตรงกับเงื่อนไขที่เลือก</p>
+                            <p class="text-xs text-zinc-500">ลองเลือกหมวดหมู่อื่น หรือกดปุ่มรีเซ็ตเพื่อดูรายการทั้งหมด</p>
+                            <button onclick="resetAdvancedFilters()" class="mt-3 px-4 py-1.5 rounded-full bg-wt-green text-black font-extrabold text-xs shadow-md shadow-wt-green/20 hover:bg-wt-greenHover transition cursor-pointer">
+                                ล้างตัวกรองทั้งหมด
+                            </button>
+                        </div>
+                    `;
                 } else {
                     renderMangaGrid(results);
                 }
-                
-                // If page 1, also populate Hero Spotlight, Daily, and Ranking sections
-                if (page === 1 && results.length > 0) {
+
+                // If page 1 and no filters, also populate Hero Spotlight, Daily, and Ranking sections
+                if (page === 1 && results.length > 0 && advancedFilters.types.size === 0 && advancedFilters.genres.size === 0) {
                     populateHeroBanner(results);
                     populateRanking(results);
                     populateDailyComics(results);
@@ -2890,7 +2975,15 @@
             document.getElementById('detailTitle').innerText = data.title;
             document.getElementById('detailAltTitle').innerText = data.alternative_title || '';
             document.getElementById('detailThumb').src = data.thumbnail || 'https://via.placeholder.com/300x400';
-            document.getElementById('detailType').innerText = data.type || 'Manga';
+            
+            // Connect Type Button to Catalog Filter
+            const typeText = document.getElementById('detailTypeText');
+            if (typeText) typeText.innerText = data.type || 'Manga';
+            const detailTypeBtn = document.getElementById('detailType');
+            if (detailTypeBtn) {
+                detailTypeBtn.onclick = () => filterFromDetail('type', data.type || 'Manga');
+            }
+
             document.getElementById('detailStatus').innerText = data.status || 'Ongoing';
             document.getElementById('detailRating').innerHTML = `<i class="fa-solid fa-star text-amber-400"></i> ${data.rating || '9.5'}`;
             document.getElementById('detailAuthor').innerText = data.author ? `ผู้เขียน: ${data.author}` : '';
@@ -2910,14 +3003,19 @@
             document.getElementById('detailSynopsis').innerText = data.synopsis || 'ไม่มีข้อมูลเรื่องย่อ';
             document.getElementById('detailTotalChapters').innerText = data.total_chapters;
 
-            // Genres
+            // Genres (Clickable and connected directly to stories filter)
             const genresContainer = document.getElementById('detailGenres');
             genresContainer.innerHTML = '';
             (data.genres || []).forEach(g => {
-                const span = document.createElement('span');
-                span.className = 'text-[10px] sm:text-[11px] bg-wt-darker text-slate-300 px-2.5 py-0.5 rounded-full border border-wt-border';
-                span.innerText = g;
-                genresContainer.appendChild(span);
+                const btn = document.createElement('button');
+                btn.className = 'text-[10px] sm:text-[11px] bg-wt-darker hover:bg-wt-green hover:text-black text-slate-300 px-2.5 py-0.5 rounded-full border border-wt-border hover:border-wt-green transition active:scale-95 cursor-pointer flex items-center gap-1 group shadow-sm';
+                btn.title = `กดเพื่อดูการ์ตูนแนว "${g}" ทั้งหมด`;
+                btn.innerHTML = `<i class="fa-solid fa-tag text-[9px] text-wt-green group-hover:text-black"></i> ${escapeHtml(g)}`;
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    filterFromDetail('genre', g);
+                };
+                genresContainer.appendChild(btn);
             });
 
             // Read First / Latest & Resume Buttons

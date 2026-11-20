@@ -74,6 +74,9 @@ pub struct SearchQuery {
 pub struct ListQuery {
     pub page: Option<u32>,
     pub order: Option<String>,
+    #[serde(rename = "type")]
+    pub manga_type: Option<String>,
+    pub genre: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]

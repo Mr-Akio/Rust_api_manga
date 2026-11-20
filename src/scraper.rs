@@ -16,6 +16,54 @@ pub struct MangaScraper {
     client: reqwest::Client,
 }
 
+fn map_genre_to_id(genre: &str) -> String {
+    let normalized = genre.trim().to_lowercase().replace("-", " ");
+    let id = match normalized.as_str() {
+        "action" => "3",
+        "adult" => "60",
+        "adventure" => "4",
+        "comedy" => "5",
+        "comic" => "1240",
+        "demons" => "1241",
+        "drama" => "6",
+        "ecchi" => "56",
+        "fantasy" => "7",
+        "fight" => "1242",
+        "game" => "1058",
+        "god" => "1059",
+        "harem" => "14",
+        "historical" => "15",
+        "horror" => "57",
+        "hunters" => "1243",
+        "isekai" => "778",
+        "josei" => "194",
+        "magic" => "1244",
+        "manhua" => "384",
+        "manhwa" => "299",
+        "martial arts" => "12",
+        "mature" => "16",
+        "mecha" => "332",
+        "modern" => "236",
+        "mystery" => "26",
+        "psychological" => "27",
+        "reincarnation" => "1245",
+        "revenge" => "394",
+        "romance" => "17",
+        "school life" => "24",
+        "sci fi" | "scifi" => "18",
+        "seinen" => "31",
+        "shoujo" => "129",
+        "shounen" => "8",
+        "slice of life" => "46",
+        "sports" => "124",
+        "supernatural" => "9",
+        "system" => "1060",
+        "tragedy" => "53",
+        _ => genre.trim(),
+    };
+    id.to_string()
+}
+
 impl MangaScraper {
     pub fn new() -> Self {
         let mut headers = HeaderMap::new();
@@ -454,8 +502,27 @@ impl MangaScraper {
         Ok(items)
     }
 
-    pub async fn list_mangas(&self, page: u32, order: &str) -> Result<MangaListResponse, String> {
-        let url = format!("{}/manga/?page={}&order={}", BASE_URL, page, order);
+    pub async fn list_mangas(
+        &self,
+        page: u32,
+        order: &str,
+        manga_type: Option<&str>,
+        genre: Option<&str>,
+    ) -> Result<MangaListResponse, String> {
+        let mut url = format!("{}/manga/?page={}&order={}", BASE_URL, page, order);
+        if let Some(t) = manga_type {
+            let t_clean = t.trim();
+            if !t_clean.is_empty() {
+                url.push_str(&format!("&type={}", urlencoding::encode(t_clean)));
+            }
+        }
+        if let Some(g) = genre {
+            let g_clean = g.trim();
+            if !g_clean.is_empty() {
+                let genre_id = map_genre_to_id(g_clean);
+                url.push_str(&format!("&genre%5B%5D={}", urlencoding::encode(&genre_id)));
+            }
+        }
 
         let html_res = self.fetch_html(&url).await;
         let mut results = Vec::new();
@@ -494,11 +561,24 @@ impl MangaScraper {
                         .map(|el| el.text().collect::<Vec<_>>().join(" ").trim().to_string())
                         .unwrap_or_default();
 
-                    let manga_type = item
+                    let mut manga_type_val = item
                         .select(&sel_type)
                         .next()
                         .map(|el| el.text().collect::<Vec<_>>().join(" ").trim().to_string())
                         .unwrap_or_default();
+
+                    if manga_type_val.is_empty() {
+                        if let Some(t) = manga_type {
+                            let t_clean = t.trim();
+                            if !t_clean.is_empty() {
+                                let mut c = t_clean.chars();
+                                manga_type_val = match c.next() {
+                                    None => String::new(),
+                                    Some(f) => f.to_uppercase().collect::<String>() + c.as_str(),
+                                };
+                            }
+                        }
+                    }
 
                     let rating = item
                         .select(&sel_rating)
@@ -514,7 +594,7 @@ impl MangaScraper {
                         url: manga_url,
                         thumbnail,
                         latest_chapter,
-                        manga_type,
+                        manga_type: manga_type_val,
                         rating,
                     });
                 }
@@ -525,8 +605,8 @@ impl MangaScraper {
             }
         }
 
-        // If results empty on first page, fall back to RSS feed
-        if results.is_empty() && page == 1 {
+        // If results empty on first page and no filters applied, fall back to RSS feed
+        if results.is_empty() && page == 1 && manga_type.is_none() && genre.is_none() {
             if let Ok(feed_items) = self.get_from_feed().await {
                 if !feed_items.is_empty() {
                     let count = feed_items.len();
