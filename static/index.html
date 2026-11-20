@@ -519,6 +519,9 @@
                             <span id="detailRating" class="text-xs font-bold text-yellow-400 flex items-center gap-1">
                                 <i class="fa-solid fa-star text-amber-400"></i> 9.5
                             </span>
+                            <span id="detailUpdatedAt" class="hidden text-[10px] sm:text-[11px] font-mono text-slate-300 bg-wt-darker px-2.5 py-0.5 rounded-full border border-wt-border items-center gap-1">
+                                <i class="fa-regular fa-calendar-days text-[9px] text-wt-green"></i> อัปเดต: <span id="detailUpdatedText"></span>
+                            </span>
                         </div>
 
                         <h1 id="detailTitle" class="text-xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight"></h1>
@@ -2209,14 +2212,12 @@
 
         function goHome(pushHistory = true) {
             if (pushHistory) {
-                if ((window.location.hash.startsWith('#/manga/') || window.location.hash === '#/history') && appHistoryDepth > 0) {
-                    history.back();
-                    return;
-                }
                 updateUrlHash('#/');
             }
             showView('viewHome');
             document.getElementById('homeSectionTitle').innerHTML = '<i class="fa-solid fa-bolt text-wt-green"></i> เรื่องอัปเดตล่าสุด';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            checkAndShowHomeQuickResumePill();
         }
 
         function scrollToSection(id) {
@@ -2226,12 +2227,15 @@
         }
 
         function backToDetail() {
-            if (window.location.hash.includes('/ch/') && appHistoryDepth > 0) {
-                history.back();
-            } else if (currentMangaData && currentMangaData.slug) {
+            if (currentMangaData && currentMangaData.slug) {
                 openMangaBySlug(currentMangaData.slug, true);
             } else {
-                goHome(true);
+                const match = window.location.hash.match(/^#\/manga\/([^/]+)/);
+                if (match && match[1]) {
+                    openMangaBySlug(decodeURIComponent(match[1]), true);
+                } else {
+                    goHome(true);
+                }
             }
         }
 
@@ -2813,6 +2817,19 @@
             document.getElementById('detailStatus').innerText = data.status || 'Ongoing';
             document.getElementById('detailRating').innerHTML = `<i class="fa-solid fa-star text-amber-400"></i> ${data.rating || '9.5'}`;
             document.getElementById('detailAuthor').innerText = data.author ? `ผู้เขียน: ${data.author}` : '';
+
+            // Update Date Badge (แสดงวันที่อัปเดตทั้งบนมือถือและเดสก์ท็อป)
+            const updateBadge = document.getElementById('detailUpdatedAt');
+            const updateText = document.getElementById('detailUpdatedText');
+            if (data.updated_at && updateBadge && updateText) {
+                updateText.innerText = data.updated_at;
+                updateBadge.classList.remove('hidden');
+                updateBadge.classList.add('inline-flex');
+            } else if (updateBadge) {
+                updateBadge.classList.add('hidden');
+                updateBadge.classList.remove('inline-flex');
+            }
+
             document.getElementById('detailSynopsis').innerText = data.synopsis || 'ไม่มีข้อมูลเรื่องย่อ';
             document.getElementById('detailTotalChapters').innerText = data.total_chapters;
 
@@ -2935,7 +2952,7 @@
                             ${ch.title}
                         </span>
                     </div>
-                    <div class="flex items-center gap-2 flex-shrink-0">
+                    <div class="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
                         ${hasProgress ? `
                             <span class="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-900/40 text-emerald-300 border border-emerald-500/40 flex items-center gap-1 font-mono">
                                 <i class="fa-solid fa-bookmark text-[8px]"></i> ค้างไว้ ${pos.percent}%
@@ -2945,7 +2962,11 @@
                                 <i class="fa-solid fa-check text-[8px]"></i> อ่านแล้ว
                             </span>
                         ` : ''}
-                        <span class="text-[9px] sm:text-[10px] text-wt-muted font-mono hidden sm:inline">${ch.date || ''}</span>
+                        ${ch.date ? `
+                            <span class="text-[9px] sm:text-[10px] text-wt-muted font-mono inline-flex items-center gap-1">
+                                <i class="fa-regular fa-calendar-days text-[8px] text-slate-500"></i> ${ch.date}
+                            </span>
+                        ` : ''}
                     </div>
                 `;
                 container.appendChild(btn);
@@ -3154,8 +3175,11 @@
                 };
 
                 item.innerHTML = `
-                    <span class="truncate">${ch.chapter_number ? `ตอนที่ ${ch.chapter_number}` : ch.title}</span>
-                    ${isRead && !isCurrent ? '<i class="fa-solid fa-check text-[10px] text-wt-green"></i>' : ''}
+                    <div class="truncate pr-1">
+                        <span class="block truncate">${ch.chapter_number ? `ตอนที่ ${ch.chapter_number}` : ch.title}</span>
+                        ${ch.date ? `<span class="text-[9px] opacity-70 font-mono flex items-center gap-1 mt-0.5"><i class="fa-regular fa-calendar text-[8px]"></i> ${ch.date}</span>` : ''}
+                    </div>
+                    ${isRead && !isCurrent ? '<i class="fa-solid fa-check text-[10px] text-wt-green flex-shrink-0"></i>' : ''}
                 `;
                 grid.appendChild(item);
             });
