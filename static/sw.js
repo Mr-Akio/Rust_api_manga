@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kuromanga-cache-v1';
+const CACHE_NAME = 'kuromanga-cache-v2';
 const STATIC_ASSETS = [
   '/',
   '/static/index.html',
@@ -46,11 +46,38 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // For HTML navigation requests, use network first, fallback to cached index.html
+  // For HTML navigation requests:
+  // If Render free tier is sleeping (takes > 2.5s) or network fails, serve cached index.html immediately!
   if (e.request.mode === 'navigate') {
     e.respondWith(
-      fetch(e.request).catch(() => {
-        return caches.match('/static/index.html') || caches.match('/');
+      new Promise((resolve) => {
+        let isSettled = false;
+        const timer = setTimeout(async () => {
+          if (!isSettled) {
+            isSettled = true;
+            const cached = (await caches.match('/static/index.html')) || (await caches.match('/'));
+            if (cached) {
+              resolve(cached);
+            }
+          }
+        }, 2500);
+
+        fetch(e.request)
+          .then((networkRes) => {
+            if (!isSettled) {
+              isSettled = true;
+              clearTimeout(timer);
+              resolve(networkRes);
+            }
+          })
+          .catch(async () => {
+            if (!isSettled) {
+              isSettled = true;
+              clearTimeout(timer);
+              const cached = (await caches.match('/static/index.html')) || (await caches.match('/'));
+              resolve(cached || new Response('Offline', { status: 503 }));
+            }
+          });
       })
     );
     return;

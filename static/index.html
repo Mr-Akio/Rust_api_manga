@@ -104,6 +104,23 @@
         .animate-bounce-subtle {
             animation: floatPrompt 2.5s ease-in-out infinite;
         }
+        @keyframes auraGlow {
+            0%, 100% { filter: drop-shadow(0 0 15px rgba(0, 229, 155, 0.4)) drop-shadow(0 0 30px rgba(6, 182, 212, 0.3)); }
+            50% { filter: drop-shadow(0 0 28px rgba(0, 229, 155, 0.8)) drop-shadow(0 0 50px rgba(6, 182, 212, 0.6)); }
+        }
+        .animate-aura-glow {
+            animation: auraGlow 3s ease-in-out infinite;
+        }
+        @keyframes spinSlow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+            animation: spinSlow 20s linear infinite;
+        }
+        .animate-spin-reverse-slow {
+            animation: spinSlow 30s linear infinite reverse;
+        }
     </style>
 </head>
 <body class="bg-wt-darker text-slate-100 min-h-screen flex flex-col selection:bg-wt-green selection:text-black pt-16">
@@ -899,6 +916,91 @@
         </div>
     </footer>
 
+    <!-- ================= ANIME SERVER WAKE-UP COUNTDOWN OVERLAY (ปลุกเซิร์ฟเวอร์ Render Free Tier) ================= -->
+    <div id="serverWakeupScreen" class="hidden opacity-0 fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#070b14]/95 backdrop-blur-2xl transition-all duration-500">
+        <!-- Ambient Neon Glow Spheres -->
+        <div class="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-wt-green/15 blur-3xl -top-10 -left-10 pointer-events-none animate-pulse"></div>
+        <div class="absolute w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-cyan-500/15 blur-3xl -bottom-10 -right-10 pointer-events-none animate-pulse" style="animation-delay: 1.5s;"></div>
+
+        <!-- Main Modal Card -->
+        <div class="relative max-w-md w-full bg-slate-900/90 border border-slate-700/60 rounded-3xl p-6 sm:p-8 text-center shadow-2xl shadow-wt-green/10 overflow-hidden">
+            <!-- Top Cyber Neon Line -->
+            <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-wt-green to-transparent"></div>
+
+            <!-- Anime Character Visual with Rotating Magic Circles -->
+            <div class="relative w-28 h-28 sm:w-32 sm:h-32 mx-auto mb-4">
+                <!-- Outer Magic Circle (Slow Clockwise Spin) -->
+                <div class="absolute -inset-2.5 rounded-full border-2 border-dashed border-wt-green/40 animate-spin-slow pointer-events-none"></div>
+                <!-- Inner Magic Circle (Reverse Spin) -->
+                <div class="absolute -inset-4 rounded-full border border-cyan-400/25 animate-spin-reverse-slow pointer-events-none"></div>
+                <!-- Aura Glow Backdrop -->
+                <div class="absolute inset-0 bg-gradient-to-tr from-wt-green/30 to-cyan-400/30 rounded-full blur-xl animate-pulse"></div>
+                
+                <!-- Anime Character Portrait -->
+                <img id="serverWakeupCharImg" 
+                     src="https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=500&auto=format&fit=crop" 
+                     alt="Anime Awakening" 
+                     class="relative w-full h-full object-cover rounded-full border-2 border-wt-green/70 shadow-[0_0_25px_rgba(0,229,155,0.4)] animate-aura-glow">
+                
+                <!-- Bottom-Right Awakening Badge -->
+                <div class="absolute -bottom-1 -right-1 bg-slate-950 border border-wt-green rounded-full w-8 h-8 flex items-center justify-center text-wt-green shadow-lg text-xs">
+                    <i id="serverWakeupCharIcon" class="fa-solid fa-bolt animate-pulse"></i>
+                </div>
+            </div>
+
+            <!-- Cloud Awakening Badge -->
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-wt-green/10 border border-wt-green/30 text-wt-green text-[11px] font-mono font-bold uppercase tracking-wider mb-2">
+                <span class="w-2 h-2 rounded-full bg-wt-green animate-ping"></span>
+                <span>RENDER CLOUD • WAKING UP</span>
+            </div>
+
+            <!-- Header Titles -->
+            <h2 id="serverWakeupTitle" class="text-xl sm:text-2xl font-black text-white tracking-tight">กำลังปลุกพลังเซิร์ฟเวอร์...</h2>
+            <p id="serverWakeupSubtitle" class="text-xs text-slate-400 mt-1 max-w-xs mx-auto">เซิร์ฟเวอร์ Render กำลังตื่นจากโหมดจำศีล กรุณารอสักครู่</p>
+
+            <!-- Countdown Box & Glowing Progress Bar -->
+            <div class="my-5 p-4 rounded-2xl bg-slate-950/70 border border-slate-800/80 shadow-inner">
+                <div class="text-4xl sm:text-5xl font-black font-mono tracking-tight text-white flex items-center justify-center gap-2">
+                    <span id="serverWakeupCountdown" class="text-transparent bg-clip-text bg-gradient-to-r from-wt-green via-emerald-300 to-cyan-400 drop-shadow-[0_0_15px_rgba(0,229,155,0.4)]">45</span>
+                    <span class="text-xs sm:text-sm font-normal text-slate-400 font-sans tracking-normal">วินาที</span>
+                </div>
+
+                <!-- Animated Neon Progress Bar -->
+                <div class="w-full bg-slate-900 rounded-full h-3 overflow-hidden border border-slate-700/50 p-0.5 mt-3">
+                    <div id="serverWakeupBar" class="h-full bg-gradient-to-r from-wt-green via-teal-400 to-cyan-400 rounded-full transition-all duration-1000 ease-linear shadow-[0_0_10px_rgba(0,229,155,0.7)]" style="width: 0%;"></div>
+                </div>
+
+                <div class="flex items-center justify-between text-[10px] text-slate-400 mt-2 px-1">
+                    <span id="serverWakeupStatusText" class="flex items-center gap-1.5 font-medium text-slate-300">
+                        <i class="fa-solid fa-spinner fa-spin text-wt-green text-[10px]"></i> กำลังสตาร์ตตู้คอนเทนเนอร์...
+                    </span>
+                    <span id="serverWakeupPercentText" class="font-mono text-wt-green font-bold">0%</span>
+                </div>
+            </div>
+
+            <!-- Rotating Anime Quote Box -->
+            <div class="p-3 rounded-xl bg-slate-950/50 border border-slate-800/80 text-[11px] text-slate-300 min-h-[48px] flex items-center justify-center gap-2 shadow-sm">
+                <i class="fa-solid fa-quote-left text-wt-green/60 text-xs flex-shrink-0"></i>
+                <span id="serverWakeupQuote" class="italic transition-all duration-300">"ซองจินอู: จงตื่นขึ้น... (ARISE) — กำลังคืนชีพเซิร์ฟเวอร์บนคลาวด์"</span>
+            </div>
+
+            <!-- Character Switcher & Fast Refresh Buttons -->
+            <div class="mt-4 flex items-center justify-center gap-2">
+                <button onclick="cycleWakeupCharacter()" class="text-[11px] text-slate-400 hover:text-white px-3 py-1.5 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/50 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-shuffle text-wt-green text-[10px]"></i> สลับตัวละครอนิเมะ
+                </button>
+                <button onclick="manualRetryWakeup()" class="text-[11px] text-slate-400 hover:text-white px-3 py-1.5 rounded-xl bg-slate-800/60 hover:bg-slate-800 border border-slate-700/50 transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-rotate-right text-cyan-400 text-[10px]"></i> ตรวจสอบสัญญาณ
+                </button>
+            </div>
+
+            <!-- Helpful Notice -->
+            <p class="text-[10px] text-slate-500 mt-3 flex items-center justify-center gap-1">
+                <i class="fa-solid fa-circle-info text-slate-500 text-[9px]"></i> ทันทีที่เซิร์ฟเวอร์ตื่น ระบบจะนำเข้าสู่เว็บอัตโนมัติ ไม่ต้องกดรีเฟรช
+            </p>
+        </div>
+    </div>
+
     <!-- ================= JAVASCRIPT CONTROLLER ================= -->
     <script>
         // State
@@ -934,6 +1036,231 @@
         // Auto-Hide Navbar on Scroll Variables
         let lastScrollY = window.scrollY;
         let isViewerToolbarsVisible = true;
+
+        // ================= SERVER WAKE-UP COUNTDOWN (RENDER FREE TIER) =================
+        const WAKEUP_ANIME_CAST = [
+            {
+                name: 'ซองจินอู (Solo Leveling)',
+                quote: 'ซองจินอู: "จงตื่นขึ้น..." (ARISE) — กำลังคืนชีพเซิร์ฟเวอร์บนคลาวด์',
+                img: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=500&auto=format&fit=crop',
+                icon: 'fa-bolt'
+            },
+            {
+                name: 'โกโจ ซาโตรุ (Jujutsu Kaisen)',
+                quote: 'โกโจ ซาโตรุ: "ไม่ต้องห่วง ฉันน่ะไร้เทียมทาน" — กำลังกางอาณาจักรข้อมูล',
+                img: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?q=80&w=500&auto=format&fit=crop',
+                icon: 'fa-eye'
+            },
+            {
+                name: 'มังกี้ ดี ลูฟี่ (One Piece Gear 5)',
+                quote: 'ลูฟี่: "นี่แหละจุดสูงสุดของฉัน เกียร์ 5!" — เสียงดรัมส์แห่งการปลดปล่อยเซิร์ฟเวอร์',
+                img: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=500&auto=format&fit=crop',
+                icon: 'fa-fire'
+            },
+            {
+                name: 'ทันจิโร่ (Demon Slayer)',
+                quote: 'ทันจิโร่: "ฮิโนะคามิคางุระ ระบำเพลิงสุริยัน!" — เร่งความเร็วการประมวลผล',
+                img: 'https://images.unsplash.com/photo-1563089145-599997674d42?q=80&w=500&auto=format&fit=crop',
+                icon: 'fa-sun'
+            }
+        ];
+
+        let currentWakeupCastIndex = 0;
+        let wakeupCountdownSeconds = 45;
+        let wakeupCountdownInterval = null;
+        let wakeupQuoteInterval = null;
+        let wakeupPollerInterval = null;
+        let wakeupPendingTimer = null;
+        let isWakeupScreenVisible = false;
+
+        function armServerWakeupDetector() {
+            if (!window.hasServerRespondedOnce && !wakeupPendingTimer) {
+                wakeupPendingTimer = setTimeout(() => {
+                    if (!window.hasServerRespondedOnce) {
+                        showServerWakeupScreen();
+                    }
+                }, 2500);
+            }
+        }
+
+        function disarmServerWakeupDetector(instantSuccess = true) {
+            window.hasServerRespondedOnce = true;
+            if (wakeupPendingTimer) {
+                clearTimeout(wakeupPendingTimer);
+                wakeupPendingTimer = null;
+            }
+            if (isWakeupScreenVisible) {
+                hideServerWakeupScreen(instantSuccess);
+            }
+        }
+
+        function showServerWakeupScreen() {
+            if (isWakeupScreenVisible) return;
+            isWakeupScreenVisible = true;
+
+            const modal = document.getElementById('serverWakeupScreen');
+            if (!modal) return;
+
+            // Pick random starting anime character
+            currentWakeupCastIndex = Math.floor(Math.random() * WAKEUP_ANIME_CAST.length);
+            updateWakeupCharacterUI();
+
+            // Reset countdown to 45s
+            wakeupCountdownSeconds = 45;
+            updateWakeupCountdownUI();
+
+            modal.classList.remove('hidden');
+            requestAnimationFrame(() => {
+                modal.classList.remove('opacity-0');
+            });
+
+            // Start countdown interval
+            if (wakeupCountdownInterval) clearInterval(wakeupCountdownInterval);
+            wakeupCountdownInterval = setInterval(() => {
+                if (wakeupCountdownSeconds > 1) {
+                    wakeupCountdownSeconds--;
+                    updateWakeupCountdownUI();
+                } else if (wakeupCountdownSeconds === 1) {
+                    wakeupCountdownSeconds = 0;
+                    updateWakeupCountdownUI();
+                    // Still waiting a little bit
+                    const statusText = document.getElementById('serverWakeupStatusText');
+                    if (statusText) {
+                        statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-wt-green text-[10px]"></i> เกือบเสร็จแล้ว! กำลังเชื่อมต่อข้อมูล...';
+                    }
+                }
+            }, 1000);
+
+            // Start rotating quotes every 4.5 seconds
+            if (wakeupQuoteInterval) clearInterval(wakeupQuoteInterval);
+            wakeupQuoteInterval = setInterval(() => {
+                cycleWakeupCharacter(false);
+            }, 4500);
+
+            // Start background poll every 2.5 seconds to detect server wake-up in real time
+            if (wakeupPollerInterval) clearInterval(wakeupPollerInterval);
+            wakeupPollerInterval = setInterval(async () => {
+                try {
+                    const res = await fetch('/api/latest?page=1');
+                    if (res.ok) {
+                        clearInterval(wakeupPollerInterval);
+                        wakeupPollerInterval = null;
+                        disarmServerWakeupDetector(true);
+                        // If home catalog is still empty, load it immediately
+                        if (allMangaItems.length === 0) {
+                            loadLatestManga(1);
+                        }
+                    }
+                } catch (e) {
+                    // still asleep, continue polling
+                }
+            }, 2500);
+        }
+
+        function updateWakeupCountdownUI() {
+            const countEl = document.getElementById('serverWakeupCountdown');
+            const barEl = document.getElementById('serverWakeupBar');
+            const percentEl = document.getElementById('serverWakeupPercentText');
+
+            if (countEl) countEl.innerText = wakeupCountdownSeconds;
+
+            const elapsed = 45 - wakeupCountdownSeconds;
+            const percent = Math.min(100, Math.max(0, Math.round((elapsed / 45) * 100)));
+
+            if (barEl) barEl.style.width = percent + '%';
+            if (percentEl) percentEl.innerText = percent + '%';
+        }
+
+        function updateWakeupCharacterUI() {
+            const cast = WAKEUP_ANIME_CAST[currentWakeupCastIndex];
+            if (!cast) return;
+
+            const imgEl = document.getElementById('serverWakeupCharImg');
+            const iconEl = document.getElementById('serverWakeupCharIcon');
+            const quoteEl = document.getElementById('serverWakeupQuote');
+
+            if (imgEl) {
+                imgEl.src = cast.img;
+                imgEl.alt = cast.name;
+            }
+            if (iconEl) {
+                iconEl.className = `fa-solid ${cast.icon} animate-pulse`;
+            }
+            if (quoteEl) {
+                quoteEl.style.opacity = '0';
+                setTimeout(() => {
+                    quoteEl.innerText = `"${cast.quote}"`;
+                    quoteEl.style.opacity = '1';
+                }, 200);
+            }
+        }
+
+        function cycleWakeupCharacter(manual = true) {
+            currentWakeupCastIndex = (currentWakeupCastIndex + 1) % WAKEUP_ANIME_CAST.length;
+            updateWakeupCharacterUI();
+            if (manual) {
+                showAlert(`สลับเป็น: ${WAKEUP_ANIME_CAST[currentWakeupCastIndex].name}`);
+            }
+        }
+
+        async function manualRetryWakeup() {
+            const statusText = document.getElementById('serverWakeupStatusText');
+            if (statusText) {
+                statusText.innerHTML = '<i class="fa-solid fa-spinner fa-spin text-cyan-400 text-[10px]"></i> กำลังส่งสัญญาณตรวจสอบ...';
+            }
+            try {
+                const res = await fetch('/api/latest?page=1');
+                if (res.ok) {
+                    disarmServerWakeupDetector(true);
+                    if (allMangaItems.length === 0) loadLatestManga(1);
+                } else {
+                    showAlert('เซิร์ฟเวอร์ยังกำลังบูตอยู่ กรุณารอสักครู่...');
+                }
+            } catch (e) {
+                showAlert('เซิร์ฟเวอร์ยังไม่พร้อมใช้งาน ระบบกำลังรอ...');
+            }
+        }
+
+        function hideServerWakeupScreen(instantSuccess = false) {
+            if (wakeupCountdownInterval) clearInterval(wakeupCountdownInterval);
+            if (wakeupQuoteInterval) clearInterval(wakeupQuoteInterval);
+            if (wakeupPollerInterval) clearInterval(wakeupPollerInterval);
+            wakeupCountdownInterval = null;
+            wakeupQuoteInterval = null;
+            wakeupPollerInterval = null;
+
+            const modal = document.getElementById('serverWakeupScreen');
+            if (!modal) return;
+
+            if (instantSuccess) {
+                // Show celebration transition for 450ms
+                const countEl = document.getElementById('serverWakeupCountdown');
+                const barEl = document.getElementById('serverWakeupBar');
+                const percentEl = document.getElementById('serverWakeupPercentText');
+                const statusText = document.getElementById('serverWakeupStatusText');
+                const titleEl = document.getElementById('serverWakeupTitle');
+
+                if (countEl) countEl.innerHTML = '<i class="fa-solid fa-circle-check text-wt-green text-3xl sm:text-4xl"></i>';
+                if (barEl) barEl.style.width = '100%';
+                if (percentEl) percentEl.innerText = '100%';
+                if (statusText) statusText.innerHTML = '<span class="text-wt-green font-bold"><i class="fa-solid fa-bolt"></i> เซิร์ฟเวอร์พร้อมใช้งานแล้ว!</span>';
+                if (titleEl) titleEl.innerText = 'เซิร์ฟเวอร์ออนไลน์แล้ว!';
+
+                setTimeout(() => {
+                    modal.classList.add('opacity-0', 'pointer-events-none');
+                    setTimeout(() => {
+                        modal.classList.add('hidden');
+                        isWakeupScreenVisible = false;
+                    }, 500);
+                }, 450);
+            } else {
+                modal.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    isWakeupScreenVisible = false;
+                }, 500);
+            }
+        }
 
         // On Page Load
         window.addEventListener('DOMContentLoaded', () => {
@@ -2197,9 +2524,11 @@
             document.getElementById('pageIndicator').innerText = `หน้า ${page}`;
             document.getElementById('btnPrevPage').disabled = (page <= 1);
 
+            armServerWakeupDetector();
             try {
                 const res = await fetch(`/api/latest?page=${page}`);
                 if (!res.ok) throw new Error('ไม่สามารถโหลดรายการมังงะได้');
+                disarmServerWakeupDetector(true);
                 const data = await res.json();
                 const results = data.results || [];
                 allMangaItems = results;
@@ -2446,6 +2775,7 @@
                 updateUrlHash('#/manga/' + encodeURIComponent(slug));
             }
 
+            armServerWakeupDetector();
             try {
                 let apiUrl = '';
                 if (slugOrUrl.startsWith('http://') || slugOrUrl.startsWith('https://')) {
@@ -2459,6 +2789,7 @@
                     const err = await res.json();
                     throw new Error(err.detail || 'ไม่สามารถดึงข้อมูลมังงะได้');
                 }
+                disarmServerWakeupDetector(true);
                 const data = await res.json();
                 currentMangaData = data;
                 currentChapterList = data.chapters || [];
@@ -2742,9 +3073,11 @@
                 return;
             }
 
+            armServerWakeupDetector();
             try {
                 const res = await fetch(`/api/chapter?url=${encodeURIComponent(chapter.url)}`);
                 if (!res.ok) throw new Error('ไม่สามารถโหลดภาพในตอนนี้ได้');
+                disarmServerWakeupDetector(true);
                 const data = await res.json();
                 const images = data.images || [];
 
