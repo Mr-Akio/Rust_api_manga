@@ -76,6 +76,8 @@ async fn main() {
         .route("/manifest.json", get(serve_manifest))
         .route("/sw.js", get(serve_sw))
         .nest_service("/static", ServeDir::new("static"))
+        .route("/health", get(health_check))
+        .route("/api/health", get(health_check))
         .route("/api/manga/{slug}", get(get_manga_by_slug))
         .route("/api/manga", get(get_manga_by_query))
         .route("/api/search", get(search_manga))
@@ -336,4 +338,11 @@ async fn debug_scrape() -> Json<Value> {
         }
         Err(e) => Json(json!({ "error": e.to_string() })),
     }
+}
+
+async fn health_check() -> Json<Value> {
+    Json(json!({
+        "status": "ok",
+        "service": "rust-manga-api"
+    }))
 }
